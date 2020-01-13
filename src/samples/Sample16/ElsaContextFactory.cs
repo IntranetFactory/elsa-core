@@ -12,7 +12,7 @@ namespace Sample16
             var optionsBuilder = new DbContextOptionsBuilder<ElsaContext>();
 
             optionsBuilder.UseSqlite(
-                @"Data Source=c:\data\elsa.sample16.db;Cache=Shared",
+                @"Data Source=C:\Dev\elsa-core\src\samples\Sample16\elsa.sample16.db;Cache=Shared",
                 x => x.MigrationsAssembly(typeof(Program).Assembly.FullName));
 
             return new ElsaContext(optionsBuilder.Options);
