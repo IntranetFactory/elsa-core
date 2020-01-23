@@ -56,6 +56,9 @@ export class DesignerHost {
     async newWorkflow() {
         await this.designer.newWorkflow();
     }
+    async autoLayout() {
+        await this.designer.autoLayout();
+    }
     async getWorkflow() {
         return await this.designer.getWorkflow();
     }
@@ -240,6 +243,22 @@ export class DesignerHost {
         }]; }
     static get methods() { return {
         "newWorkflow": {
+            "complexType": {
+                "signature": "() => Promise<void>",
+                "parameters": [],
+                "references": {
+                    "Promise": {
+                        "location": "global"
+                    }
+                },
+                "return": "Promise<void>"
+            },
+            "docs": {
+                "text": "",
+                "tags": []
+            }
+        },
+        "autoLayout": {
             "complexType": {
                 "signature": "() => Promise<void>",
                 "parameters": [],

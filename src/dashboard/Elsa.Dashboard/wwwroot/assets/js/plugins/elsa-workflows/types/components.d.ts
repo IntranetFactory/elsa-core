@@ -53,6 +53,7 @@ export namespace Components {
   interface WfDesigner {
     'activityDefinitions': Array<ActivityDefinition>;
     'addActivity': (activityDefinition: ActivityDefinition) => Promise<void>;
+    'autoLayout': () => Promise<void>;
     'canvasHeight': string;
     'getWorkflow': () => Promise<any>;
     'newWorkflow': () => Promise<void>;
@@ -62,6 +63,7 @@ export namespace Components {
   }
   interface WfDesignerHost {
     'activityDefinitionsData': string;
+    'autoLayout': () => Promise<void>;
     'canvasHeight': string;
     'export': (formatDescriptor: WorkflowFormatDescriptor) => Promise<void>;
     'getWorkflow': () => Promise<any>;

@@ -4,6 +4,7 @@ import uuid from 'uuid-browser/v4';
 import { ActivityDisplayMode } from "../../../models";
 import ActivityManager from '../../../services/activity-manager';
 import { deepClone } from "../../../utils/deep-clone";
+import dagre from 'dagre';
 export class Designer {
     constructor() {
         this.activityDefinitions = [];
@@ -18,6 +19,7 @@ export class Designer {
                 return null;
             return ([
                 h("wf-context-menu", { target: this.elem() },
+                    h("wf-context-menu-item", { text: "Auto Layout", onClick: this.onAutoLayoutClick }),
                     h("wf-context-menu-item", { text: "Add Activity", onClick: this.onAddActivityClick })),
                 h("wf-context-menu", { ref: (el) => this.activityContextMenu = el },
                     h("wf-context-menu-item", { text: "Edit", onClick: this.onEditActivityClick }),
@@ -130,6 +132,9 @@ export class Designer {
             };
             this.addActivityEvent.emit();
         };
+        this.onAutoLayoutClick = () => {
+            this.autoLayout();
+        };
         this.onDeleteActivityClick = async () => {
             await this.deleteActivity(this.selectedActivity);
         };
@@ -146,6 +151,35 @@ export class Designer {
             connections: []
         };
     }
+    async autoLayout() {
+        var self = this;
+        var g = new dagre.graphlib.Graph();
+        var allNodes = document.querySelectorAll("[data-activity-id]");
+        g.setGraph({ nodesep: 100, ranksep: 100, marginx: 100, marginy: 100 });
+        g.setDefaultEdgeLabel(function () { return {}; });
+        allNodes.forEach(function (element) {
+            var activityId = element.getAttribute('data-activity-id');
+            var boundingClientRect = element.getBoundingClientRect();
+            g.setNode(activityId, {
+                width: boundingClientRect.width,
+                height: boundingClientRect.height
+            });
+        });
+        this.workflow.connections.forEach(function (connection) {
+            g.setEdge(connection.sourceActivityId, connection.destinationActivityId);
+        });
+        dagre.layout(g);
+        g.nodes().forEach(function (n) {
+            var node = g.node(n);
+            var activity = self.findActivityById(n);
+            if (activity != undefined) {
+                activity.top = node.y - node.height / 2;
+                activity.left = node.x - node.width / 2;
+                self.updateActivityInternal(activity);
+            }
+        });
+    }
+    ;
     async getWorkflow() {
         return deepClone(this.workflow);
     }
@@ -388,6 +422,22 @@ export class Designer {
         }]; }
     static get methods() { return {
         "newWorkflow": {
+            "complexType": {
+                "signature": "() => Promise<void>",
+                "parameters": [],
+                "references": {
+                    "Promise": {
+                        "location": "global"
+                    }
+                },
+                "return": "Promise<void>"
+            },
+            "docs": {
+                "text": "",
+                "tags": []
+            }
+        },
+        "autoLayout": {
             "complexType": {
                 "signature": "() => Promise<void>",
                 "parameters": [],

@@ -23,6 +23,7 @@ export declare class DesignerHost {
     readonly: boolean;
     pluginsData: string;
     newWorkflow(): Promise<void>;
+    autoLayout(): Promise<void>;
     getWorkflow(): Promise<any>;
     showActivityPicker(): Promise<void>;
     export(formatDescriptor: WorkflowFormatDescriptor): Promise<void>;

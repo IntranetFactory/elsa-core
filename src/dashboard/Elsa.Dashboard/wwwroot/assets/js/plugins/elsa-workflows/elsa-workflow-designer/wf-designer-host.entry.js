@@ -1,5 +1,5 @@
 import { r as registerInstance, c as createEvent, h, d as getElement } from './chunk-25ccd4a5.js';
-import { c as createCommonjsModule, a as commonjsGlobal, d as deepClone } from './chunk-f1938ac4.js';
+import { c as createCommonjsModule, a as commonjsGlobal, d as deepClone } from './chunk-b68c6ae2.js';
 import { D as DisplayManager } from './chunk-80cbdbf5.js';
 
 var dragscroll = createCommonjsModule(function (module, exports) {
@@ -510,10 +510,10 @@ class TimerActivities {
                     hint: 'The amount of time to wait before this timer event is triggered. Format: \'d.HH:mm:ss\'.'
                 },
                 {
-                    name: 'id',
+                    name: 'name',
                     type: 'text',
-                    label: 'ID',
-                    hint: 'Optionally provide a custom ID for this activity. You can then reference this activity from expressions.'
+                    label: 'Name',
+                    hint: 'Optionally provide a name for this activity. You can reference named activities from expressions.'
                 },
                 {
                     name: 'title',
@@ -581,6 +581,9 @@ class DesignerHost {
     }
     async newWorkflow() {
         await this.designer.newWorkflow();
+    }
+    async autoLayout() {
+        await this.designer.autoLayout();
     }
     async getWorkflow() {
         return await this.designer.getWorkflow();

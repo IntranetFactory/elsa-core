@@ -11,6 +11,7 @@ export declare class Designer {
     workflow: Workflow;
     onWorkflowChanged(value: Workflow): void;
     newWorkflow(): Promise<void>;
+    autoLayout(): Promise<void>;
     getWorkflow(): Promise<any>;
     addActivity(activityDefinition: ActivityDefinition): Promise<void>;
     updateActivity(activity: Activity): Promise<void>;
@@ -45,6 +46,7 @@ export declare class Designer {
     private connectionDetached;
     private onEditActivity;
     private onAddActivityClick;
+    private onAutoLayoutClick;
     private onDeleteActivityClick;
     private onEditActivityClick;
     private onActivityContextMenu;

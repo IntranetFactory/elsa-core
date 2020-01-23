@@ -5,47 +5,7 @@ let workflow = null;
 designer.addEventListener('workflowChanged', onWorkflowChanged);
 
 function autoLayout() {
-    var g = new dagre.graphlib.Graph();
-    var allNodes = document.querySelectorAll("[data-activity-id]");
-    g.setGraph({ nodesep: 100, ranksep: 100, marginx: 100, marginy: 100 });
-    g.setDefaultEdgeLabel(function () { return {}; });
-
-    allNodes.forEach(function (element) {
-        var elDataId = element.dataset.activityId;
-        g.setNode(elDataId, {
-            width: element.offsetWidth,
-            height: element.offsetHeight
-        });
-    });
-
-    var workflow = JSON.parse(designer.workflowData);
-
-    workflow.connections.forEach(function (edge) {
-        g.setEdge(
-            edge.sourceActivityId,
-            edge.destinationActivityId
-        );
-    });
-
-    dagre.layout(g);
-
-    g.nodes().forEach(function (n) {
-        var node = g.node(n);
-        var idNode = document.querySelector("[data-activity-id='" + n + "']");
-
-        if (node != undefined) {
-            var top = node.y - node.height / 2 + 'px';
-            var left = node.x - node.width / 2 + 'px';
-            $('#' + idNode.id).css({ left: left, top: top });
-
-            if (idNode) {
-                triggerMouseEvent(idNode, "mouseover");
-                triggerMouseEvent(idNode, "mousedown");
-                triggerMouseEvent(idNode, "mousemove");
-                triggerMouseEvent(idNode, "mouseup");
-            }
-        }
-    });
+    designer.autoLayout();
 }
 
 function triggerMouseEvent(node, eventType) {
