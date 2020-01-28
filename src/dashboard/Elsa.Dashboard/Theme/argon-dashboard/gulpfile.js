@@ -54,13 +54,13 @@ gulp.task('copy-images', function (done) {
 
 gulp.task('copy-scripts', function (done) {
     gulp.src(`${Paths.ASSETS}js/**/*.*`)
-        .pipe(gulp.dest(`${Paths.DIST}assets/js/`, {overwrite: true}));
+        .pipe(gulp.dest(`${Paths.DIST}assets/js/`, {overwrite: false}));
     done();
 });
 
 gulp.task('copy-scripts-npm', function (done) {
     gulp.src(`${Paths.NPM}@elsa-workflows/elsa-workflow-designer/dist/**/*.*`)
-        .pipe(gulp.dest(`${Paths.DIST}assets/js/plugins/elsa-workflows/`, {overwrite: true}));
+        .pipe(gulp.dest(`${Paths.DIST}assets/js/plugins/elsa-workflows/`, {overwrite: false}));
     done();
 });
 
