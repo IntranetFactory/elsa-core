@@ -4,6 +4,7 @@ using Elsa.Dashboard.ActionFilters;
 using Elsa.Dashboard.Options;
 using Elsa.Dashboard.Services;
 using Elsa.Mapping;
+using Elsa.Metadata;
 using Elsa.Runtime;
 using Elsa.Serialization;
 using Elsa.Serialization.Formatters;
@@ -32,8 +33,11 @@ namespace Elsa.Dashboard.Extensions
             var optionsBuilder = services.AddOptions<ElsaDashboardOptions>();
             options?.Invoke(optionsBuilder);
 
+            var serviceProvider = services.BuildServiceProvider();
+            var activityDescriber = serviceProvider.GetRequiredService<IActivityDescriber>();
+
             if (options == null)
-                optionsBuilder.Configure(x => x.DiscoverActivities());
+                optionsBuilder.Configure(x => x.DiscoverActivities(activityDescriber));
             
             services
                 .AddTaskExecutingServer()

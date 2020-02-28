@@ -4,13 +4,13 @@ class DisplayManager {
             this.drivers[fieldType] = Object.assign({}, driver);
         };
         this.displayEditor = (activity, property) => {
-            const driver = this.drivers[property.type];
+            const driver = this.drivers[property.type.toLowerCase()]; 
             if (!driver)
                 return null;
             return driver.displayEditor(activity, property);
         };
         this.updateEditor = (activity, property, formData) => {
-            const driver = this.drivers[property.type];
+            const driver = this.drivers[property.type.toLowerCase()];
             if (!driver)
                 return;
             driver.updateEditor(activity, property, formData);

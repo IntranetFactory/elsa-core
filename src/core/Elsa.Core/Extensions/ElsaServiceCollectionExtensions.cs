@@ -91,6 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddLocalization()
                 .AddMemoryCache()
                 .AddTransient<Func<IEnumerable<IActivity>>>(sp => sp.GetServices<IActivity>)
+                .AddSingleton<IActivityDescriber, ActivityDescriber>()
                 .AddSingleton<IIdGenerator, IdGenerator>()
                 .AddSingleton<ITokenSerializerProvider, TokenSerializerProvider>()
                 .AddSingleton<ITokenSerializer, TokenSerializer>()

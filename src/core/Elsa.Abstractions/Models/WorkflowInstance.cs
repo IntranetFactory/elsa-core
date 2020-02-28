@@ -19,15 +19,11 @@ namespace Elsa.Models
         public string? DefinitionId { get; set; }
         public string? CorrelationId { get; set; }
         public int Version { get; set; }
-        public Instant CreatedAt { get; set; }
-
-        //This is temporarily commented out because WorkflowInstance.cs of elsa-2.0 doesn't have it originally.
-        //It is also commented out in Elsa.Dashboard/Areas/Elsa/Views/WorkflowInstance/Index.html until we figure out if it's needed.
-        //public Instant? StartedAt { get; set; }
-        //public Instant? FinishedAt { get; set; }
-        //public Instant? FaultedAt { get; set; }
-        //public Instant? AbortedAt { get; set; }
-
+        public Instant CreatedAt { get; set; } 
+        public Instant? StartedAt { get; set; } // TO DO: implement for dashboard
+        public Instant? CompletedAt { get; set; } // TO DO: implement for dashboard
+        public Instant? FaultedAt { get; set; } // TO DO: implement for dashboard
+        public Instant? CancelledAt { get; set; } // TO DO: implement for dashboard
         public WorkflowStatus Status { get; set; }
         public WorkflowFault? Fault { get; set; }
         public Variables Variables { get; set; }

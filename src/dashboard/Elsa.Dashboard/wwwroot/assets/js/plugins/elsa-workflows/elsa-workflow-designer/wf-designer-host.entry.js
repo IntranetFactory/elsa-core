@@ -11,15 +11,19 @@ class BooleanFieldDriver {
         this.displayEditor = (activity, property) => {
             const name = property.name;
             const label = property.label;
-            const checked = activity.state[name] === 'true';
+            const stateProperty = activity.state[name];
+            const checked = stateProperty != undefined ? stateProperty.value : false;
             return `<wf-boolean-field name="${name}" label="${label}" hint="${property.hint}" checked="${checked}"></wf-boolean-field>`;
         };
         this.updateEditor = (activity, property, formData) => {
-            activity.state[property.name] = formData.get(property.name);
+            activity.state[property.name] = {
+                value: formData.get(property.name)
+            }
         };
     }
 }
 
+// TO DO @MM : ExpressionFieldDriver needs fixing so that activities could be edited
 class ExpressionFieldDriver {
     constructor() {
         this.displayEditor = (activity, property) => {
@@ -43,6 +47,7 @@ class ExpressionFieldDriver {
     }
 }
 
+// TO DO @MM : Test if ListFieldDriver works properly after fixing ExpressionFieldDriver. If it doesn't -> fix it
 class ListFieldDriver {
     constructor() {
         this.displayEditor = (activity, property) => {
@@ -64,11 +69,14 @@ class TextFieldDriver {
         this.displayEditor = (activity, property) => {
             const name = property.name;
             const label = property.label;
-            const value = activity.state[name] || '';
+            const stateProperty = activity.state[name];
+            const value = stateProperty != undefined ? stateProperty.value : '';
             return `<wf-text-field name="${name}" label="${label}" hint="${property.hint}" value="${value}"></wf-text-field>`;
         };
         this.updateEditor = (activity, property, formData) => {
-            activity.state[property.name] = formData.get(property.name).toString().trim();
+            activity.state[property.name] = {
+                value: formData.get(property.name).toString().trim()
+            }
         };
     }
 }
@@ -78,14 +86,22 @@ class SelectFieldDriver {
         this.displayEditor = (activity, property) => {
             const name = property.name;
             const label = property.label;
-            const value = activity.state[name] || '';
-            const items = property.options.items || [];
-            const itemsJson = encodeURI(JSON.stringify(items));
+            const stateProperty = activity.state[name]; 
+            const value = stateProperty != undefined ? stateProperty.value : '';  
+            const items = property.options.Items || [];
+            const itemsValues = [];
+
+            items.forEach(function (item, index) {
+                itemsValues.push(item.label);
+            });
+
+            const itemsJson = encodeURI(JSON.stringify(itemsValues));
             return `<wf-select-field name="${name}" label="${label}" hint="${property.hint}" data-items="${itemsJson}" value="${value}"></wf-select-field>`;
         };
         this.updateEditor = (activity, property, formData) => {
-            const value = formData.get(property.name).toString();
-            activity.state[property.name] = value.trim();
+            activity.state[property.name] = {
+                value: formData.get(property.name).trim()
+            }
         };
     }
 }

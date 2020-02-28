@@ -33,6 +33,7 @@ namespace Elsa.Dashboard.Web
             services
                 .AddHttp(options => options.Bind(elsaSection.GetSection("Http")))
                 .AddEmail(options => options.Bind(elsaSection.GetSection("Smtp")))
+                .AddConsoleActivities()
                 .AddUserTaskActivities()
                 .AddTimerActivities(options => options.Bind(elsaSection.GetSection("Timers")))
                 .AddElsaDashboard();

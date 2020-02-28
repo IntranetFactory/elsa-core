@@ -11,7 +11,7 @@ namespace Elsa.Metadata
             Properties = new ActivityPropertyDescriptor[0];
             Outcomes = new string[0];
         }
-        
+
         public string Type { get; set; }
         public string DisplayName { get; set; }
         public string? Description { get; set; }

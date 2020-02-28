@@ -10,9 +10,10 @@ namespace Elsa.Dashboard.Extensions
 {
     public static class ActivityDefinitionListExtensions
     {
+        private static IActivityDescriber _activityDescriber { get; set; }
         public static ActivityDefinitionList Add<T>(this ActivityDefinitionList list) where T : IActivity
         {
-            return list.Add(ActivityDescriber.Describe<T>());
+            return list.Add(_activityDescriber.Describe<T>());
         }
 
         public static ActivityDefinitionList Discover(
@@ -27,15 +28,17 @@ namespace Elsa.Dashboard.Extensions
 
             foreach (var service in serviceCollection)
             {
-                list.Add(ActivityDescriber.Describe(service.ImplementationType));
+                list.Add(_activityDescriber.Describe(service.ImplementationType));
             }
 
             return list;
         }
 
         public static ElsaDashboardOptions DiscoverActivities(
-            this ElsaDashboardOptions options)
+            this ElsaDashboardOptions options, IActivityDescriber activityDescriber)
         {
+            _activityDescriber = activityDescriber;
+
             options.ActivityDefinitions
                 // Add all activities from all referenced assemblies.
                 .Discover(

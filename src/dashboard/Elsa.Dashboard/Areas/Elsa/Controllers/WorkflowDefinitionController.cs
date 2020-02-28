@@ -188,10 +188,12 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return new WorkflowDefinitionListItemModel
             {
                 WorkflowDefinition = workflowDefinition,
-                AbortedCount = instances.Count(x => x.Status == WorkflowStatus.Cancelled),
+                IdleCount = instances.Count(x => x.Status == WorkflowStatus.Idle),
+                RunningCount = instances.Count(x => x.Status == WorkflowStatus.Running),
+                CompletedCount = instances.Count(x => x.Status == WorkflowStatus.Completed),
+                SuspendedCount = instances.Count(x => x.Status == WorkflowStatus.Suspended),
                 FaultedCount = instances.Count(x => x.Status == WorkflowStatus.Faulted),
-                FinishedCount = instances.Count(x => x.Status == WorkflowStatus.Completed),
-                ExecutingCount = instances.Count(x => x.Status == WorkflowStatus.Running),
+                CancelledCount = instances.Count(x => x.Status == WorkflowStatus.Cancelled),
             };
         }
     }

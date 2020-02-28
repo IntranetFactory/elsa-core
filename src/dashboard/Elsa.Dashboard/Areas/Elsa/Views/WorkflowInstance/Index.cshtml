@@ -39,17 +39,17 @@
                     <form id="listForm" method="post" class="table-wrapper">
                         <table class="table align-items-center table-flush">
                             <thead class="thead-light">
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Version</th>
-                                <th scope="col">Correlation ID</th>
-                                <th scope="col">Started</th>
-                                <th scope="col">Finished</th>
-                                <th scope="col">Faulted</th>
-                                <th scope="col">Aborted</th>
-                                <th scope="col"></th>
-                            </tr>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Version</th>
+                                    <th scope="col">Correlation ID</th>
+                                    <th scope="col">Started</th>
+                                    <th scope="col">Completed</th>
+                                    <th scope="col">Faulted</th>
+                                    <th scope="col">Cancelled</th>
+                                    <th scope="col"></th>
+                                </tr>
                             </thead>
                             <tbody>
                             @foreach (var item in Model.WorkflowInstances)
@@ -69,12 +69,10 @@
                                     </td>
                                     <td>@workflowInstance.Version</td>
                                     <td>@workflowInstance.CorrelationId</td>
-
-                                    @* This is temporarily commented out until we figure out if it's necessary because              WorkflowInstance.cs of elsa-2.0 doesn't have it originally. 
-                                         <td>@workflowInstance.StartedAt</td>
-                                         <td>@workflowInstance.FinishedAt</td>
-                                         <td>@workflowInstance.FaultedAt</td>
-                                         <td>@workflowInstance.AbortedAt</td>*@
+                                    <td>@workflowInstance.StartedAt TO DO: Add started time</td>
+                                    <td>@workflowInstance.CompletedAt TO DO: Add completed time</td>
+                                    <td>@workflowInstance.FaultedAt TO DO: Add faulted time</td>
+                                    <td>@workflowInstance.CancelledAt TO DO: Add cancelled time</td>
                                     <td class="text-right">
                                         <div class="dropdown">
                                             <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
