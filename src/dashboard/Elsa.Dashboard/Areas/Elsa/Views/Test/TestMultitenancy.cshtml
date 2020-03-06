@@ -1,0 +1,50 @@
+@model TestMultitenancyViewModel
+@{
+    ViewBag.Title = "Test Multitenancy";
+}
+
+<h3>Workflow Definitions (@Model.WorkflowDefinitionsByTenantId.Count())</h3>
+@foreach (var workflowDefinition in Model.WorkflowDefinitionsByTenantId)
+{
+    if (workflowDefinition != null)
+    {
+        <div>Definition Id: @workflowDefinition.Id</div>
+        <div>Tenant Id: @workflowDefinition.TenantId</div>
+        <div>Created: @workflowDefinition.CreatedAt</div>
+        <br />
+        <br />
+    }
+    <hr />
+}
+
+<h3> Workflow Instances (@Model.WorkflowInstancesByTenantId.Count())</h3>
+@foreach (var workflowInstance in Model.WorkflowInstancesByTenantId)
+{
+    if (workflowInstance != null)
+    {
+        <div>InstanceID: @workflowInstance.Id</div>
+        <div>DefinitionID: @workflowInstance.DefinitionId</div>
+        <br />
+        <br />
+    }
+    <hr />
+
+}
+
+<h3> Blocking Activities (@Model.BlockingActivitiesByTenantIdAndTag.Count())</h3>
+@foreach (var blockingActivity in Model.BlockingActivitiesByTenantIdAndTag)
+{
+    if (blockingActivity != null)
+    {
+        <div>BlockingActivityId: @blockingActivity.ActivityId</div>
+        <div>Tag: @blockingActivity.Tag</div>
+        <br />
+        <br />
+    }
+    <hr />
+
+}
+
+
+
+

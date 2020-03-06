@@ -4,7 +4,7 @@ using Elsa.Models;
 
 namespace Elsa.Extensions
 {
-    public static class WorkflowDefinitionExtensions
+    public static class WorkflowDefinitionVersionExtensions
     {
         public static IEnumerable<WorkflowDefinitionVersion> WithVersion(
             this IEnumerable<WorkflowDefinitionVersion> query,

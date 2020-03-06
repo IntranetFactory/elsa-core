@@ -20,6 +20,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Extensions
             string? migrationHistoryTableName = default)
         {
             return options
+                .UseEntityFrameworkWorkflowDefinitionVersionStore(configureOptions, usePooling, schema, migrationHistoryTableName)
                 .UseEntityFrameworkWorkflowDefinitionStore(configureOptions, usePooling, schema, migrationHistoryTableName)
                 .UseEntityFrameworkWorkflowInstanceStore(configureOptions, usePooling);
         }
@@ -38,11 +39,24 @@ namespace Elsa.Persistence.EntityFrameworkCore.Extensions
             return options;
         }
 
-        public static ElsaOptions UseEntityFrameworkWorkflowDefinitionStore(
+        public static ElsaOptions UseEntityFrameworkWorkflowDefinitionVersionStore(
             this ElsaOptions options,
             Action<DbContextOptionsBuilder> configureOptions,
             bool usePooling = true,
             string? schema = default, 
+            string? migrationHistoryTableName = default)
+        {
+            options.AddEntityFrameworkCoreProvider(configureOptions, usePooling, schema, migrationHistoryTableName);
+            options.Services.AddScoped<EntityFrameworkCoreWorkflowDefinitionVersionStore>();
+            options.UseWorkflowDefinitionVersionStore(sp => sp.GetRequiredService<EntityFrameworkCoreWorkflowDefinitionVersionStore>());
+
+            return options;
+        }
+        public static ElsaOptions UseEntityFrameworkWorkflowDefinitionStore(
+            this ElsaOptions options,
+            Action<DbContextOptionsBuilder> configureOptions,
+            bool usePooling = true,
+            string? schema = default,
             string? migrationHistoryTableName = default)
         {
             options.AddEntityFrameworkCoreProvider(configureOptions, usePooling, schema, migrationHistoryTableName);
@@ -51,7 +65,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Extensions
 
             return options;
         }
-        
+
         private static ElsaOptions AddEntityFrameworkCoreProvider(
             this ElsaOptions options,
             Action<DbContextOptionsBuilder> configureOptions,

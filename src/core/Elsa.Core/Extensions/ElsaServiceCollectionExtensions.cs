@@ -41,6 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
             configure?.Invoke(options);
 
             services
+                .AddTransient(options.WorkflowDefinitionVersionStoreFactory)
                 .AddTransient(options.WorkflowDefinitionStoreFactory)
                 .AddTransient(options.WorkflowInstanceStoreFactory)
                 .AddSingleton(options.DistributedLockProviderFactory)
@@ -111,7 +112,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSingleton<IWorkflowSchedulerQueue, WorkflowSchedulerQueue>()
                 .AddScoped<IWorkflowHost, WorkflowHost>()
                 .AddSingleton<IWorkflowActivator, WorkflowActivator>()
-                .AddSingleton<MemoryWorkflowDefinitionStore>()
+                .AddSingleton<MemoryWorkflowDefinitionVersionStore>()
                 .AddSingleton<MemoryWorkflowInstanceStore>()
                 .AddStartupRunner()
                 .AddTransient<IActivityResolver, ActivityResolver>()
@@ -121,7 +122,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddTransient<Func<IWorkflowBuilder>>(sp => sp.GetRequiredService<IWorkflowBuilder>)
                 .AddStartupTask<StartServiceBusTask>()
                 .AddConsumer<RunWorkflow, RunWorkflowHandler>()
-                .AddAutoMapperProfile<WorkflowDefinitionProfile>(ServiceLifetime.Singleton)
+                .AddAutoMapperProfile<WorkflowDefinitionVersionProfile>(ServiceLifetime.Singleton)
                 .AddSerializationHandlers()
                 .AddMetadataHandlers()
                 .AddPrimitiveActivities();

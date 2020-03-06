@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,9 +29,9 @@ namespace Elsa.Server.GraphQL
             return type == null ? default : describer.Describe(type);
         }
 
-        public async Task<IEnumerable<WorkflowDefinitionVersion>> GetWorkflowDefinitions(
+        public async Task<IEnumerable<WorkflowDefinitionVersion>> GetWorkflowDefinitionVersions(
             VersionOptionsInput? version,
-            [Service] IWorkflowDefinitionStore store,
+            [Service] IWorkflowDefinitionVersionStore store,
             [Service] IMapper mapper,
             CancellationToken cancellationToken)
         {
@@ -39,11 +39,11 @@ namespace Elsa.Server.GraphQL
             return await store.ListAsync(mappedVersion ?? VersionOptions.Latest, cancellationToken);
         }
         
-        public async Task<WorkflowDefinitionVersion> GetWorkflowDefinition(
+        public async Task<WorkflowDefinitionVersion> GetWorkflowDefinitionVersion(
             string? id,
             string? definitionId,
             VersionOptionsInput? version,
-            [Service] IWorkflowDefinitionStore store,
+            [Service] IWorkflowDefinitionVersionStore store,
             [Service] IMapper mapper,
             CancellationToken cancellationToken)
         {

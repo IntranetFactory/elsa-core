@@ -23,6 +23,7 @@ namespace Elsa.Persistence.MongoDb.Extensions
             return options
                 .AddMongoDbProvider(databaseName, connectionString)
                 .UseMongoDbWorkflowDefinitionStore(databaseName, connectionString)
+                .UseMongoDbWorkflowDefinitionVersionStore(databaseName, connectionString)
                 .UseMongoDbWorkflowInstanceStore(databaseName, connectionString);
         }
 
@@ -41,6 +42,20 @@ namespace Elsa.Persistence.MongoDb.Extensions
             return options;
         }
 
+        public static ElsaOptions UseMongoDbWorkflowDefinitionVersionStore(
+            this ElsaOptions options,
+            string databaseName,
+            string connectionString)
+        {
+            options
+                .AddMongoDbProvider(databaseName, connectionString)
+                .UseWorkflowDefinitionVersionStore(sp => sp.GetRequiredService<MongoWorkflowDefinitionVersionStore>())
+                .Services
+                .AddMongoDbCollection<WorkflowDefinitionVersion>("WorkflowDefinitionVersions")
+                .AddScoped<MongoWorkflowDefinitionVersionStore>();
+
+            return options;
+        }
         public static ElsaOptions UseMongoDbWorkflowDefinitionStore(
             this ElsaOptions options,
             string databaseName,
@@ -50,7 +65,7 @@ namespace Elsa.Persistence.MongoDb.Extensions
                 .AddMongoDbProvider(databaseName, connectionString)
                 .UseWorkflowDefinitionStore(sp => sp.GetRequiredService<MongoWorkflowDefinitionStore>())
                 .Services
-                .AddMongoDbCollection<WorkflowDefinitionVersion>("WorkflowDefinitions")
+                .AddMongoDbCollection<WorkflowDefinition>("WorkflowDefinitions")
                 .AddScoped<MongoWorkflowDefinitionStore>();
 
             return options;

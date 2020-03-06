@@ -1,4 +1,4 @@
-@model WorkflowDefinitionListViewModel
+@model WorkflowDefinitionVersionListViewModel
 @{
     ViewBag.Title = "Workflows";
 
@@ -51,20 +51,20 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach (var grouping in Model.WorkflowDefinitions)
+                            @foreach (var grouping in Model.WorkflowDefinitionVersions)
                             {
-                                var latest = grouping.First(x => x.WorkflowDefinition.IsLatest);
-                                var published = grouping.FirstOrDefault(x => x.WorkflowDefinition.IsPublished);
-                                var publishedVersion = published?.WorkflowDefinition.Version.ToString() ?? "-";
+                                var latest = grouping.First(x => x.WorkflowDefinitionVersion.IsLatest);
+                                var published = grouping.FirstOrDefault(x => x.WorkflowDefinitionVersion.IsPublished);
+                                var publishedVersion = published?.WorkflowDefinitionVersion.Version.ToString() ?? "-";
                                 <tr>
                                     <th scope="row">
                                         <div class="media align-items-center">
                                             <div class="media-body">
-                                                <a asp-action="Edit" asp-route-id="@latest.WorkflowDefinition.DefinitionId" class="mb-0 text-sm">@latest.WorkflowDefinition.Name</a>
+                                                <a asp-action="Edit" asp-route-id="@latest.WorkflowDefinitionVersion.DefinitionId" class="mb-0 text-sm">@latest.WorkflowDefinitionVersion.Name</a>
                                             </div>
                                         </div>
                                     </th>
-                                    <td>@latest.WorkflowDefinition.Description</td>
+                                    <td>@latest.WorkflowDefinitionVersion.Description</td>
                                     <td>
                                         <ul class="list-unstyled">
                                             @if (latest.IdleCount > 0)
@@ -74,7 +74,7 @@
                                                         <i class="bg-info"></i>
                                                         <a asp-action="Index"
                                                            asp-controller="WorkflowInstance"
-                                                           asp-route-definitionId="@latest.WorkflowDefinition.DefinitionId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
                                                            asp-route-status="Idle">
                                                             @($"{latest.IdleCount} Idle")
                                                         </a>
@@ -88,7 +88,7 @@
                                                         <i class="bg-info"></i>
                                                         <a asp-action="Index"
                                                            asp-controller="WorkflowInstance"
-                                                           asp-route-definitionId="@latest.WorkflowDefinition.DefinitionId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
                                                            asp-route-status="Running">
                                                             @($"{latest.RunningCount} Running")
                                                         </a>
@@ -102,7 +102,7 @@
                                                         <i class="bg-success"></i>
                                                         <a asp-action="Index"
                                                            asp-controller="WorkflowInstance"
-                                                           asp-route-definitionId="@latest.WorkflowDefinition.DefinitionId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
                                                            asp-route-status="Completed">
                                                             @($"{latest.CompletedCount} Completed")
                                                         </a>
@@ -116,7 +116,7 @@
                                                         <i class="bg-warning"></i>
                                                         <a asp-action="Index"
                                                            asp-controller="WorkflowInstance"
-                                                           asp-route-definitionId="@latest.WorkflowDefinition.DefinitionId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
                                                            asp-route-status="Suspended">
                                                             @($"{latest.SuspendedCount} Suspended")
                                                         </a>
@@ -130,7 +130,7 @@
                                                         <i class="bg-warning"></i>
                                                         <a asp-action="Index"
                                                            asp-controller="WorkflowInstance"
-                                                           asp-route-definitionId="@latest.WorkflowDefinition.DefinitionId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
                                                            asp-route-status="Faulted">
                                                             @($"{latest.FaultedCount} Faulted")
                                                         </a>
@@ -144,7 +144,7 @@
                                                         <i class="bg-default"></i>
                                                         <a asp-action="Index"
                                                            asp-controller="WorkflowInstance"
-                                                           asp-route-definitionId="@latest.WorkflowDefinition.DefinitionId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
                                                            asp-route-status="Cancelled">
                                                             @($"{latest.CancelledCount} Cancelled")
                                                         </a>
@@ -154,14 +154,14 @@
                                         </ul>
                                     </td>
                                     <td>
-                                        @latest.WorkflowDefinition.Version
+                                        @latest.WorkflowDefinitionVersion.Version
                                     </td>
                                     <td>
                                         @publishedVersion
                                     </td>
                                     <td>
                                         <label class="custom-toggle disabled">
-                                            <input type="checkbox" @if(!latest.WorkflowDefinition.IsDisabled){<text>checked</text>} disabled="disabled">
+                                            <input type="checkbox" @if(!latest.WorkflowDefinitionVersion.IsDisabled){<text>checked</text>} disabled="disabled">
                                             <span class="custom-toggle-slider rounded-circle"></span>
                                         </label>
                                     </td>
@@ -171,11 +171,11 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                                <a class="dropdown-item" asp-action="Edit" asp-route-id="@latest.WorkflowDefinition.DefinitionId">Edit</a>
+                                                <a class="dropdown-item" asp-action="Edit" asp-route-id="@latest.WorkflowDefinitionVersion.DefinitionId">Edit</a>
                                                 <a class="dropdown-item" href="#">Publish Draft</a>
                                                 <a class="dropdown-item" href="#">Unpublish</a>
                                                 <a class="dropdown-item" href="#">History</a>
-                                                <a class="dropdown-item" href="#" onclick="onDeleteClick(event, '@latest.WorkflowDefinition.DefinitionId')">Delete</a>
+                                                <a class="dropdown-item" href="#" onclick="onDeleteClick(event, '@latest.WorkflowDefinitionVersion.DefinitionId')">Delete</a>
                                             </div>
                                         </div>
                                     </td>

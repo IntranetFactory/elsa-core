@@ -3,7 +3,7 @@ using Elsa.WorkflowDesigner.Models;
 
 namespace Elsa.Dashboard.Areas.Elsa.ViewModels
 {
-    public class WorkflowDefinitionEditModel
+    public class WorkflowDefinitionVersionEditModel
     {
         public string Id { get; set; }
         public string Json { get; set; }

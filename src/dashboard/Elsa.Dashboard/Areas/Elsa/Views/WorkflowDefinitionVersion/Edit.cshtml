@@ -1,9 +1,9 @@
-@model WorkflowDefinitionEditModel
+@model WorkflowDefinitionVersionEditModel
 @{
     ViewBag.Title = Model.Name;
 }
 
-@await Html.PartialAsync("WorkflowDefinitionEditor")
+@await Html.PartialAsync("WorkflowDefinitionVersionEditor")
 
 @section FootScripts{
     <script src="~/_content/Elsa.Dashboard/assets/js/workflow-editor.js"></script>

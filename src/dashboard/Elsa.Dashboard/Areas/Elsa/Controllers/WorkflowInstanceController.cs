@@ -20,18 +20,18 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
     public class WorkflowInstanceController : Controller
     {
         private readonly IWorkflowInstanceStore workflowInstanceStore;
-        private readonly IWorkflowDefinitionStore workflowDefinitionStore;
+        private readonly IWorkflowDefinitionVersionStore workflowDefinitionVersionStore;
         private readonly IOptions<ElsaDashboardOptions> options;
         private readonly INotifier notifier;
 
         public WorkflowInstanceController(
             IWorkflowInstanceStore workflowInstanceStore,
-            IWorkflowDefinitionStore workflowDefinitionStore,
+            IWorkflowDefinitionVersionStore workflowDefinitionVersionStore,
             IOptions<ElsaDashboardOptions> options,
             INotifier notifier)
         {
             this.workflowInstanceStore = workflowInstanceStore;
-            this.workflowDefinitionStore = workflowDefinitionStore;
+            this.workflowDefinitionVersionStore = workflowDefinitionVersionStore;
             this.options = options;
             this.notifier = notifier;
         }
@@ -42,13 +42,13 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
-            var definition = await workflowDefinitionStore.GetByIdAsync(
+            var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(
                 definitionId,
                 VersionOptions.Latest,
                 cancellationToken
             );
 
-            if (definition == null)
+            if (definitionVersion == null)
                 return NotFound();
 
             var instances = await workflowInstanceStore
@@ -57,7 +57,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
             var model = new WorkflowInstanceListViewModel
             {
-                WorkflowDefinition = definition,
+                WorkflowDefinition = definitionVersion,
                 ReturnUrl = Url.Action("Index", new { definitionId, status }),
                 WorkflowInstances = instances.Select(
                         x => new WorkflowInstanceListItemModel
@@ -79,7 +79,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             if (instance == null)
                 return NotFound();
 
-            var definition = await workflowDefinitionStore.GetByIdAsync(
+            var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(
                 instance.DefinitionId,
                 VersionOptions.SpecificVersion(instance.Version),
                 cancellationToken
@@ -87,13 +87,13 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
             var workflow = new WorkflowModel
             {
-                Activities = definition.Activities.Select(x => CreateActivityModel(x, instance)).ToList(),
-                Connections = definition.Connections.Select(x => new ConnectionModel(x)).ToList()
+                Activities = definitionVersion.Activities.Select(x => CreateActivityModel(x, instance)).ToList(),
+                Connections = definitionVersion.Connections.Select(x => new ConnectionModel(x)).ToList()
             };
 
             var model = new WorkflowInstanceDetailsModel(
                 instance,
-                definition,
+                definitionVersion,
                 workflow,
                 options.Value.ActivityDefinitions,
                 returnUrl);

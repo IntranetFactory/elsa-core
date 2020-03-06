@@ -11,11 +11,11 @@ namespace Elsa.Server.GraphQL.Types
                 .Argument("typeName", x => x.Type<IdType>());
             
             descriptor
-                .Field(x => x.GetWorkflowDefinitions(default, default, default, default))
+                .Field(x => x.GetWorkflowDefinitionVersions(default, default, default, default))
                 .Argument("version", x => x.Type<VersionOptionsInputType>());
             
             descriptor
-                .Field(x => x.GetWorkflowDefinition(default, default, default, default, default, default))
+                .Field(x => x.GetWorkflowDefinitionVersion(default, default, default, default, default, default))
                 .Argument("id", x => x.Type<IdType>())
                 .Argument("definitionId", x => x.Type<IdType>())
                 .Argument("version", x => x.Type<VersionOptionsInputType>());

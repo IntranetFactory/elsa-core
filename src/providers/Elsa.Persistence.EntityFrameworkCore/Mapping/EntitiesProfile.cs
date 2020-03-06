@@ -8,6 +8,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
     {
         public EntitiesProfile()
         {
+            CreateMap<WorkflowDefinition, WorkflowDefinitionEntity>();
+            CreateMap<WorkflowDefinitionEntity, WorkflowDefinition>();
+
             CreateMap<ScheduledActivity, ScheduledActivityEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())
                 .ForMember(d => d.WorkflowInstance, d => d.Ignore())
