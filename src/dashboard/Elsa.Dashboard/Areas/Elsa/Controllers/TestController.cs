@@ -104,7 +104,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         [HttpPost("SaveWorkflowDefinition/{definitionId}")]
         public async Task<IActionResult> SaveWorkflowDefinition(string definitionId, CancellationToken cancellationToken)
         {
-            var workflowDefinition = await workflowDefinitionStore.GetByIdAsync(definitionId, cancellationToken);
+            string tenantId = "1";
+            var workflowDefinition = await workflowDefinitionStore.GetByIdAsync(tenantId, definitionId, cancellationToken);
             workflowDefinition.CreatedAt = clock.GetCurrentInstant();
             await workflowDefinitionStore.SaveAsync(workflowDefinition, cancellationToken);
 
@@ -126,7 +127,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         [HttpGet("GetWorkflowDefinitionById/{definitionId}")]
         public async Task<IActionResult> GetWorkflowDefinition(string definitionId, CancellationToken cancellationToken)
         {
-            var workflowDefinition = await workflowDefinitionStore.GetByIdAsync(definitionId, cancellationToken);
+            string tenantId = "1";
+            var workflowDefinition = await workflowDefinitionStore.GetByIdAsync(tenantId, definitionId, cancellationToken);
             return Ok(workflowDefinition);
         }
 
@@ -140,8 +142,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         [HttpPost("UpdateWorkflowDefinition/{definitionId}")]
         public async Task<IActionResult> UpdateWorkflowDefinition(string definitionId, CancellationToken cancellationToken)
         {
-            var workflowDefinition = await workflowDefinitionStore.GetByIdAsync(definitionId, cancellationToken);
-            workflowDefinition.TenantId = Guid.NewGuid().ToString();
+            string tenantId = "1";
+            var workflowDefinition = await workflowDefinitionStore.GetByIdAsync(tenantId, definitionId, cancellationToken);
             workflowDefinition.WorkflowDefinitionVersions.Clear();
             await workflowDefinitionStore.UpdateAsync(workflowDefinition, cancellationToken);
 
@@ -151,7 +153,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         [HttpPost("DeleteWorkflowDefinition/{definitionId}")]
         public async Task<IActionResult> DeleteWorkflowDefinition(string definitionId, CancellationToken cancellationToken)
         {
-            var count = await workflowDefinitionStore.DeleteAsync(definitionId, cancellationToken);
+            string tenantId = "1";
+            var count = await workflowDefinitionStore.DeleteAsync(tenantId, definitionId, cancellationToken);
             return Content(count.ToString());
         }
         #endregion
