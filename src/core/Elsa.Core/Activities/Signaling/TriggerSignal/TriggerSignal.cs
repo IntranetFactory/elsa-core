@@ -53,8 +53,9 @@ namespace Elsa.Activities.Signaling
             var correlationId = await context.EvaluateAsync(CorrelationId, cancellationToken);
             var input = await context.EvaluateAsync(Input, cancellationToken);
             var triggeredSignal = new TriggeredSignal(signal, input);
-
+            // TO DO: inspect if tenantId should be passed here
             await workflowScheduler.TriggerWorkflowsAsync(
+                null,
                 nameof(Signaled),
                 triggeredSignal,
                 correlationId,

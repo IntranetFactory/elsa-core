@@ -10,6 +10,7 @@ namespace Elsa.StartupTasks
     {
         private readonly IBus serviceBus;
         public StartServiceBusTask(IBus serviceBus) => this.serviceBus = serviceBus;
-        public Task ExecuteAsync(CancellationToken cancellationToken = default) => serviceBus.Subscribe<RunWorkflow>();
+        // tenantId has no other use than to enable project compilation and prevent errors
+        public Task ExecuteAsync(string tenantId, CancellationToken cancellationToken = default) => serviceBus.Subscribe<RunWorkflow>();
     }
 }

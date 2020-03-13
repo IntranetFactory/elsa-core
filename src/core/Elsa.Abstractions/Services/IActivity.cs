@@ -22,7 +22,17 @@ namespace Elsa.Services
         /// Unique identifier of this activity.
         /// </summary>
         string? Id { get; set; }
-        
+
+        /// <summary>
+        /// Unique identifier of this activity.
+        /// </summary>
+        string? TenantId { get; set; }
+
+        /// <summary>
+        /// Tag identifier of this activity.
+        /// </summary>
+        string? Tag { get; set; }
+
         /// <summary>
         /// Name identifier of this activity.
         /// </summary>

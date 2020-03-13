@@ -28,7 +28,7 @@ namespace Elsa.Persistence.YesSql.Services
             string instanceId = instance.Id;
 
             WorkflowInstanceDocument existingInstance = await session
-                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.WorkflowInstanceId == instanceId)
+                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.TenantId == instance.TenantId && x.WorkflowInstanceId == instanceId)
                 .FirstOrDefaultAsync();
 
             WorkflowInstanceDocument document = (existingInstance != null)
@@ -41,53 +41,62 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<WorkflowInstance> GetByIdAsync(
+            string tenantId,
             string id,
             CancellationToken cancellationToken)
         {
             var document = await session
-                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.WorkflowInstanceId == id)
+                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.TenantId == tenantId && x.WorkflowInstanceId == id)
                 .FirstOrDefaultAsync();
             return mapper.Map<WorkflowInstance>(document);
         }
 
         public async Task<WorkflowInstance> GetByCorrelationIdAsync(
+            string tenantId, 
             string correlationId,
             CancellationToken cancellationToken = default)
         {
             var document = await session
-                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.CorrelationId == correlationId)
+                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.TenantId == tenantId && x.CorrelationId == correlationId)
                 .FirstOrDefaultAsync();
             return mapper.Map<WorkflowInstance>(document);
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(
+            string tenantId, 
             string definitionId,
             CancellationToken cancellationToken)
         {
             var documents = await session
-                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.WorkflowDefinitionId == definitionId)
+                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.TenantId == tenantId && x.WorkflowDefinitionId == definitionId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ListAsync();
             return mapper.Map<IEnumerable<WorkflowInstance>>(documents);
         }
 
-        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(string tenantId, CancellationToken cancellationToken)
         {
             var documents = await session.Query<WorkflowInstanceDocument, WorkflowInstanceIndex>()
+                .Where(x => x.TenantId == tenantId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ListAsync();
             return mapper.Map<IEnumerable<WorkflowInstance>>(documents);
         }
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(string activityType, string tag, string correlationId = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+            string tenantId,
+            string activityType, 
+            string tag, 
+            string correlationId = null, 
+            CancellationToken cancellationToken = default)
         {
             var query = session.Query<WorkflowInstanceDocument, WorkflowInstanceBlockingActivitiesIndex>();
 
-            query = query.Where(x => x.ProcessStatus == WorkflowStatus.Suspended);
+            query = query.Where(x => x.ProcessStatus == WorkflowStatus.Suspended && x.TenantId == tenantId);
 
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.ActivityType == activityType && x.Tag == tag);
+            query = query.Where(x => x.ActivityType == activityType && x.Tag == tag && x.TenantId == tenantId);
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var documents = await query.ListAsync();
@@ -97,18 +106,19 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
+            string tenantId, 
             string activityType,
             string correlationId = default,
             CancellationToken cancellationToken = default)
         {
             var query = session.Query<WorkflowInstanceDocument, WorkflowInstanceBlockingActivitiesIndex>();
 
-            query = query.Where(x => x.ProcessStatus == WorkflowStatus.Suspended);
+            query = query.Where(x => x.ProcessStatus == WorkflowStatus.Suspended && x.TenantId == tenantId);
 
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.ActivityType == activityType);
+            query = query.Where(x => x.ActivityType == activityType && x.TenantId == tenantId);
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var documents = await query.ListAsync();
@@ -118,35 +128,38 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
+            string tenantId, 
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
             var documents = await session
                 .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(
-                    x => x.WorkflowDefinitionId == definitionId && x.WorkflowStatus == status)
+                    x => x.WorkflowDefinitionId == definitionId && x.WorkflowStatus == status && x.TenantId == tenantId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ListAsync();
             return mapper.Map<IEnumerable<WorkflowInstance>>(documents);
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
+            string tenantId, 
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
             var documents = await session
-                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.WorkflowStatus == status)
+                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.WorkflowStatus == status && x.TenantId == tenantId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ListAsync();
             return mapper.Map<IEnumerable<WorkflowInstance>>(documents);
         }
 
         public async Task DeleteAsync(
+            string tenantId, 
             string id,
             CancellationToken cancellationToken = default)
         {
             var document = await session
-                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.WorkflowInstanceId == id)
+                .Query<WorkflowInstanceDocument, WorkflowInstanceIndex>(x => x.WorkflowInstanceId == id && x.TenantId == tenantId)
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync();
 

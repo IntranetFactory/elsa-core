@@ -20,85 +20,110 @@ namespace Elsa.Persistence.Memory
             return Task.FromResult(instance);
         }
 
-        public Task<WorkflowInstance> GetByIdAsync(string id, CancellationToken cancellationToken)
+        public Task<WorkflowInstance> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken)
         {
-            var instance = workflowInstances.ContainsKey(id) ? workflowInstances[id] : default;
-            return Task.FromResult(instance);
+
+            if(workflowInstances.ContainsKey(id))
+            {
+                var instance = workflowInstances[id];
+
+                if (instance.TenantId == tenantId)
+                    return Task.FromResult(instance);
+            }
+
+            return default;
         }
 
-        public Task<WorkflowInstance> GetByCorrelationIdAsync(string correlationId,
+        public Task<WorkflowInstance> GetByCorrelationIdAsync(
+            string tenantId, 
+            string correlationId,
             CancellationToken cancellationToken = default)
         {
-            var instance = workflowInstances.Values.FirstOrDefault(x => x.CorrelationId == correlationId);
+            var instance = workflowInstances.Values.FirstOrDefault(x => x.TenantId == tenantId && x.CorrelationId == correlationId);
             return Task.FromResult(instance);
         }
 
-        public Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(string definitionId,
+        public Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(
+            string tenantId, 
+            string definitionId,
             CancellationToken cancellationToken)
         {
-            var workflows = workflowInstances.Values.Where(x => x.DefinitionId == definitionId);
+            var workflows = workflowInstances.Values.Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId);
             return Task.FromResult(workflows);
         }
 
-        public Task<IEnumerable<WorkflowInstance>> ListAllAsync(CancellationToken cancellationToken)
+        public Task<IEnumerable<WorkflowInstance>> ListAllAsync(string tenantId, CancellationToken cancellationToken)
         {
-            var workflows = workflowInstances.Values.AsEnumerable();
+            var workflows = workflowInstances.Values.Where(x => x.TenantId == tenantId).AsEnumerable();
             return Task.FromResult(workflows);
         }
-        public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(string activityType, string tag, string? correlationId = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+            string tenantId, 
+            string activityType,
+            string tag,
+            string? correlationId = null, 
+            CancellationToken cancellationToken = default)
         {
             var query = workflowInstances.Values.AsQueryable();
 
-            query = query.Where(x => x.Status == WorkflowStatus.Suspended);
+            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
 
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
             query = query.Where(
-                x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag)
+                x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag && y.TenantId == tenantId)
             );
 
             return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
         }
 
         public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
+            string tenantId, 
             string activityType,
             string? correlationId = default, 
             CancellationToken cancellationToken = default)
         {
             var query = workflowInstances.Values.AsQueryable();
 
-            query = query.Where(x => x.Status == WorkflowStatus.Suspended);
+            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
 
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
             query = query.Where(
-                x => x.BlockingActivities.Any(y => y.ActivityType == activityType)
+                x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.TenantId == tenantId)
             );
 
             return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
         }
 
         public Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
+            string tenantId, 
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
-            var query = workflowInstances.Values.Where(x => x.DefinitionId == definitionId && x.Status == status);
+            var query = workflowInstances.Values.Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId && x.Status == status);
             return Task.FromResult(query);
         }
 
-        public Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(WorkflowStatus status,
+        public Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
+            string tenantId, 
+            WorkflowStatus status,
             CancellationToken cancellationToken)
         {
-            var query = workflowInstances.Values.Where(x => x.Status == status);
+            var query = workflowInstances.Values.Where(x => x.TenantId == tenantId && x.Status == status);
             return Task.FromResult(query);
         }
 
-        public Task DeleteAsync(string id, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
-            workflowInstances.Remove(id);
+            var instance = workflowInstances[id];
+
+            if(instance.TenantId == tenantId)
+                workflowInstances.Remove(id);
+
             return Task.CompletedTask;
         }
     }

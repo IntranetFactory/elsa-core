@@ -6,8 +6,13 @@ namespace Elsa.Persistence.DocumentDb.Documents
 {
     public class WorkflowDefinitionVersionDocument
     {
-        [JsonProperty(PropertyName = "id")] public string Id { get; set; }
-        [JsonProperty(PropertyName = "type")] public string Type { get; } = nameof(WorkflowDefinitionVersionDocument);
+        [JsonProperty(PropertyName = "id")] 
+        public string Id { get; set; }
+        [JsonProperty(PropertyName = "tenantId")] 
+        public string TenantId { get; set; }
+
+        [JsonProperty(PropertyName = "type")] 
+        public string Type { get; } = nameof(WorkflowDefinitionVersionDocument);
 
         [JsonProperty(PropertyName = "definitionId")]
         public string DefinitionId { get; set; }
@@ -15,7 +20,8 @@ namespace Elsa.Persistence.DocumentDb.Documents
         [JsonProperty(PropertyName = "version")]
         public int Version { get; set; }
 
-        [JsonProperty(PropertyName = "name")] public string Name { get; set; }
+        [JsonProperty(PropertyName = "name")] 
+        public string Name { get; set; }
 
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }

@@ -30,11 +30,12 @@ namespace Elsa.Services
             this.clock = clock;
         }
 
-        public WorkflowDefinitionVersion New()
+        public WorkflowDefinitionVersion New(string tenantId)
         {
             var definitionVersion = new WorkflowDefinitionVersion
             {
                 Id = idGenerator.Generate(),
+                TenantId = tenantId,
                 DefinitionId = idGenerator.Generate(),
                 Name = "New Workflow",
                 Version = 1,
@@ -48,10 +49,11 @@ namespace Elsa.Services
         }
 
         public async Task<WorkflowDefinitionVersion> PublishAsync(
+            string tenantId, 
             string id,
             CancellationToken cancellationToken)
         {
-            var definitionVersion = await store.GetByIdAsync(id, VersionOptions.Latest, cancellationToken);
+            var definitionVersion = await store.GetByIdAsync(tenantId, id, VersionOptions.Latest, cancellationToken);
 
             if (definitionVersion == null)
                 return null;
@@ -66,6 +68,7 @@ namespace Elsa.Services
             var definitionVersion = mapper.Map<WorkflowDefinitionVersion>(workflowDefinitionVersion);
 
             var publishedDefinitionVersion = await store.GetByIdAsync(
+                definitionVersion.TenantId,
                 definitionVersion.DefinitionId,
                 VersionOptions.Published,
                 cancellationToken);
@@ -96,10 +99,11 @@ namespace Elsa.Services
         }
 
         public async Task<WorkflowDefinitionVersion> GetDraftAsync(
+            string tenantId, 
             string id,
             CancellationToken cancellationToken)
         {
-            var definitionVersion = await store.GetByIdAsync(id, VersionOptions.Latest, cancellationToken);
+            var definitionVersion = await store.GetByIdAsync(tenantId, id, VersionOptions.Latest, cancellationToken);
 
             if (definitionVersion == null)
                 return null;
@@ -123,6 +127,7 @@ namespace Elsa.Services
             var draft = mapper.Map<WorkflowDefinitionVersion>(workflowDefinitionVersion);
             
             var latestVersion = await store.GetByIdAsync(
+                workflowDefinitionVersion.TenantId,
                 workflowDefinitionVersion.DefinitionId,
                 VersionOptions.Latest,
                 cancellationToken);
@@ -158,6 +163,7 @@ namespace Elsa.Services
                 WorkflowDefinition newDefinition = new WorkflowDefinition();
                 newDefinition.Id = idGenerator.Generate();
                 newDefinition.CreatedAt = clock.GetCurrentInstant();
+                newDefinition.TenantId = workflowDefinitionVersion.TenantId;
                 await definitionStore.AddAsync(newDefinition);
                 workflowDefinitionVersion.DefinitionId = newDefinition.Id;
             }

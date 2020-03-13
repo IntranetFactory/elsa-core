@@ -37,7 +37,9 @@ namespace Elsa.Activities.MassTransit.Consumers
                     break;
             }
 
+            // TO DO: Inspect if tenantId should be passed here
             await workflowScheduler.TriggerWorkflowsAsync(
+                null,
                 activityType,
                 Variable.From(message),
                 correlationId?.ToString(),

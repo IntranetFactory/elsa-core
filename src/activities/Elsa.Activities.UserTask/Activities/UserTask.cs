@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Elsa.Attributes;
@@ -27,6 +27,19 @@ namespace Elsa.Activities.UserTask.Activities
         public ICollection<string> Actions
         {
             get => GetState(() => new string[0]);
+            set => SetState(value);
+        }
+
+        /// <summary>
+        /// Only a user or a group of users that belong to this tag will see the activity. 
+        /// </summary>
+        [ActivityProperty(
+            Type = ActivityPropertyTypes.Text,
+            Hint = "Only a user or a group of users that belong to this tag will see the activity."
+        )]
+        public string Tag
+        {
+            get => GetState<string>();
             set => SetState(value);
         }
 

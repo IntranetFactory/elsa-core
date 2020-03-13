@@ -35,6 +35,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Top")
                         .HasColumnType("INTEGER");
 
@@ -70,6 +73,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -101,6 +107,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.Property<string>("Tag")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("WorkflowInstanceId")
                         .HasColumnType("INTEGER");
 
@@ -129,6 +138,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.Property<string>("TargetActivityId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("WorkflowDefinitionVersionId")
                         .HasColumnType("INTEGER");
 
@@ -150,6 +162,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Input")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TenantId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("WorkflowInstanceId")
@@ -206,6 +221,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TenantId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Variables")
@@ -268,6 +286,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TenantId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Variables")

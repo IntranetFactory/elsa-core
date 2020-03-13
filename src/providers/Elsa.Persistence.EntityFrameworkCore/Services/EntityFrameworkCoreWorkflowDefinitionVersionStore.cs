@@ -30,7 +30,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                     .Include(x => x.WorkflowDefinition)
                     .Include(x => x.Activities)
                     .Include(x => x.Connections)
-                    .FirstOrDefaultAsync(x => x.VersionId == definitionVersion.Id, cancellationToken);
+                    .FirstOrDefaultAsync(x => x.TenantId == definitionVersion.TenantId && x.VersionId == definitionVersion.Id, cancellationToken);
 
             if (existingEntity == null)
                 return await AddAsync(definitionVersion, cancellationToken);
@@ -46,14 +46,14 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return Map(entity);
         }
 
-        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
             var query = dbContext
                 .WorkflowDefinitionVersions
                 .Include(x => x.WorkflowDefinition)
                 .Include(x => x.Activities)
                 .Include(x => x.Connections)
-                .Where(x => x.VersionId == id);
+                .Where(x => x.TenantId == tenantId && x.VersionId == id);
 
             var entity = await query.FirstOrDefaultAsync(cancellationToken);
             
@@ -61,6 +61,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         }
 
         public async Task<WorkflowDefinitionVersion> GetByIdAsync(
+            string tenantId, 
             string definitionId,
             VersionOptions version,
             CancellationToken cancellationToken = default)
@@ -71,7 +72,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .Include(x => x.Activities)
                 .Include(x => x.Connections)
                 .AsQueryable()
-                .Where(x => x.DefinitionId == definitionId)
+                .Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId)
                 .WithVersion(version);
 
             var entity = await query.FirstOrDefaultAsync(cancellationToken);
@@ -85,7 +86,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .WorkflowDefinitionVersions
                 .Include(x => x.Activities)
                 .Include(x => x.Connections)
-                .FirstOrDefaultAsync(x => x.VersionId == definitionVersion.Id, cancellationToken);
+                .FirstOrDefaultAsync(x => x.TenantId == definitionVersion.TenantId && x.VersionId == definitionVersion.Id, cancellationToken);
 
             DeleteActivities(entity);
             DeleteConnections(entity);
@@ -99,6 +100,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         }
 
         public async Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(
+            string tenantId, 
             VersionOptions version,
             CancellationToken cancellationToken = default)
         {
@@ -106,6 +108,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .WorkflowDefinitionVersions
                 .Include(x => x.Activities)
                 .Include(x => x.Connections)
+                .Where(x => x.TenantId == tenantId)
                 .AsQueryable()
                 .WithVersion(version);
 
@@ -114,34 +117,34 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return mapper.Map<IEnumerable<WorkflowDefinitionVersion>>(entities);
         }
 
-        public async Task<int> DeleteAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
             var definitionRecords = await dbContext.WorkflowDefinitions
-                .Where(x => x.Id == id)
+                .Where(x => x.TenantId == tenantId && x.Id == id)
                 .ToListAsync(cancellationToken);
 
             var definitionVersionRecords = await dbContext.WorkflowDefinitionVersions
-                .Where(x => x.DefinitionId == id)
+                .Where(x => x.TenantId == tenantId && x.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
             var instanceRecords = await dbContext
-                .WorkflowInstances.Where(x => x.DefinitionId == id)
+                .WorkflowInstances.Where(x => x.TenantId == tenantId && x.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
             var activityDefinitionRecords = await dbContext.ActivityDefinitions
-                .Where(x => x.WorkflowDefinitionVersion.DefinitionId == id)
+                .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionVersion.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
             var connectionRecords = await dbContext.ConnectionDefinitions
-                .Where(x => x.WorkflowDefinitionVersion.DefinitionId == id)
+                .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionVersion.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
             var activityInstanceRecords = await dbContext.ActivityInstances
-                .Where(x => x.WorkflowInstance.DefinitionId == id)
+                .Where(x => x.TenantId == tenantId && x.WorkflowInstance.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
             var blockingActivityRecords = await dbContext.BlockingActivities
-                .Where(x => x.WorkflowInstance.DefinitionId == id)
+                .Where(x => x.TenantId == tenantId && x.WorkflowInstance.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
             

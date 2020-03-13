@@ -34,7 +34,7 @@ namespace Elsa.Activities.Http.Controllers
             if (!tokenService.TryDecryptToken(token, out Signal signal))
                 return NotFound();
 
-            var workflowInstance = await workflowInstanceStore.GetByIdAsync(signal.WorkflowInstanceId, cancellationToken);
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(signal.TenantId, signal.WorkflowInstanceId, cancellationToken);
 
             if (workflowInstance == null)
                 return NotFound();

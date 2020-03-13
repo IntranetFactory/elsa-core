@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Elsa.Activities.Http.Models;
 using Elsa.Activities.Http.Services;
@@ -36,7 +36,8 @@ namespace Elsa.Activities.Http.Liquid
         private string GenerateUrl(string signal, WorkflowExecutionContext workflowExecutionContext)
         {
             var workflowInstanceId = workflowExecutionContext.InstanceId;
-            var payload = new Signal(signal, workflowInstanceId);
+            // TO DO: Inspect if tenantId should be passed here
+            var payload = new Signal(null, signal, workflowInstanceId);
             var token = tokenService.CreateToken(payload);
             var url = $"/workflows/signal?token={token}";
 

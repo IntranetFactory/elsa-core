@@ -54,12 +54,14 @@ class ListFieldDriver {
             const name = property.name;
             const label = property.label;
             const items = activity.state[name] || [];
-            const value = items.join(', ');
+            const value = items.value != undefined ? items.value.join(', ') : '';
             return `<wf-list-field name="${name}" label="${label}" hint="${property.hint}" items="${value}"></wf-list-field>`;
         };
         this.updateEditor = (activity, property, formData) => {
             const value = formData.get(property.name).toString();
-            activity.state[property.name] = value.split(',').map(x => x.trim());
+            activity.state[property.name] = {
+                value: value.split(',').map(x => x.trim())
+            }
         };
     }
 }

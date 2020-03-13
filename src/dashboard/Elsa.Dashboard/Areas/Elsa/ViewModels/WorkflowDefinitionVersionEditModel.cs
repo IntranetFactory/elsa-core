@@ -6,6 +6,7 @@ namespace Elsa.Dashboard.Areas.Elsa.ViewModels
     public class WorkflowDefinitionVersionEditModel
     {
         public string Id { get; set; }
+        public string TenantId { get; set; }
         public string Json { get; set; }
         public string SubmitAction { get; set; }
         public string Name { get; set; }

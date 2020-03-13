@@ -41,11 +41,11 @@ namespace Elsa.Persistence.YesSql.Services
             return mapper.Map<WorkflowDefinitionVersion>(document);
         }
 
-        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
             var query = session
                 .Query<WorkflowDefinitionVersionDocument, WorkflowDefinitionVersionIndex>()
-                .Where(x => x.VersionId == id);
+                .Where(x => x.TenantId == tenantId && x.VersionId == id);
 
             var document = await query.FirstOrDefaultAsync();
 
@@ -53,13 +53,14 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<WorkflowDefinitionVersion> GetByIdAsync(
+            string tenantId,
             string definitionId,
             VersionOptions version,
             CancellationToken cancellationToken = default)
         {
             var query = session
                 .Query<WorkflowDefinitionVersionDocument, WorkflowDefinitionVersionIndex>()
-                .Where(x => x.WorkflowDefinitionId == definitionId)
+                .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionId == definitionId)
                 .WithVersion(version);
 
             var document = await query.FirstOrDefaultAsync();
@@ -68,11 +69,14 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(
+            string tenantId, 
             VersionOptions version,
             CancellationToken cancellationToken = default)
         {
             var query = session.Query<WorkflowDefinitionVersionDocument, WorkflowDefinitionVersionIndex>()
+                .Where(x => x.TenantId == tenantId)
                 .WithVersion(version);
+
             var documents = await query.ListAsync();
 
             return mapper.Map<IEnumerable<WorkflowDefinitionVersion>>(documents);
@@ -96,16 +100,16 @@ namespace Elsa.Persistence.YesSql.Services
             return mapper.Map<WorkflowDefinitionVersion>(document);
         }
 
-        public async Task<int> DeleteAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
             var instanceDocuments = (await session.Query<WorkflowInstanceDocument, WorkflowInstanceIndex>()
-                    .Where(x => x.WorkflowDefinitionId == id)
+                    .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionId == id)
                     .ListAsync())
                 .ToList();
 
             var definitionVersionDocuments = (await session
                     .Query<WorkflowDefinitionVersionDocument, WorkflowDefinitionVersionIndex>()
-                    .Where(x => x.WorkflowDefinitionId == id)
+                    .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionId == id)
                     .ListAsync())
                 .ToList();
 

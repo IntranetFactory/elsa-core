@@ -22,6 +22,7 @@ namespace Elsa.Server.GraphQL
         }
         
         public async Task<WorkflowDefinitionVersion> SaveWorkflowDefinitionVersion(
+            string tenantId, 
             string? id,
             WorkflowSaveAction saveAction,
             WorkflowInput workflowInput,
@@ -31,7 +32,7 @@ namespace Elsa.Server.GraphQL
             [Service] IWorkflowPublisher publisher,
             CancellationToken cancellationToken)
         {
-            var workflowDefinitionVersion = id != null ? await store.GetByIdAsync(id, cancellationToken) : default;
+            var workflowDefinitionVersion = id != null ? await store.GetByIdAsync(tenantId, id, cancellationToken) : default;
 
             if (workflowDefinitionVersion == null)
             {
@@ -80,11 +81,12 @@ namespace Elsa.Server.GraphQL
         }
 
         public async Task<int> DeleteWorkflowDefinitionVersion(
+            string tenantId, 
             string id,
             [Service] IWorkflowDefinitionVersionStore store,
             CancellationToken cancellationToken)
         {
-            return await store.DeleteAsync(id, cancellationToken);
+            return await store.DeleteAsync(tenantId, id, cancellationToken);
         }
 
         private ActivityDefinition ToActivityDefinition(ActivityDefinitionInput source) => mapper.Map<ActivityDefinition>(source);

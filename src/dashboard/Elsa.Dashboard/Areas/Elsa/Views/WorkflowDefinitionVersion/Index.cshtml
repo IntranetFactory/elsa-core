@@ -2,7 +2,10 @@
 @{
     ViewBag.Title = "Workflows";
 
-    var deleteUrlTemplate = Url.Action("Delete", new { id = "id" }).Replace("id", "${id}");
+    var deleteUrlTemplate = Url.Action("Delete", new { tenantId = "tenantId", id = "id" })
+        .Replace("tenantId", "${tenantId}")
+        .Replace("id", "${id}");
+
 }
 
 @section FootScripts
@@ -10,7 +13,7 @@
     <script type="text/javascript">
         const form = document.querySelector('#listForm');
         
-        function onDeleteClick(e, id){
+        function onDeleteClick(e, tenantId, id){
             e.preventDefault();
             
             if(!confirm('Are you sure you want to delete this workflow?'))
@@ -60,7 +63,7 @@
                                     <th scope="row">
                                         <div class="media align-items-center">
                                             <div class="media-body">
-                                                <a asp-action="Edit" asp-route-id="@latest.WorkflowDefinitionVersion.DefinitionId" class="mb-0 text-sm">@latest.WorkflowDefinitionVersion.Name</a>
+                                                <a asp-action="Edit" asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId" asp-route-id="@latest.WorkflowDefinitionVersion.DefinitionId" class="mb-0 text-sm">@latest.WorkflowDefinitionVersion.Name</a>
                                             </div>
                                         </div>
                                     </th>
@@ -175,7 +178,7 @@
                                                 <a class="dropdown-item" href="#">Publish Draft</a>
                                                 <a class="dropdown-item" href="#">Unpublish</a>
                                                 <a class="dropdown-item" href="#">History</a>
-                                                <a class="dropdown-item" href="#" onclick="onDeleteClick(event, '@latest.WorkflowDefinitionVersion.DefinitionId')">Delete</a>
+                                                <a class="dropdown-item" href="#" onclick="onDeleteClick(event, '@latest.WorkflowDefinitionVersion.TenantId','@latest.WorkflowDefinitionVersion.DefinitionId')">Delete</a>
                                             </div>
                                         </div>
                                     </td>

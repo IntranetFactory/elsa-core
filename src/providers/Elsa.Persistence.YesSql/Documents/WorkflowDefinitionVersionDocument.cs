@@ -6,6 +6,7 @@ namespace Elsa.Persistence.YesSql.Documents
     public class WorkflowDefinitionVersionDocument : YesSqlDocument
     {
         public string VersionId { get; set; }
+        public string TenantId { get; set; }
         public string WorkflowDefinitionId { get; set; }
         public int Version { get; set; }
         public string Name { get; set; }

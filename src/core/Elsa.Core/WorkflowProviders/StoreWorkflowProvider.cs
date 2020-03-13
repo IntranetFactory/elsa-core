@@ -24,9 +24,9 @@ namespace Elsa.WorkflowProviders
             this.activityResolver = activityResolver;
         }
 
-        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(string tenantId, CancellationToken cancellationToken)
         {
-            var workflowDefinitionVersions = await store.ListAsync(VersionOptions.All, cancellationToken);
+            var workflowDefinitionVersions = await store.ListAsync(tenantId, VersionOptions.All, cancellationToken);
             return workflowDefinitionVersions.Select(CreateWorkflow);
         }
 
@@ -37,6 +37,7 @@ namespace Elsa.WorkflowProviders
             var workflow = new Workflow
             {
                 DefinitionId = definitionVersion.DefinitionId,
+                TenantId = definitionVersion.TenantId,
                 Description = definitionVersion.Description,
                 Name = definitionVersion.Name,
                 Version = definitionVersion.Version,

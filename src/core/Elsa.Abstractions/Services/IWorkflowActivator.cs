@@ -8,6 +8,7 @@ namespace Elsa.Services
     public interface IWorkflowActivator
     {
         Task<WorkflowInstance> ActivateAsync(
+            string tenantId,
             string definitionId, 
             string? correlationId = default, 
             CancellationToken cancellationToken = default);

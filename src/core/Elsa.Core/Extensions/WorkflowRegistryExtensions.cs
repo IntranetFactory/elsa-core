@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,21 +10,24 @@ namespace Elsa.Extensions
 {
     public static class WorkflowRegistryExtensions
     {
-        public static Task<Workflow> GetWorkflowAsync<T>(this IWorkflowRegistry workflowRegistry, CancellationToken cancellationToken) =>
-            workflowRegistry.GetWorkflowAsync(typeof(T).Name, VersionOptions.Latest, cancellationToken);
+        public static Task<Workflow> GetWorkflowAsync<T>(this IWorkflowRegistry workflowRegistry, string tenantId, CancellationToken cancellationToken) =>
+            workflowRegistry.GetWorkflowAsync(tenantId, typeof(T).Name, VersionOptions.Latest, cancellationToken);
 
         public static Task<IEnumerable<(Workflow Workflow, IActivity Activity)>> GetWorkflowsByStartActivityAsync<T>(
             this IWorkflowRegistry workflowRegistry,
+            string tenantId, 
             CancellationToken cancellationToken = default)
             where T : IActivity =>
-            workflowRegistry.GetWorkflowsByStartActivityAsync(typeof(T).Name, cancellationToken);
+            workflowRegistry.GetWorkflowsByStartActivityAsync(tenantId, typeof(T).Name, cancellationToken);
 
         public static async Task<IEnumerable<(Workflow Workflow, IActivity Activity)>> GetWorkflowsByStartActivityAsync(
             this IWorkflowRegistry workflowRegistry,
+            string tenantId, 
             string activityType,
             CancellationToken cancellationToken = default)
         {
-            var workflows = await workflowRegistry.GetWorkflowsAsync(cancellationToken);
+            // TO DO: inspect if tenantId should be passed here
+            var workflows = await workflowRegistry.GetWorkflowsAsync(tenantId, cancellationToken);
 
             var query =
                 from workflow in workflows

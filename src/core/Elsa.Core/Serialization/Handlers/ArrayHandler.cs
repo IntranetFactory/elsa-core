@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Elsa.Serialization.Extensions;
 using Newtonsoft.Json;
@@ -21,13 +21,20 @@ namespace Elsa.Serialization.Handlers
         public void Serialize(JsonWriter writer, JsonSerializer serializer, Type type, JToken token, object? value)
         {
             var elementType = GetElementType(type);
-            var arrayToken = new JObject
+            
+            if(elementType != null)
             {
-                [ElementTypeFieldName] = typeMap.GetAlias(elementType), 
-                [ElementsFieldName] = token
-            };
+                var arrayToken = new JObject
+                {
+                    [ElementTypeFieldName] = typeMap.GetAlias(elementType),
+                    [ElementsFieldName] = token
+                };
 
-            arrayToken.WriteTo(writer, serializer.Converters.ToArray());
+                arrayToken.WriteTo(writer, serializer.Converters.ToArray());
+            } else
+            {
+                token.WriteTo(writer, serializer.Converters.ToArray());
+            }
         }
         
         public object Deserialize(JsonSerializer serializer, JToken token)
@@ -52,6 +59,6 @@ namespace Elsa.Serialization.Handlers
             return array;
         }
 
-        private Type GetElementType(Type listType) => listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments().First();
+        private Type GetElementType(Type listType) => listType.IsArray ? listType.GetElementType() : listType.GetGenericArguments().FirstOrDefault();
     }
 }

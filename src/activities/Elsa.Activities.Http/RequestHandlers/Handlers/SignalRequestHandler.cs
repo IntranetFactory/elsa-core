@@ -63,7 +63,7 @@ namespace Elsa.Activities.Http.RequestHandlers.Handlers
         }
 
         private async Task<WorkflowInstance> GetWorkflowInstanceAsync(Signal signal) => 
-            await workflowInstanceStore.GetByIdAsync(signal.WorkflowInstanceId, cancellationToken);
+            await workflowInstanceStore.GetByIdAsync(signal.TenantId, signal.WorkflowInstanceId, cancellationToken);
 
         private bool CheckIfExecuting(WorkflowInstance workflowInstance) => 
             workflowInstance.Status == WorkflowStatus.Running;
@@ -73,6 +73,7 @@ namespace Elsa.Activities.Http.RequestHandlers.Handlers
             var input = Variable.From(signal.Name);
 
             var workflowDefinition = await workflowRegistry.GetWorkflowAsync(
+                workflowInstanceModel.TenantId,
                 workflowInstanceModel.DefinitionId,
                 VersionOptions.SpecificVersion(workflowInstanceModel.Version),
                 cancellationToken);

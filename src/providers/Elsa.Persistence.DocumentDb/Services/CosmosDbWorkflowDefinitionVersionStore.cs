@@ -33,30 +33,30 @@ namespace Elsa.Persistence.DocumentDb.Services
             return Map(document);
         }
 
-        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
-            var query = client.CreateDocumentQuery<WorkflowDefinitionVersionDocument>(collectionUrl).Where(c => c.Id == id);
+            var query = client.CreateDocumentQuery<WorkflowDefinitionVersionDocument>(collectionUrl).Where(c => c.TenantId == tenantId && c.Id == id);
             var document = query.FirstOrDefault();
             return Map(document);
         }
 
-        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
             var query = client.CreateDocumentQuery<WorkflowDefinitionVersionDocument>(collectionUrl)
-                .Where(c => c.DefinitionId == definitionId).WithVersion(version);
+                .Where(c => c.TenantId == tenantId && c.DefinitionId == definitionId).WithVersion(version);
             var document = query.AsEnumerable().FirstOrDefault();
             return Map(document);
         }
         
-        public async Task<int> DeleteAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
-            var workflowDefinitionVersionDocuments = await client.CreateDocumentQuery<WorkflowDefinitionVersionDocument>(collectionUrl).Where(c => c.DefinitionId == id).ToQueryResultAsync();
+            var workflowDefinitionVersionDocuments = await client.CreateDocumentQuery<WorkflowDefinitionVersionDocument>(collectionUrl).Where(c => c.TenantId == tenantId && c.DefinitionId == id).ToQueryResultAsync();
             foreach (var record in workflowDefinitionVersionDocuments)
             {
                 await client.DeleteDocumentAsync(record.Id, cancellationToken: cancellationToken);
@@ -64,12 +64,14 @@ namespace Elsa.Persistence.DocumentDb.Services
             return workflowDefinitionVersionDocuments.Count;
         }
 
-        public async Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(VersionOptions version, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(string tenantId, VersionOptions version, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
+
             var query = client
                 .CreateDocumentQuery<WorkflowDefinitionVersionDocument>(collectionUrl)
+                .Where(c => c.TenantId == tenantId)
                 .WithVersion(version).ToList();
            
             return mapper.Map<IEnumerable<WorkflowDefinitionVersion>>(query);

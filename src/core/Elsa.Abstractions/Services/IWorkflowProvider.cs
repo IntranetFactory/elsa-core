@@ -10,6 +10,6 @@ namespace Elsa.Services
     /// </summary>
     public interface IWorkflowProvider
     {
-        Task<IEnumerable<Workflow>> GetWorkflowsAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<Workflow>> GetWorkflowsAsync(string tenantId, CancellationToken cancellationToken);
     }
 }

@@ -19,7 +19,7 @@ namespace Elsa.Persistence.Memory
 
         public async Task<WorkflowDefinitionVersion> SaveAsync(WorkflowDefinitionVersion definitionVersion, CancellationToken cancellationToken = default)
         {
-            var existingDefinitionVersion = await GetByIdAsync(definitionVersion.Id, VersionOptions.SpecificVersion(definitionVersion.Version), cancellationToken);
+            var existingDefinitionVersion = await GetByIdAsync(definitionVersion.TenantId, definitionVersion.Id, VersionOptions.SpecificVersion(definitionVersion.Version), cancellationToken);
 
             if (existingDefinitionVersion == null)
                 await AddAsync(definitionVersion, cancellationToken);
@@ -31,7 +31,7 @@ namespace Elsa.Persistence.Memory
 
         public async Task<WorkflowDefinitionVersion> AddAsync(WorkflowDefinitionVersion definitionVersion, CancellationToken cancellationToken = default)
         {
-            var existingDefinitionVersion = await GetByIdAsync(definitionVersion.Id, VersionOptions.SpecificVersion(definitionVersion.Version), cancellationToken);
+            var existingDefinitionVersion = await GetByIdAsync(definitionVersion.TenantId, definitionVersion.Id, VersionOptions.SpecificVersion(definitionVersion.Version), cancellationToken);
 
             if (existingDefinitionVersion != null)
             {
@@ -42,37 +42,37 @@ namespace Elsa.Persistence.Memory
             return definitionVersion;
         }
 
-        public Task<WorkflowDefinitionVersion> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
-            var definitionVersion = definitionVersions.FirstOrDefault(x => x.Id == id);
+            var definitionVersion = definitionVersions.FirstOrDefault(x => x.TenantId == tenantId && x.Id == id);
             return Task.FromResult(definitionVersion);
         }
 
-        public Task<WorkflowDefinitionVersion> GetByIdAsync(string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
         {
-            var query = definitionVersions.Where(x => x.DefinitionId == definitionId).AsQueryable().WithVersion(version);
+            var query = definitionVersions.Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId).AsQueryable().WithVersion(version);
             var definitionVersion = query.FirstOrDefault();
             return Task.FromResult(definitionVersion);
         }
 
-        public Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(VersionOptions version, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(string tenantid, VersionOptions version, CancellationToken cancellationToken = default)
         {
-            var query = definitionVersions.AsQueryable().WithVersion(version);
+            var query = definitionVersions.Where(x => x.TenantId == tenantid).AsQueryable().WithVersion(version);
             return Task.FromResult(query.AsEnumerable());
         }
 
         public async Task<WorkflowDefinitionVersion> UpdateAsync(WorkflowDefinitionVersion definitionVersion, CancellationToken cancellationToken)
         {
-            var existingDefinitionVersion = await GetByIdAsync(definitionVersion.Id, VersionOptions.SpecificVersion(definitionVersion.Version), cancellationToken);
+            var existingDefinitionVersion = await GetByIdAsync(definitionVersion.TenantId, definitionVersion.Id, VersionOptions.SpecificVersion(definitionVersion.Version), cancellationToken);
             var index = definitionVersions.IndexOf(existingDefinitionVersion);
 
             definitionVersions[index] = definitionVersion;
             return definitionVersion;
         }
 
-        public Task<int> DeleteAsync(string id, CancellationToken cancellationToken = default)
+        public Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
-            var count = definitionVersions.RemoveAll(x => x.DefinitionId == id);
+            var count = definitionVersions.RemoveAll(x => x.TenantId == tenantId && x.DefinitionId == id);
             return Task.FromResult(count);
         }
     }

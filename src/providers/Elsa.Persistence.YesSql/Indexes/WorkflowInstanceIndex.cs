@@ -9,6 +9,7 @@ namespace Elsa.Persistence.YesSql.Indexes
     public class WorkflowInstanceIndex : MapIndex
     {
         public string WorkflowInstanceId { get; set; }
+        public string TenantId { get; set; }
         public string WorkflowDefinitionId { get; set; }
         public string CorrelationId { get; set; }
         public WorkflowStatus WorkflowStatus { get; set; }
@@ -18,6 +19,7 @@ namespace Elsa.Persistence.YesSql.Indexes
     public class WorkflowInstanceBlockingActivitiesIndex : MapIndex
     {
         public string ActivityId { get; set; }
+        public string TenantId { get; set; }
         public string ActivityType { get; set; }
         public string Tag { get; set; }
         public string CorrelationId { get; set; }
@@ -33,6 +35,7 @@ namespace Elsa.Persistence.YesSql.Indexes
                 .Map(
                     workflowInstance => new WorkflowInstanceIndex
                     {
+                        TenantId = workflowInstance.TenantId,
                         WorkflowInstanceId = workflowInstance.WorkflowInstanceId,
                         WorkflowDefinitionId = workflowInstance.DefinitionId,
                         WorkflowStatus = workflowInstance.Status,
@@ -47,6 +50,7 @@ namespace Elsa.Persistence.YesSql.Indexes
                             activity => new WorkflowInstanceBlockingActivitiesIndex
                             {
                                 ActivityId = activity.ActivityId,
+                                TenantId = activity.TenantId,
                                 ActivityType = activity.ActivityType,
                                 Tag = activity.Tag,
                                 CorrelationId = workflowInstance.CorrelationId,

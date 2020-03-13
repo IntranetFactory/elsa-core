@@ -5,6 +5,6 @@ namespace Elsa.Runtime
 {
     public interface IStartupTask
     {
-        Task ExecuteAsync(CancellationToken cancellationToken = default);
+        Task ExecuteAsync(string tenantId, CancellationToken cancellationToken = default);
     }
 }

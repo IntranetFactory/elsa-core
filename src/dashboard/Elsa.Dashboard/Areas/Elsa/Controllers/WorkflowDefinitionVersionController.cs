@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -47,9 +48,10 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         [HttpGet]
-        public async Task<ViewResult> Index(CancellationToken cancellationToken)
+        public async Task<ViewResult> Index(string tenantId, CancellationToken cancellationToken)
         {
             var workflows = await workflowDefinitionVersionStore.ListAsync(
+                tenantId,
                 VersionOptions.LatestOrPublished,
                 cancellationToken
             );
@@ -71,13 +73,14 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         [HttpGet("create")]
-        public ViewResult Create()
+        public ViewResult Create(string tenantId)
         {
-            var workflowDefinitionVersion = publisher.New();
+            var workflowDefinitionVersion = publisher.New(tenantId);
 
             var model = new WorkflowDefinitionVersionEditModel
             {
                 Name = workflowDefinitionVersion.Name,
+                TenantId = tenantId,
                 Json = serializer.Serialize(workflowDefinitionVersion, JsonTokenFormatter.FormatName),
                 ActivityDefinitions = options.Value.ActivityDefinitions.ToArray(),
                 IsSingleton = workflowDefinitionVersion.IsSingleton,
@@ -85,6 +88,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 Description = workflowDefinitionVersion.Description
             };
 
+            
             return View(model);
         }
 
@@ -95,10 +99,10 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return await SaveAsync(model, workflowDefinitionVersion, cancellationToken);
         }
 
-        [HttpGet("edit/{id}", Name ="EditWorkflowDefinitionVersion")]
-        public async Task<IActionResult> Edit(string id, CancellationToken cancellationToken)
+        [HttpGet("edit/{tenantId}/{id}", Name ="EditWorkflowDefinitionVersion")]
+        public async Task<IActionResult> Edit(string tenantId, string id, CancellationToken cancellationToken)
         {
-            var workflowDefinitionVersion = await publisher.GetDraftAsync(id, cancellationToken);
+            var workflowDefinitionVersion = await publisher.GetDraftAsync(tenantId, id, cancellationToken);
 
             if (workflowDefinitionVersion == null)
                 return NotFound();
@@ -112,6 +116,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             var model = new WorkflowDefinitionVersionEditModel
             {
                 Id = workflowDefinitionVersion.DefinitionId,
+                TenantId = workflowDefinitionVersion.TenantId,
                 Name = workflowDefinitionVersion.Name,
                 Json = serializer.Serialize(workflowModel, JsonTokenFormatter.FormatName),
                 Description = workflowDefinitionVersion.Description,
@@ -124,20 +129,21 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return View(model);
         }
 
-        [HttpPost("edit/{id}")]
+        [HttpPost("edit/{tenantId}/{id}")]
         public async Task<IActionResult> Edit(
+            string tenantId,
             string id,
             WorkflowDefinitionVersionEditModel model,
             CancellationToken cancellationToken)
         {
-            var workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(id, VersionOptions.Latest, cancellationToken);
+            var workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, id, VersionOptions.Latest, cancellationToken);
             return await SaveAsync(model, workflowDefinitionVersion, cancellationToken);
         }
 
-        [HttpPost("delete/{id}")]
-        public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
+        [HttpPost("delete/{tenantId}/{id}")]
+        public async Task<IActionResult> Delete(string tenantId, string id, CancellationToken cancellationToken)
         {
-            await workflowDefinitionVersionStore.DeleteAsync(id, cancellationToken);
+            await workflowDefinitionVersionStore.DeleteAsync(tenantId, id, cancellationToken);
             notifier.Notify("Workflow successfully deleted.", NotificationType.Success);
             return RedirectToAction(nameof(Index));
         }
@@ -150,12 +156,23 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             var postedWorkflow = serializer.Deserialize<WorkflowModel>(model.Json, JsonTokenFormatter.FormatName);
 
             workflowDefinitionVersion.Activities = postedWorkflow.Activities
-                .Select(x => new ActivityDefinition(x.Id, x.Type, x.State, x.Left, x.Top))
+                .Select(x => new ActivityDefinition(x.Id, x.TenantId, x.Type, x.State, x.Left, x.Top))
                 .ToList();
 
-            workflowDefinitionVersion.Connections = postedWorkflow.Connections.Select(
-                x => new ConnectionDefinition(x.SourceActivityId, x.TargetActivityId, x.Outcome)).ToList();
+            foreach(var activity in workflowDefinitionVersion.Activities)
+            {
+                activity.TenantId = model.TenantId;
+            }
 
+            workflowDefinitionVersion.Connections = postedWorkflow.Connections.Select(
+                x => new ConnectionDefinition(x.TenantId, x.SourceActivityId, x.TargetActivityId, x.Outcome)).ToList();
+
+            foreach (var connection in workflowDefinitionVersion.Connections)
+            {
+                connection.TenantId = model.TenantId;
+            }
+
+            workflowDefinitionVersion.TenantId = model.TenantId;
             workflowDefinitionVersion.Description = model.Description;
             workflowDefinitionVersion.Name = model.Name;
             workflowDefinitionVersion.IsDisabled = model.IsDisabled;
@@ -174,9 +191,9 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 notifier.Notify("Workflow successfully saved as a draft.", NotificationType.Success);
             }
 
-            var asd = await workflowDefinitionVersionStore.GetByIdAsync(workflowDefinitionVersion.Id, cancellationToken);
+            var asd = await workflowDefinitionVersionStore.GetByIdAsync(workflowDefinitionVersion.TenantId, workflowDefinitionVersion.Id, cancellationToken);
             
-            return RedirectToRoute("EditWorkflowDefinitionVersion", new { id = workflowDefinitionVersion.DefinitionId });
+            return RedirectToRoute("EditWorkflowDefinitionVersion", new { tenantId = workflowDefinitionVersion.TenantId, id = workflowDefinitionVersion.DefinitionId });
         }
 
         private async Task<WorkflowDefinitionVersionListItemModel> CreateWorkflowDefinitionListItemModelAsync(
@@ -184,7 +201,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             CancellationToken cancellationToken)
         {
             var instances = await workflowInstanceStore
-                .ListByDefinitionAsync(workflowDefinitionVersion.DefinitionId, cancellationToken)
+                .ListByDefinitionAsync(workflowDefinitionVersion.TenantId, workflowDefinitionVersion.DefinitionId, cancellationToken)
                 .ToListAsync();
 
             return new WorkflowDefinitionVersionListItemModel

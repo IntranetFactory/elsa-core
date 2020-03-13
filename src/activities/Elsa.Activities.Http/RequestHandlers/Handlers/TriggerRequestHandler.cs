@@ -40,9 +40,10 @@ namespace Elsa.Activities.Http.RequestHandlers.Handlers
             // TODO: Optimize this by building up a hash of routes and workflows to execute.
             var requestPath = httpContext.Request.Path;
             var method = httpContext.Request.Method;
-            var httpWorkflows = await registry.GetWorkflowsByStartActivityAsync<ReceiveHttpRequest>(cancellationToken);
+            var tenantId = httpContext.Request.Query["tenantId"];
+            var httpWorkflows = await registry.GetWorkflowsByStartActivityAsync<ReceiveHttpRequest>(tenantId, cancellationToken);
             var workflowsToStart = Filter(httpWorkflows, requestPath, method).ToList();
-            var suspendedWorkflows = await workflowInstanceStore.ListByBlockingActivityAsync<ReceiveHttpRequest>(cancellationToken: cancellationToken);
+            var suspendedWorkflows = await workflowInstanceStore.ListByBlockingActivityAsync<ReceiveHttpRequest>(tenantId, cancellationToken: cancellationToken);
 
             var workflowsToResume = Filter(suspendedWorkflows, requestPath, method).ToList();
 

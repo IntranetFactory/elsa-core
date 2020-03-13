@@ -27,16 +27,16 @@ namespace Elsa.StartupTasks
             this.distributedLockProvider = distributedLockProvider;
         }
         
-        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+        public async Task ExecuteAsync(string tenantId, CancellationToken cancellationToken = default)
         {
             if (!await distributedLockProvider.AcquireLockAsync(GetType().Name, cancellationToken))
                 return;
             
-            var instances = await workflowInstanceStore.ListByStatusAsync(WorkflowStatus.Running, cancellationToken);
+            var instances = await workflowInstanceStore.ListByStatusAsync(tenantId, WorkflowStatus.Running, cancellationToken);
 
             foreach (var instance in instances)
             {
-                await workflowScheduler.ScheduleNewWorkflowAsync(instance.Id, cancellationToken: cancellationToken);
+                await workflowScheduler.ScheduleNewWorkflowAsync(tenantId, instance.Id, cancellationToken: cancellationToken);
             }
         }
     }

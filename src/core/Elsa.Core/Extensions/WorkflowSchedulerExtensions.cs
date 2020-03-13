@@ -9,9 +9,10 @@ namespace Elsa
     {
         public static async Task ScheduleNewWorkflow<T>(
             this IWorkflowScheduler scheduler,
+            string tenantId, 
             object? input = default,
             string? correlationId = default,
             CancellationToken cancellationToken = default) =>
-            await scheduler.ScheduleNewWorkflowAsync(typeof(T).Name, input, correlationId, cancellationToken);
+            await scheduler.ScheduleNewWorkflowAsync(tenantId, typeof(T).Name, input, correlationId, cancellationToken);
     }
 }

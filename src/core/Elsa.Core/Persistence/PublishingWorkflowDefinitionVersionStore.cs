@@ -32,19 +32,19 @@ namespace Elsa.Persistence
             return result;
         }
 
-        public Task<WorkflowDefinitionVersion> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
-            return decoratedStore.GetByIdAsync(id, cancellationToken);
+            return decoratedStore.GetByIdAsync(tenantId, id, cancellationToken);
         }
 
-        public Task<WorkflowDefinitionVersion> GetByIdAsync(string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
         {
-            return decoratedStore.GetByIdAsync(definitionId, version, cancellationToken);
+            return decoratedStore.GetByIdAsync(tenantId, definitionId, version, cancellationToken);
         }
 
-        public Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(VersionOptions version, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(string tenantId, VersionOptions version, CancellationToken cancellationToken = default)
         {
-            return decoratedStore.ListAsync(version, cancellationToken);
+            return decoratedStore.ListAsync(tenantId, version, cancellationToken);
         }
 
         public async Task<WorkflowDefinitionVersion> UpdateAsync(WorkflowDefinitionVersion definitionVersion, CancellationToken cancellationToken = default)
@@ -54,9 +54,9 @@ namespace Elsa.Persistence
             return updatedDefinitionVersion;
         }
 
-        public async Task<int> DeleteAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
         {
-            var count = await decoratedStore.DeleteAsync(id, cancellationToken);
+            var count = await decoratedStore.DeleteAsync(tenantId, id, cancellationToken);
             await PublishUpdateEventAsync(cancellationToken);
             return count;
         }

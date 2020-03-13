@@ -16,6 +16,7 @@ namespace Elsa.Models
         }
 
         public string? Id { get; set; }
+        public string? TenantId { get; set; }
         public string? DefinitionId { get; set; }
         public string? CorrelationId { get; set; }
         public int Version { get; set; }

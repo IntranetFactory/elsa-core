@@ -38,11 +38,13 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Index(
+            string tenantId, 
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
             var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(
+                tenantId,
                 definitionId,
                 VersionOptions.Latest,
                 cancellationToken
@@ -71,15 +73,16 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return View(model);
         }
 
-        [HttpGet("details/{id}")]
-        public async Task<IActionResult> Details(string id, string returnUrl, CancellationToken cancellationToken)
+        [HttpGet("details{tenantId}/{id}")]
+        public async Task<IActionResult> Details(string tenantId, string id, string returnUrl, CancellationToken cancellationToken)
         {
-            var instance = await workflowInstanceStore.GetByIdAsync(id, cancellationToken);
+            var instance = await workflowInstanceStore.GetByIdAsync(tenantId, id, cancellationToken);
 
             if (instance == null)
                 return NotFound();
 
             var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(
+                tenantId,
                 instance.DefinitionId,
                 VersionOptions.SpecificVersion(instance.Version),
                 cancellationToken
@@ -101,15 +104,15 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return View(model);
         }
 
-        [HttpPost("delete/{id}")]
-        public async Task<IActionResult> Delete(string id, string returnUrl, CancellationToken cancellationToken)
+        [HttpPost("delete/{tenantId}/{id}")]
+        public async Task<IActionResult> Delete(string tenantId, string id, string returnUrl, CancellationToken cancellationToken)
         {
-            var instance = await workflowInstanceStore.GetByIdAsync(id, cancellationToken);
+            var instance = await workflowInstanceStore.GetByIdAsync(tenantId, id, cancellationToken);
 
             if (instance == null)
                 return NotFound();
 
-            await workflowInstanceStore.DeleteAsync(id, cancellationToken);
+            await workflowInstanceStore.DeleteAsync(tenantId, id, cancellationToken);
             notifier.Notify("Workflow instance successfully deleted.", NotificationType.Success);
 
             if (Url.IsLocalUrl(returnUrl))

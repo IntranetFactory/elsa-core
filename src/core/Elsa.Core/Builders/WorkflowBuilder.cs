@@ -100,8 +100,10 @@ namespace Elsa.Builders
             var activities = activityBuilders.Select(x => x.BuildActivity()).ToList();
             var connections = connectionBuilders.Select(x => x.BuildConnection()).ToList();
             
+            // TO DO: inspect if tenantId should be passed here
             var workflow = new Workflow(
                 definitionId, 
+                null,
                 Version, 
                 IsSingleton, 
                 false, 

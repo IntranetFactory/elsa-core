@@ -3,6 +3,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
     public class ConnectionDefinitionEntity
     {
         public int Id { get; set; }
+        public string? TenantId { get; set; }
         public WorkflowDefinitionVersionEntity WorkflowDefinitionVersion { get; set; }
         public string SourceActivityId { get; set; }
         public string? TargetActivityId { get; set; }

@@ -25,11 +25,12 @@
                 </div>
                 <div class="card-body">
                     <form asp-action="@formAction">
-                        <input asp-for="Json" id="workflowData" type="hidden"/>
-                        <input asp-for="Name" type="hidden" id="workflowName"/>
-                        <input asp-for="Description" type="hidden" id="workflowDescription"/>
-                        <input asp-for="IsDisabled" type="hidden" id="workflowIsDisabled"/>
-                        <input asp-for="IsSingleton" type="hidden" id="workflowIsSingleton"/>
+                        <input asp-for="Json" id="workflowData" type="hidden" />
+                        <input asp-for="Name" type="hidden" id="workflowName" />
+                        <input asp-for="TenantId" type="hidden" id="workflowTenantId" />
+                        <input asp-for="Description" type="hidden" id="workflowDescription" />
+                        <input asp-for="IsDisabled" type="hidden" id="workflowIsDisabled" />
+                        <input asp-for="IsSingleton" type="hidden" id="workflowIsSingleton" />
                         <vc:workflow-designer id="designerHost" activity-definitions="@Model.ActivityDefinitions" workflow="@Model.WorkflowModel" is-readonly="@false" />
                         <div class="text-center">
                             <button asp-for="SubmitAction" name="SubmitAction" type="submit" value="draft" class="btn btn-primary mt-4">Save Draft</button>
