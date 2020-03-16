@@ -54,7 +54,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 return NotFound();
 
             var instances = await workflowInstanceStore
-                .ListByStatusAsync(definitionId, status, cancellationToken)
+                .ListByStatusAsync(tenantId, definitionId, status, cancellationToken)
                 .ToListAsync();
 
             var model = new WorkflowInstanceListViewModel
@@ -118,7 +118,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             if (Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            return RedirectToAction("Index", "WorkflowDefinition");
+            return RedirectToAction("Index", "WorkflowDefinition", new { tenantId = tenantId });
         }
 
         private ActivityModel CreateActivityModel(

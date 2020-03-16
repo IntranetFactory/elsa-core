@@ -2,8 +2,10 @@
 @model WorkflowInstanceListViewModel
 @{
     ViewBag.Title = "Workflow Instances";
-    
-    var deleteUrlTemplate = Url.Action("Delete", new { id = "id", returnUrl = Model.ReturnUrl }).Replace("id", "${id}");
+
+    var deleteUrlTemplate = Url.Action("Delete", new { tenantId = "tenantId", id = "id" })
+        .Replace("tenantId", "${tenantId}")
+        .Replace("id", "${id}");
 }
 
 @section FootScripts
@@ -80,7 +82,7 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                                 <a class="dropdown-item" asp-action="Details" asp-route-id="@workflowInstance.Id">Details</a>
-                                                <a class="dropdown-item" href="#" onclick="onDeleteClick(event, '@workflowInstance.Id')">Delete</a>
+                                                <a class="dropdown-item" href="#" onclick="onDeleteClick(event,'@workflowInstance.TenantId', '@workflowInstance.Id')">Delete</a>
                                             </div>
                                         </div>
                                     </td>
