@@ -61,7 +61,7 @@
                                 
                                 <tr>
                                     <td>
-                                        <a asp-action="Details" asp-route-id="@workflowInstance.Id" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" class="mb-0 text-sm">@workflowInstance.Id</a>
+                                        <a asp-action="Details" asp-route-tenantId="@workflowInstance.TenantId" asp-route-id="@workflowInstance.Id" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" class="mb-0 text-sm">@workflowInstance.Id</a>
                                     </td>
                                     <td>
                                         <span class="badge badge-dot mr-4">

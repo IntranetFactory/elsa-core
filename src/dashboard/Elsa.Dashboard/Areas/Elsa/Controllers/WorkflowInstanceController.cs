@@ -73,7 +73,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return View(model);
         }
 
-        [HttpGet("details{tenantId}/{id}")]
+        [HttpGet("details/{tenantId}/{id}")]
         public async Task<IActionResult> Details(string tenantId, string id, string returnUrl, CancellationToken cancellationToken)
         {
             var instance = await workflowInstanceStore.GetByIdAsync(tenantId, id, cancellationToken);
