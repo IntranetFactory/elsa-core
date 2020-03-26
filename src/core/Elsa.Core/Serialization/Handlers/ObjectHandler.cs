@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Linq;
+using Elsa.Expressions;
 using Elsa.Serialization.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,20 +16,28 @@ namespace Elsa.Serialization.Handlers
         {
             this.typeMap = typeMap;
         }
-        
+
         public int Priority => -8999;
         public bool CanSerialize(JToken token, Type type, object value) => token.Type == JTokenType.Object;
         public bool CanDeserialize(JToken token) => token.Type == JTokenType.Object;
-        
+
         public object Deserialize(JsonSerializer serializer, JToken token)
         {
             var typeName = token.GetValue<string>(TypeFieldName);
-            
-            if(typeName == null)
+
+            if (typeName == null)
                 throw new InvalidOperationException();
-            
+
             var objectType = typeMap.GetType(typeName);
-            return token.ToObject(objectType, serializer);
+
+            if (objectType.ContainsGenericParameters == true)
+            {
+                return token.ToObject(objectType.BaseType, serializer);
+            }
+            else
+            {
+                return token.ToObject(objectType, serializer);
+            }
         }
 
         public void Serialize(JsonWriter writer, JsonSerializer serializer, Type type, JToken token, object? value)

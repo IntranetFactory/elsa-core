@@ -4,6 +4,7 @@ using Elsa.Activities.Primitives;
 using Elsa.Expressions;
 using Elsa.Results;
 using Elsa.Services.Models;
+using Elsa.ExpressionTypes;
 
 namespace Elsa.Builders
 {

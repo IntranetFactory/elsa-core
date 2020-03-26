@@ -7,6 +7,7 @@ using Elsa.Serialization;
 using Elsa.Serialization.Formatters;
 using Elsa.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Elsa.ExpressionTypes;
 
 namespace Elsa.Samples.Serialization
 {

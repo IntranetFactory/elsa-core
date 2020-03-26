@@ -6,6 +6,7 @@ using Elsa.Results;
 using Elsa.Services;
 using Elsa.Services.Models;
 using NodaTime;
+using Elsa.ExpressionTypes;
 
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Timers

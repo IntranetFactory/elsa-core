@@ -24,6 +24,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         private readonly IWorkflowDefinitionVersionStore workflowDefinitionVersionStore;
         private readonly IWorkflowDefinitionStore workflowDefinitionStore;
         private readonly IWorkflowInstanceStore workflowInstanceStore;
+        private readonly IWorkflowHost workflowHost;
         private readonly IOptions<ElsaDashboardOptions> options;
         private readonly IIdGenerator idGenerator;
         private readonly IClock clock;
@@ -32,6 +33,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             IWorkflowDefinitionVersionStore workflowDefinitionVersionStore,
             IWorkflowDefinitionStore workflowDefinitionStore,
             IWorkflowInstanceStore workflowInstanceStore,
+            IWorkflowHost workflowHost,
             IOptions<ElsaDashboardOptions> options,
             IIdGenerator idGenerator,
             IClock clock)
@@ -39,28 +41,27 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             this.workflowDefinitionVersionStore = workflowDefinitionVersionStore;
             this.workflowDefinitionStore = workflowDefinitionStore;
             this.workflowInstanceStore = workflowInstanceStore;
+            this.workflowHost = workflowHost;
             this.options = options;
             this.idGenerator = idGenerator;
             this.clock = clock;
         }
 
-        #region QueryUserTask
-        [HttpGet("QueryUserTask")]
-        public async Task<IActionResult> QueryUserTask(string tenantId, string tag, CancellationToken cancellationToken)
+        #region InvokeUserAction
+        [HttpGet("InvokeUserAction")]
+        public async Task<IActionResult> InvokeUserAction(string tenantId, string actionName, CancellationToken cancellationToken)
         {
-            var tuples = await workflowInstanceStore.ListByBlockingActivityTagAsync(tenantId, "UserTask", tag);
-            List<BlockingActivity> pendingUserTasks = new List<BlockingActivity>();
+            var workflowInstances = await workflowInstanceStore.ListAllAsync(tenantId);
+            var workflowInstance = workflowInstances.FirstOrDefault();
+            var blockingActivities = workflowInstance.BlockingActivities.Select(x => x.ActivityId);
+            var blockingActivityId = blockingActivities.FirstOrDefault();
 
-            foreach (var item in tuples)
-            {
-                if (item.BlockingActivity != null)
-                    pendingUserTasks.Add(item.BlockingActivity);
-            }
+            await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, actionName);
 
-            return Ok(pendingUserTasks);
+            return Ok();
         }
         #endregion
-        
+
 
     }
 }

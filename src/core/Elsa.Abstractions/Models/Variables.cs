@@ -1,6 +1,16 @@
+using Elsa.Converters;
+using Elsa.Expressions;
+using Elsa.ExpressionTypes;
+using Elsa.Serialization.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Net.Http.Headers;
 
 namespace Elsa.Models
 {
@@ -10,7 +20,7 @@ namespace Elsa.Models
         {
         }
 
-        public Variables(Variables other) : this((IEnumerable<KeyValuePair<string, Variable>>) other)
+        public Variables(Variables other) : this((IEnumerable<KeyValuePair<string, Variable>>)other)
         {
         }
 
@@ -19,7 +29,7 @@ namespace Elsa.Models
             foreach (var item in dictionary)
                 this[item.Key] = item.Value;
         }
-        
+
         public Variables(IEnumerable<KeyValuePair<string, object>> dictionary)
         {
             foreach (var item in dictionary)
@@ -44,6 +54,14 @@ namespace Elsa.Models
             if (value is T v)
                 return v;
 
+            // this is used to return a collection of items for UserTask activity
+            if(value.GetType().Name == "JArray")
+            {
+                JArray jArray = JArray.FromObject(value);
+                var items = jArray.ToObject<T>();
+                return (T)items;
+            }
+
             var converter = TypeDescriptor.GetConverter(typeof(T));
             return (T)converter.ConvertFrom(value);
         }
@@ -61,7 +79,7 @@ namespace Elsa.Models
         }
 
         public void SetVariables(Variables variables) =>
-            SetVariables((IEnumerable<KeyValuePair<string, Variable>>) variables);
+            SetVariables((IEnumerable<KeyValuePair<string, Variable>>)variables);
 
         public Variables SetVariables(IEnumerable<KeyValuePair<string, Variable>> variables)
         {
@@ -72,5 +90,31 @@ namespace Elsa.Models
         }
 
         public bool HasVariable(string name) => ContainsKey(name);
+
+        private T CreateExpressionType<T>(object value)
+        {
+            var json = JsonConvert.SerializeObject(value);
+            dynamic expression = SimpleJson.SimpleJson.DeserializeObject(json);
+
+            var arguments = typeof(T).GetGenericArguments();
+
+            if (expression["Type"] == "Literal")
+            {
+                if (arguments.Count() == 0)
+                {
+                    IWorkflowExpression literalExpression = new LiteralExpression(expression["Expression"]);
+                    return (T)literalExpression;
+
+
+                }
+                if (arguments[0].Name == "String")
+                {
+                    IWorkflowExpression literalExpression = new LiteralExpression<string>(expression["Expression"]);
+                    return (T)literalExpression;
+                }
+            }
+
+            return default;
+        }
     }
 }

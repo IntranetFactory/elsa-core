@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using Elsa.Expressions;
 using Elsa.Extensions;
 using Elsa.Services;
+using Elsa.ExpressionTypes;
 
 namespace Elsa.Builders
 {

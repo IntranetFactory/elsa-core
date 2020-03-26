@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="9.0.0" />
+        <PackageReference Include="DotLiquid" Version="2.0.325" />
         <PackageReference Include="Humanizer.Core" Version="2.7.9" />
         <PackageReference Include="MediatR" Version="8.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />

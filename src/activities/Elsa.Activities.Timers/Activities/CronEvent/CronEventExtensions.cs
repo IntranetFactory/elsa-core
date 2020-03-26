@@ -3,6 +3,7 @@ using Elsa.Activities.Timers;
 using Elsa.Builders;
 using Elsa.Expressions;
 using Elsa.Services.Models;
+using Elsa.ExpressionTypes;
 
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.MassTransit

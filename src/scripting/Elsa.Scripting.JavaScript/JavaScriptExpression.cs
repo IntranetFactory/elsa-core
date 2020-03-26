@@ -1,4 +1,5 @@
 using Elsa.Expressions;
+using Elsa.ExpressionTypes;
 
 namespace Elsa.Scripting.JavaScript
 {

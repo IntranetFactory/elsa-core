@@ -1,3 +1,6 @@
+using Elsa.Converters;
+using System.ComponentModel;
+
 namespace Elsa.Expressions
 {
     public interface IWorkflowExpression<T> : IWorkflowExpression
