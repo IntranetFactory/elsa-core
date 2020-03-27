@@ -14,6 +14,8 @@ namespace Elsa.ExpressionTypes
             if (typeof(string) == targetType || targetType == default)
                 return value;
 
+            if (targetType.Name == "Object") return (object)value;
+
             var converter = TypeDescriptor.GetConverter(targetType);
             return converter.ConvertFromString(value);
         }
