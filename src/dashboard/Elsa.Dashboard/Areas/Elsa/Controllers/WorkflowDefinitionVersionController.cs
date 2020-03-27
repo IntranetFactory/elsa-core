@@ -190,8 +190,6 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 workflowDefinitionVersion = await publisher.SaveDraftAsync(workflowDefinitionVersion, cancellationToken);
                 notifier.Notify("Workflow successfully saved as a draft.", NotificationType.Success);
             }
-
-            var asd = await workflowDefinitionVersionStore.GetByIdAsync(workflowDefinitionVersion.TenantId, workflowDefinitionVersion.Id, cancellationToken);
             
             return RedirectToRoute("EditWorkflowDefinitionVersion", new { tenantId = workflowDefinitionVersion.TenantId, id = workflowDefinitionVersion.DefinitionId });
         }

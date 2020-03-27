@@ -55,11 +55,23 @@ namespace Elsa.Models
                 return v;
 
             // this is used to return a collection of items for UserTask activity
-            if(value.GetType().Name == "JArray")
+            if (value.GetType().Name == "JArray")
             {
                 JArray jArray = JArray.FromObject(value);
                 var items = jArray.ToObject<T>();
                 return (T)items;
+            }
+
+            if (typeof(T).Name == "IWorkflowExpression")
+            {
+                var json = JsonConvert.SerializeObject(value);
+                dynamic expression = SimpleJson.SimpleJson.DeserializeObject(json);
+
+                if (expression["Type"] == "Literal")
+                {
+                    IWorkflowExpression literalExpression = new LiteralExpression(expression["Expression"]);
+                    return (T)literalExpression;
+                }
             }
 
             var converter = TypeDescriptor.GetConverter(typeof(T));
@@ -91,30 +103,5 @@ namespace Elsa.Models
 
         public bool HasVariable(string name) => ContainsKey(name);
 
-        private T CreateExpressionType<T>(object value)
-        {
-            var json = JsonConvert.SerializeObject(value);
-            dynamic expression = SimpleJson.SimpleJson.DeserializeObject(json);
-
-            var arguments = typeof(T).GetGenericArguments();
-
-            if (expression["Type"] == "Literal")
-            {
-                if (arguments.Count() == 0)
-                {
-                    IWorkflowExpression literalExpression = new LiteralExpression(expression["Expression"]);
-                    return (T)literalExpression;
-
-
-                }
-                if (arguments[0].Name == "String")
-                {
-                    IWorkflowExpression literalExpression = new LiteralExpression<string>(expression["Expression"]);
-                    return (T)literalExpression;
-                }
-            }
-
-            return default;
-        }
     }
 }
