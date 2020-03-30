@@ -1,13 +1,13 @@
-// Comented out while we are using expressions from Elsa.Abstractions
-//using Elsa.Extensions;
-//using Elsa.Scripting.JavaScript.Options;
-//using Elsa.Scripting.JavaScript.Services;
-//using Microsoft.Extensions.Options;
+// This is moved to Elsa.Core
 //using System;
 //using Elsa.Expressions;
-//using Elsa.Scripting.JavaScript;
+//using Elsa.ExpressionTypes;
+//using Microsoft.Extensions.Options;
+//using Elsa.ExpressionTypes.JavaScript.Options;
+//using Elsa.ExpressionTypes.JavaScript.Services;
+//using Elsa.ExpressionTypes.JavaScript.Extensions;
 
-// ReSharper disable once CheckNamespace
+//// ReSharper disable once CheckNamespace
 //namespace Microsoft.Extensions.DependencyInjection
 //{
 //    public static class JavaScriptServiceCollectionExtensions

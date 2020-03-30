@@ -1,24 +1,24 @@
-using Elsa.Expressions;
-using Elsa.ExpressionTypes;
+//using Elsa.Expressions;
+//using Elsa.ExpressionTypes;
+// Comented out while we are using expressions from Elsa.Abstractions
+//namespace Elsa.Scripting.JavaScript
+//{
+//    public class JavaScriptExpression : WorkflowExpression
+//    {
+//        public const string ExpressionType = "JavaScript";
 
-namespace Elsa.Scripting.JavaScript
-{
-    public class JavaScriptExpression : WorkflowExpression
-    {
-        public const string ExpressionType = "JavaScript";
+//        public JavaScriptExpression(string expression) : base(ExpressionType)
+//        {
+//            Expression = expression;
+//        }
 
-        public JavaScriptExpression(string expression) : base(ExpressionType)
-        {
-            Expression = expression;
-        }
+//        public string Expression { get; }
+//    }
 
-        public string Expression { get; }
-    }
-
-    public class JavaScriptExpression<T> : JavaScriptExpression, IWorkflowExpression<T>
-    {
-        public JavaScriptExpression(string expression) : base(expression)
-        {
-        }
-    }
-}
+//    public class JavaScriptExpression<T> : JavaScriptExpression, IWorkflowExpression<T>
+//    {
+//        public JavaScriptExpression(string expression) : base(expression)
+//        {
+//        }
+//    }
+//}

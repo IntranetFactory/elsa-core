@@ -1,6 +1,7 @@
 using System;
 using Elsa;
 using Elsa.Activities.UserTask.Extensions;
+using Elsa.Extensions;
 using Elsa.Runtime;
 using Elsa.Scripting.Liquid.Extensions;
 

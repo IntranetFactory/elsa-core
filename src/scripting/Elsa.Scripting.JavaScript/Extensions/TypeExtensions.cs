@@ -1,32 +1,33 @@
-using System;
-using System.Collections.Generic;
+// Comented out while we are using expressions from Elsa.Abstractions
+//using System;
+//using System.Collections.Generic;
 
-namespace Elsa.Scripting.JavaScript.Extensions
-{
-    public static class TypeExtensions
-    {
-        private static readonly HashSet<Type> NumericTypes = new HashSet<Type> {
-            typeof(byte),
-            typeof(sbyte),
-            typeof(short),
-            typeof(ushort),
-            typeof(int),
-            typeof(uint),
-            typeof(long),
-            typeof(ulong),
-            typeof(double),
-            typeof(decimal),
-            typeof(float)
-        };
+//namespace Elsa.Scripting.JavaScript.Extensions
+//{
+//    public static class TypeExtensions
+//    {
+//        private static readonly HashSet<Type> NumericTypes = new HashSet<Type> {
+//            typeof(byte),
+//            typeof(sbyte),
+//            typeof(short),
+//            typeof(ushort),
+//            typeof(int),
+//            typeof(uint),
+//            typeof(long),
+//            typeof(ulong),
+//            typeof(double),
+//            typeof(decimal),
+//            typeof(float)
+//        };
 
-        public static bool IsNumeric(this Type type)
-        {
-            return NumericTypes.Contains(type);
-        }
-        
-        public static bool IsObject(this Type type)
-        {
-            return type == typeof(object);
-        }
-    }
-}
+//        public static bool IsNumeric(this Type type)
+//        {
+//            return NumericTypes.Contains(type);
+//        }
+
+//        public static bool IsObject(this Type type)
+//        {
+//            return type == typeof(object);
+//        }
+//    }
+//}
