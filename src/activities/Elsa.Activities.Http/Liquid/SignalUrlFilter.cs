@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Elsa.Activities.Http.Models;
 using Elsa.Activities.Http.Services;
-using Elsa.Scripting.Liquid.Services;
+using Elsa.ExpressionTypes.Liquid.Services;
 using Elsa.Services.Models;
 using Fluid;
 using Fluid.Values;

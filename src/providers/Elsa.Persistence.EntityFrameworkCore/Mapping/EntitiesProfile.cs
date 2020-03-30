@@ -31,12 +31,10 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
 
             CreateMap<WorkflowInstance, WorkflowInstanceEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())
-                .ForMember(d => d.InstanceId, d => d.MapFrom(s => s.Id))
-                .ForMember(d => d.ScheduledActivities, d => d.Ignore());
+                .ForMember(d => d.InstanceId, d => d.MapFrom(s => s.Id));
 
             CreateMap<WorkflowInstanceEntity, WorkflowInstance>()
-                .ForMember(d => d.Id, d => d.MapFrom(s => s.InstanceId))
-                .ForMember(d => d.ScheduledActivities, d => d.MapFrom(s => s.ScheduledActivities));
+                .ForMember(d => d.Id, d => d.MapFrom(s => s.InstanceId));
 
             CreateMap<ActivityDefinition, ActivityDefinitionEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())

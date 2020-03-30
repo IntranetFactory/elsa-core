@@ -31,9 +31,11 @@
       <PackageReference Include="Jint" Version="3.0.0-beta-1629" />-->
       <PackageReference Include="AutoMapper" Version="9.0.0" />
       <PackageReference Include="DotLiquid" Version="2.0.325" />
+      <PackageReference Include="Fluid.Core" Version="1.0.0-beta-9605" />
       <PackageReference Include="Jint" Version="3.0.0-beta-1629" />
       <PackageReference Include="MediatR" Version="7.0.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
       <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="3.1.3" />
       <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.3" />
@@ -43,6 +45,7 @@
       <PackageReference Include="NodaTime.Serialization.JsonNet" Version="2.2.0" />
       <PackageReference Include="Rebus" Version="5.4.1" />
       <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+      <PackageReference Include="System.Text.Encodings.Web" Version="4.7.0" />
       <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
     </ItemGroup>
 

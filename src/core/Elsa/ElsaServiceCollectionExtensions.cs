@@ -3,7 +3,7 @@ using Elsa;
 using Elsa.Activities.UserTask.Extensions;
 using Elsa.Extensions;
 using Elsa.Runtime;
-using Elsa.Scripting.Liquid.Extensions;
+using Elsa.ExpressionTypes.Liquid.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection

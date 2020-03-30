@@ -78,6 +78,12 @@ namespace Elsa.Models
                     IWorkflowExpression javaScriptExpression = new JavaScriptExpression(expression["Expression"]);
                     return (T)javaScriptExpression;
                 }
+
+                if (expression["Type"] == "Liquid")
+                {
+                    IWorkflowExpression liquidExpression = new LiquidExpression(expression["Expression"]);
+                    return (T)liquidExpression;
+                }
             }
 
             var converter = TypeDescriptor.GetConverter(typeof(T));
