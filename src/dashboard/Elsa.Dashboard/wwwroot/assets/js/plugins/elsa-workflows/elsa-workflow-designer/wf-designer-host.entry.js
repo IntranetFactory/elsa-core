@@ -29,10 +29,10 @@ class ExpressionFieldDriver {
         this.displayEditor = (activity, property) => {
             const name = property.name;
             const label = property.label;
-            const value = activity.state[name] || { expression: '', syntax: 'Literal' };
-            var syntaxValue = value.value != undefined ? value.value.syntax : value.syntax;
+            const value = activity.state[name] || { Expression: '', Type: 'Literal' };
+            var syntaxValue = value.value != undefined ? value.value.Type : value.Type;
             const multiline = (property.options || {}).multiline || false;
-            const expressionValue = value.value != undefined ? value.value.expression.replace(/"/g, '&quot;') : value.expression.replace(/"/g, '&quot;');
+            const expressionValue = value.value != undefined ? value.value.Expression.replace(/"/g, '&quot;') : value.Expression.replace(/"/g, '&quot;');
             return `<wf-expression-field name="${name}" label="${label}" hint="${property.hint}" value="${expressionValue}" syntax="${syntaxValue}" multiline="${multiline}"></wf-expression-field>`;
         };
         this.updateEditor = (activity, property, formData) => {

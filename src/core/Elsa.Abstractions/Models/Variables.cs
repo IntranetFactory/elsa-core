@@ -62,27 +62,50 @@ namespace Elsa.Models
                 return (T)items;
             }
 
-            if (typeof(T).Name == "IWorkflowExpression")
+            if (typeof(T).Name.StartsWith("IWorkflowExpression"))
             {
                 var json = JsonConvert.SerializeObject(value);
                 dynamic expression = SimpleJson.SimpleJson.DeserializeObject(json);
 
-                if (expression["Type"] == "Literal")
+                if (typeof(T).IsGenericType)
                 {
-                    IWorkflowExpression literalExpression = new LiteralExpression(expression["Expression"]);
-                    return (T)literalExpression;
-                }
+                    Type typeArgument = typeof(T).GetGenericArguments()[0];
+                    Type genericClass = null;
 
-                if (expression["Type"] == "JavaScript")
-                {
-                    IWorkflowExpression javaScriptExpression = new JavaScriptExpression(expression["Expression"]);
-                    return (T)javaScriptExpression;
-                }
+                    switch (expression["Type"])
+                    {
+                        case "Literal":
+                            genericClass = typeof(LiteralExpression<>);
+                            break;
 
-                if (expression["Type"] == "Liquid")
+                        case "JavaScript":
+                            genericClass = typeof(JavaScriptExpression<>);
+                            break;
+                        case "Liquid":
+                            genericClass = typeof(LiquidExpression<>);
+                            break;
+                    }
+
+                    Type constructedClass = genericClass.MakeGenericType(typeArgument);
+                    object createdObject = Activator.CreateInstance(constructedClass, expression["Expression"]);
+                    return (T)createdObject;
+                }
+                else
                 {
-                    IWorkflowExpression liquidExpression = new LiquidExpression(expression["Expression"]);
-                    return (T)liquidExpression;
+                    switch (expression["Type"])
+                    {
+                        case "Literal":
+                            IWorkflowExpression literalExpression = new LiteralExpression(expression["Expression"]);
+                            return (T)literalExpression;
+
+                        case "JavaScript":
+                            IWorkflowExpression javaScriptExpression = new JavaScriptExpression(expression["Expression"]);
+                            return (T)javaScriptExpression;
+
+                        case "Liquid":
+                            IWorkflowExpression liquidExpression = new LiquidExpression(expression["Expression"]);
+                            return (T)liquidExpression;
+                    }
                 }
             }
 

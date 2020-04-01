@@ -23,7 +23,7 @@ namespace Elsa.Serialization.Handlers
 
         public object Deserialize(JsonSerializer serializer, JToken token)
         {
-            var typeName = token.GetValue<string>(TypeFieldName);
+            var typeName = token.GetValue<string>(TypeFieldName) != null ? token.GetValue<string>(TypeFieldName) : token.GetValue<string>("Type") + "Expression";
 
             if (typeName == null)
                 throw new InvalidOperationException();
