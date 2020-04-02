@@ -27,16 +27,23 @@ namespace Elsa.ExpressionTypes.Liquid.Services
         {
             var liquidExpression = (LiquidExpression)expression;
             var templateContext = await CreateTemplateContextAsync(context);
-            var result = await liquidTemplateManager.RenderAsync(liquidExpression.Expression, templateContext);
+            string template = liquidExpression.Expression;
+            template = "{{Foo}}";  // we should not use Variables.* in templates until we find a request for that
+
+            var result = await liquidTemplateManager.RenderAsync(template, templateContext);
             return string.IsNullOrWhiteSpace(result) ? default : Convert.ChangeType(result, returnType);
         }
 
         private async Task<TemplateContext> CreateTemplateContextAsync(ActivityExecutionContext workflowContext)
         {
             var context = new TemplateContext();
-            context.SetValue("WorkflowExecutionContext", workflowContext);
-            await mediator.Publish(new EvaluatingLiquidExpression(context, workflowContext));
-            context.Model = workflowContext;
+            //context.SetValue("WorkflowExecutionContext", workflowContext);
+            //await mediator.Publish(new EvaluatingLiquidExpression(context, workflowContext));
+            //context.Model = workflowContext;
+
+            // should be generated from workflowContext
+            context.SetValue("Foo", "Bar" );
+            
             return context;
         }
     }
