@@ -20,6 +20,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Areas\Elsa\Views\Test\**" />
+      <Content Remove="Areas\Elsa\Views\Test\**" />
+      <EmbeddedResource Remove="Areas\Elsa\Views\Test\**" />
+      <None Remove="Areas\Elsa\Views\Test\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="icon.png">
             <Pack>True</Pack>
             <PackagePath />
@@ -79,10 +86,6 @@
       <_ContentIncludedByDefault Remove="wwwroot\assets\js\plugins\nucleo\fonts\nucleo-icons.woff2" />
       <_ContentIncludedByDefault Remove="wwwroot\assets\js\workflow-editor.js" />
       <_ContentIncludedByDefault Remove="wwwroot\assets\js\workflow-instance-viewer.js" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Areas\Elsa\Views\Test\" />
     </ItemGroup>
 
 </Project>

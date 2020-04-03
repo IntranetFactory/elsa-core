@@ -27,6 +27,10 @@ namespace Elsa.Dashboard.Web
         {
             var elsaSection = Configuration.GetSection("Elsa");
 
+            // this is enables us to edit the pages without having to stop debugging
+            services.AddRazorPages()
+                .AddRazorRuntimeCompilation();
+
             services
                 .AddElsa(x => x.UseEntityFrameworkWorkflowStores(x => x.UseSqlite(Configuration.GetConnectionString("Sqlite"))));
 

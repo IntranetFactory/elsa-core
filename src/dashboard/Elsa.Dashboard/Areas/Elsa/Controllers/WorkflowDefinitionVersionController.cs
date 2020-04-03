@@ -194,6 +194,17 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return RedirectToRoute("EditWorkflowDefinitionVersion", new { tenantId = workflowDefinitionVersion.TenantId, id = workflowDefinitionVersion.DefinitionId });
         }
 
+        [HttpGet("WorkflowDefinitionVersionEditorStandalone")]
+        public async Task<IActionResult> WorkflowDefinitionVersionEditorStandalone()
+        {
+            WorkflowDefinitionVersionEditModel model = new WorkflowDefinitionVersionEditModel
+            {
+                ActivityDefinitions = options.Value.ActivityDefinitions.ToArray()
+            };
+
+            return View("WorkflowDefinitionVersionEditorStandalone", model);
+        }
+
         private async Task<WorkflowDefinitionVersionListItemModel> CreateWorkflowDefinitionListItemModelAsync(
             WorkflowDefinitionVersion workflowDefinitionVersion,
             CancellationToken cancellationToken)
