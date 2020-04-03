@@ -45,7 +45,15 @@ namespace Elsa.ExpressionTypes.JavaScript.Services
             var javaScriptExpression = (JavaScriptExpression)expression;
             var engine = new Engine(ConfigureJintEngine);
 
-            await ConfigureEngineAsync(engine, context, cancellationToken);
+            foreach(var variable in context.WorkflowExecutionContext.Variables)
+            {
+                engine.SetValue(variable.Key, variable.Value.Value);
+            }
+
+            // this is commented out until it's fully understood
+            //var engine = new Engine(ConfigureJintEngine);
+            //await ConfigureEngineAsync(engine, context, cancellationToken);
+
             engine.Execute(javaScriptExpression.Expression);
 
             return ConvertValue(engine.GetCompletionValue(), returnType);
