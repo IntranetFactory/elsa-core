@@ -197,12 +197,41 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         [HttpGet("WorkflowDefinitionVersionEditorStandalone")]
         public async Task<IActionResult> WorkflowDefinitionVersionEditorStandalone()
         {
+            var hiddenActivityNames = new List<string>() { "ReadLine", "WriteLine", "Redirect", "WriteHttpResponse", "Inline" };
+            List<Metadata.ActivityDescriptor> activityDefinitions = new List<Metadata.ActivityDescriptor>();
+
+            foreach(var activity in options.Value.ActivityDefinitions)
+            {
+                if (!hiddenActivityNames.Contains(activity.Type))
+                    activityDefinitions.Add(activity);
+            }
+
             WorkflowDefinitionVersionEditModel model = new WorkflowDefinitionVersionEditModel
             {
-                ActivityDefinitions = options.Value.ActivityDefinitions.ToArray()
+                ActivityDefinitions = activityDefinitions.ToArray()
             };
 
             return View("WorkflowDefinitionVersionEditorStandalone", model);
+        }
+
+        // Work in progress: this will be used to load the definition via ajax.
+        [HttpGet("LoadWorkflowDefinition")]
+        public async Task<IActionResult> LoadWorkflowDefinition(string tenantId, string id, CancellationToken cancellationToken)
+        {
+            var workflowDefinitionVersion = await publisher.GetDraftAsync(tenantId, id, cancellationToken);
+
+            if (workflowDefinitionVersion == null)
+                return NotFound();
+
+            dynamic workflowModel = new
+            {
+                TenantId = tenantId,
+                WorkflowId = id,
+                Activities = workflowDefinitionVersion.Activities.Select(x => new ActivityModel(x)).ToList(),
+                Connections = workflowDefinitionVersion.Connections.Select(x => new ConnectionModel(x)).ToList()
+            };
+
+            return Ok(serializer.Serialize(workflowModel, JsonTokenFormatter.FormatName));
         }
 
         private async Task<WorkflowDefinitionVersionListItemModel> CreateWorkflowDefinitionListItemModelAsync(

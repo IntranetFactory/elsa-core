@@ -5,14 +5,14 @@
     var formAction = Model.Id == null ? "Create" : "Edit";
 }
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>
         Workflow Dashboard
     </title>
-    <!-- Favicon -->
-    <link href="https://www.adenin.com/assets/images/favicon.ico" rel="icon" type="image/png">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
     <!-- Icons -->
@@ -23,8 +23,7 @@
     <link href="~/_content/Elsa.Dashboard/assets/css/elsa.css?v=1.1.0" rel="stylesheet" />
     <script type="module" src="~/_content/Elsa.Dashboard/assets/js/plugins/elsa-workflows/elsa-workflow-designer/elsa-workflow-designer.esm.js"></script>
     <script nomodule="" src="~/_content/Elsa.Dashboard/assets/js/plugins/elsa-workflows/elsa-workflow-designer/elsa-workflow-designer.js"></script>
-    <script src="~/_content/Elsa.Dashboard/assets/js/plugins/jquery/dist/jquery.min.js"></script>
-    <script src="~/_content/Elsa.Dashboard/assets/js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <body>
@@ -40,6 +39,7 @@
                     <a href="#!" class="btn btn-secondary" onclick="autoLayout()">Auto Layout</a>
                     <a href="#!" class="btn btn-secondary" onclick="exportWorkflow()">Download</a>
                     <a href="#!" class="btn btn-secondary" onclick="importWorkflow()">Import</a>
+                    <a href="#!" class="btn btn-secondary" onclick="loadWorkflowDefinition()">Load</a>
                     <a href="#!" class="btn btn-secondary" data-toggle="modal" data-target="#workflow-properties-modal">
                         <i class="ni ni-settings-gear-65"></i>
                     </a>
@@ -62,7 +62,6 @@
             </form>
         </div>
     </div>
-    @await Html.PartialAsync("Footer")
 
     <div class="modal fade" id="workflow-properties-modal" tabindex="-1" role="dialog" aria-labelledby="workflow-properties-modal" aria-hidden="true">
         <div class="modal-dialog modal- modal-dialog-centered modal-lg" role="document">
@@ -120,12 +119,9 @@
             </div>
         </div>
     </div>
-</body>
-
-@await Html.PartialAsync("CustomScripts")
-
-@section FootScripts{
+    <script src="~/_content/Elsa.Dashboard/assets/js/plugins/jquery/dist/jquery.min.js"></script>
+    <script src="~/_content/Elsa.Dashboard/assets/js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/_content/Elsa.Dashboard/assets/js/workflow-editor.js"></script>
-}
-
+</body>
+</html>
 
