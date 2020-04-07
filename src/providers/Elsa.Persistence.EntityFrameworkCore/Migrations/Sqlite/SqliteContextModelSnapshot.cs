@@ -67,6 +67,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Output")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("State")
@@ -127,15 +128,15 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("DestinationActivityId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Outcome")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SourceActivityId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TargetActivityId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TenantId")

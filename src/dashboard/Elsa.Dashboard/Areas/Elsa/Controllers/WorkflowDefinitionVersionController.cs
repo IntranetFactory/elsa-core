@@ -165,7 +165,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             }
 
             workflowDefinitionVersion.Connections = postedWorkflow.Connections.Select(
-                x => new ConnectionDefinition(x.TenantId, x.SourceActivityId, x.TargetActivityId, x.Outcome)).ToList();
+                x => new ConnectionDefinition(x.TenantId, x.SourceActivityId, x.DestinationActivityId, x.Outcome)).ToList();
 
             foreach (var connection in workflowDefinitionVersion.Connections)
             {

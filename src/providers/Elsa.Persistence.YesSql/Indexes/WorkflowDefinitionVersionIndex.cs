@@ -58,11 +58,11 @@ namespace Elsa.Persistence.YesSql.Indexes
 
         private static IEnumerable<ActivityDefinition> GetStartActivities(WorkflowDefinitionVersionDocument workflow)
         {
-            var targetActivityIds = workflow.Connections.Select(x => x.TargetActivityId).Distinct().ToLookup(x => x);
+            var destinationActivityIds = workflow.Connections.Select(x => x.DestinationActivityId).Distinct().ToLookup(x => x);
 
             var query =
                 from activity in workflow.Activities
-                where !targetActivityIds.Contains(activity.Id)
+                where !destinationActivityIds.Contains(activity.Id)
                 select activity;
 
             return query;

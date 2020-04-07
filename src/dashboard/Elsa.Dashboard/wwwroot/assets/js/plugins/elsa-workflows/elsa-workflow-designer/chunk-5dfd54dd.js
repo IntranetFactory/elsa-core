@@ -1,4 +1,4 @@
-export class DisplayManager {
+class DisplayManager {
     constructor() {
         this.addDriver = (fieldType, driver) => {
             this.drivers[fieldType] = Object.assign({}, driver);
@@ -18,4 +18,6 @@ export class DisplayManager {
         this.drivers = {};
     }
 }
-export default new DisplayManager();
+const DisplayManager$1 = new DisplayManager();
+
+export { DisplayManager$1 as D };

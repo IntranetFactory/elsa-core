@@ -33,11 +33,11 @@ namespace Elsa.Extensions
         
         public static IEnumerable<IActivity> GetStartActivities(this Workflow workflow)
         {
-            var targetActivityIds = workflow.Connections.Select(x => x.Target.Activity.Id).Distinct().ToLookup(x => x);
+            var destinationActivityIds = workflow.Connections.Select(x => x.Target.Activity.Id).Distinct().ToLookup(x => x);
 
             var query =
                 from activity in workflow.Activities
-                where !targetActivityIds.Contains(activity.Id)
+                where !destinationActivityIds.Contains(activity.Id)
                 select activity;
 
             return query;

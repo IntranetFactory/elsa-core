@@ -57,7 +57,7 @@ namespace Elsa.WorkflowProviders
         private static Connection ResolveConnection(ConnectionDefinition connectionDefinition, IReadOnlyDictionary<string?, IActivity> activityDictionary)
         {
             var source = activityDictionary[connectionDefinition.SourceActivityId];
-            var target = activityDictionary[connectionDefinition.TargetActivityId];
+            var target = activityDictionary[connectionDefinition.DestinationActivityId];
             var outcome = connectionDefinition.Outcome;
 
             return new Connection(source, target, outcome);

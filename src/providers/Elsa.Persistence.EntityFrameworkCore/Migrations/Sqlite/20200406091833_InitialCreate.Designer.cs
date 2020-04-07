@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteContext))]
-    [Migration("20200323110414_InitialCreate")]
+    [Migration("20200406091833_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,6 +69,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Output")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("State")
@@ -129,15 +130,15 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("DestinationActivityId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Outcome")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SourceActivityId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TargetActivityId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TenantId")

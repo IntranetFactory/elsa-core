@@ -87,7 +87,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     WorkflowInstanceId = table.Column<int>(nullable: false),
                     Type = table.Column<string>(nullable: false),
                     State = table.Column<string>(nullable: false),
-                    Output = table.Column<string>(nullable: true)
+                    Output = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -179,7 +179,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     TenantId = table.Column<string>(nullable: true),
                     WorkflowDefinitionVersionId = table.Column<int>(nullable: false),
                     SourceActivityId = table.Column<string>(nullable: false),
-                    TargetActivityId = table.Column<string>(nullable: true),
+                    DestinationActivityId = table.Column<string>(nullable: true),
                     Outcome = table.Column<string>(nullable: false)
                 },
                 constraints: table =>

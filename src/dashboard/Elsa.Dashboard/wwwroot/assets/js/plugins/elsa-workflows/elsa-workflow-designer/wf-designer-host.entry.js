@@ -1,6 +1,6 @@
 import { r as registerInstance, c as createEvent, h, d as getElement } from './chunk-25ccd4a5.js';
 import { c as createCommonjsModule, a as commonjsGlobal, d as deepClone } from './chunk-b68c6ae2.js';
-import { D as DisplayManager } from './chunk-80cbdbf5.js';
+import { D as DisplayManager } from './chunk-5dfd54dd.js';
 
 var dragscroll = createCommonjsModule(function (module, exports) {
 !function(e,n){"function"==typeof undefined&&undefined.amd?undefined(["exports"],n):n("undefined"!='object'?exports:e.dragscroll={});}(commonjsGlobal,function(e){var n,t,o=window,l=document,c="mousemove",r="mouseup",i="mousedown",m="EventListener",d="add"+m,s="remove"+m,f=[],u=function(e,m){for(e=0;e<f.length;)m=f[e++],m=m.container||m,m[s](i,m.md,0),o[s](r,m.mu,0),o[s](c,m.mm,0);for(f=[].slice.call(l.getElementsByClassName("dragscroll")),e=0;e<f.length;)!function(e,m,s,f,u,a){(a=e.container||e)[d](i,a.md=function(n){e.hasAttribute("nochilddrag")&&l.elementFromPoint(n.pageX,n.pageY)!=a||(f=1,m=n.clientX,s=n.clientY,n.preventDefault());},0),o[d](r,a.mu=function(){f=0;},0),o[d](c,a.mm=function(o){f&&((u=e.scroller||e).scrollLeft-=n=-m+(m=o.clientX),u.scrollTop-=t=-s+(s=o.clientY),e==l.body&&((u=l.documentElement).scrollLeft-=n,u.scrollTop-=t));},0);}(f[e++]);};"complete"==l.readyState?u():o[d]("load",u,0),e.reset=u;});
@@ -18,21 +18,20 @@ class BooleanFieldDriver {
         this.updateEditor = (activity, property, formData) => {
             activity.state[property.name] = {
                 value: formData.get(property.name)
-            }
+            };
         };
     }
 }
 
-// TO DO @MM : ExpressionFieldDriver needs fixing so that activities could be edited. Do this after expressions are fixed.
 class ExpressionFieldDriver {
     constructor() {
         this.displayEditor = (activity, property) => {
             const name = property.name;
             const label = property.label;
             const value = activity.state[name] || { Expression: '', Type: 'Literal' };
-            var syntaxValue = value.value != undefined ? value.value.Type : value.Type;
+            const syntaxValue = value["value"] != undefined ? value["value"].Type : value.Type;
             const multiline = (property.options || {}).multiline || false;
-            const expressionValue = value.value != undefined ? value.value.Expression.replace(/"/g, '&quot;') : value.Expression.replace(/"/g, '&quot;');
+            const expressionValue = value["value"] != undefined ? value["value"].Expression.replace(/"/g, '&quot;') : value.Expression.replace(/"/g, '&quot;');
             return `<wf-expression-field name="${name}" label="${label}" hint="${property.hint}" value="${expressionValue}" syntax="${syntaxValue}" multiline="${multiline}"></wf-expression-field>`;
         };
         this.updateEditor = (activity, property, formData) => {
@@ -40,7 +39,6 @@ class ExpressionFieldDriver {
             const syntaxFieldName = `${property.name}.syntax`;
             const expression = formData.get(expressionFieldName).toString().trim();
             const syntax = formData.get(syntaxFieldName).toString();
-
             activity.state[property.name] = {
                 value: {
                     type: syntax,
@@ -52,21 +50,25 @@ class ExpressionFieldDriver {
     }
 }
 
-// TO DO @MM : Test if ListFieldDriver works properly after fixing ExpressionFieldDriver. If it doesn't -> fix it
 class ListFieldDriver {
     constructor() {
         this.displayEditor = (activity, property) => {
             const name = property.name;
             const label = property.label;
-            const items = activity.state[name] || [];
-            const value = items.value != undefined ? items.value.join(', ') : '';
+            var stateItems;
+            if (activity.state[name]) {
+                if (activity.state[name].value) {
+                    stateItems = activity.state[name].value || [];
+                }
+            }
+            const value = stateItems != undefined ? stateItems.join(', ') : '';
             return `<wf-list-field name="${name}" label="${label}" hint="${property.hint}" items="${value}"></wf-list-field>`;
         };
         this.updateEditor = (activity, property, formData) => {
             const value = formData.get(property.name).toString();
             activity.state[property.name] = {
                 value: value.split(',').map(x => x.trim())
-            }
+            };
         };
     }
 }
@@ -83,7 +85,7 @@ class TextFieldDriver {
         this.updateEditor = (activity, property, formData) => {
             activity.state[property.name] = {
                 value: formData.get(property.name).toString().trim()
-            }
+            };
         };
     }
 }
@@ -93,22 +95,21 @@ class SelectFieldDriver {
         this.displayEditor = (activity, property) => {
             const name = property.name;
             const label = property.label;
-            const stateProperty = activity.state[name]; 
-            const value = stateProperty != undefined ? stateProperty.value : '';  
+            const stateProperty = activity.state[name];
+            const value = stateProperty != undefined ? stateProperty.value : '';
             const items = property.options.Items || [];
             const itemsValues = [];
-
             items.forEach(function (item, index) {
-                itemsValues.push(item.label);
+                itemsValues.push(item["label"]);
             });
-
             const itemsJson = encodeURI(JSON.stringify(itemsValues));
             return `<wf-select-field name="${name}" label="${label}" hint="${property.hint}" data-items="${itemsJson}" value="${value}"></wf-select-field>`;
         };
         this.updateEditor = (activity, property, formData) => {
+            const value = formData.get(property.name).toString();
             activity.state[property.name] = {
-                value: formData.get(property.name).trim()
-            }
+                value: value.trim()
+            };
         };
     }
 }

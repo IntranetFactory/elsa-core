@@ -1,4 +1,4 @@
 export interface WorkflowExpression {
-    expression: string;
-    syntax: string;
+    Expression: string;
+    Type: string;
 }
