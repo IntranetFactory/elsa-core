@@ -9,6 +9,7 @@ using Elsa.Dashboard.Models;
 using Elsa.Dashboard.Options;
 using Elsa.Dashboard.Services;
 using Elsa.Extensions;
+using Elsa.Metadata;
 using Elsa.Models;
 using Elsa.Persistence;
 using Elsa.Serialization;
@@ -17,6 +18,8 @@ using Elsa.Services;
 using Elsa.WorkflowDesigner.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Elsa.Dashboard.Areas.Elsa.Controllers
 {
@@ -197,24 +200,9 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         [HttpGet("WorkflowDefinitionVersionEditorStandalone")]
         public async Task<IActionResult> WorkflowDefinitionVersionEditorStandalone()
         {
-            var hiddenActivityNames = new List<string>() { "ReadLine", "WriteLine", "Redirect", "WriteHttpResponse", "Inline" };
-            List<Metadata.ActivityDescriptor> activityDefinitions = new List<Metadata.ActivityDescriptor>();
-
-            foreach(var activity in options.Value.ActivityDefinitions)
-            {
-                if (!hiddenActivityNames.Contains(activity.Type))
-                    activityDefinitions.Add(activity);
-            }
-
-            WorkflowDefinitionVersionEditModel model = new WorkflowDefinitionVersionEditModel
-            {
-                ActivityDefinitions = activityDefinitions.ToArray()
-            };
-
-            return View("WorkflowDefinitionVersionEditorStandalone", model);
+            return View("WorkflowDefinitionVersionEditorStandalone");
         }
 
-        // Work in progress: this will be used to load the definition via ajax.
         [HttpGet("LoadWorkflowDefinition")]
         public async Task<IActionResult> LoadWorkflowDefinition(string tenantId, string id, CancellationToken cancellationToken)
         {
@@ -223,15 +211,36 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             if (workflowDefinitionVersion == null)
                 return NotFound();
 
-            dynamic workflowModel = new
+            var hiddenActivityNames = new List<string>() { "ReadLine", "WriteLine", "Redirect", "WriteHttpResponse", "Inline" };
+            List<ActivityDescriptor> activityDefinitions = new List<ActivityDescriptor>();
+
+            foreach (var activity in options.Value.ActivityDefinitions)
             {
-                TenantId = tenantId,
-                WorkflowId = id,
+                if (!hiddenActivityNames.Contains(activity.Type))
+                    activityDefinitions.Add(activity);
+            }
+
+            var workflowModel = new
+            {
                 Activities = workflowDefinitionVersion.Activities.Select(x => new ActivityModel(x)).ToList(),
-                Connections = workflowDefinitionVersion.Connections.Select(x => new ConnectionModel(x)).ToList()
+                Connections = workflowDefinitionVersion.Connections.Select(x => new ConnectionModel(x)).ToList(),
             };
 
-            return Ok(serializer.Serialize(workflowModel, JsonTokenFormatter.FormatName));
+            dynamic workflowData = new
+            {
+                Id = id,
+                TenantId = tenantId,
+                ActivityDefinitions = activityDefinitions.ToArray(),
+                WorkflowModel = workflowModel
+            };
+
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+            return Ok(JsonConvert.SerializeObject(workflowData, settings));
         }
 
         private async Task<WorkflowDefinitionVersionListItemModel> CreateWorkflowDefinitionListItemModelAsync(

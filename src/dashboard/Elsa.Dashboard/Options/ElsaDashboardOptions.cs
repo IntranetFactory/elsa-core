@@ -6,11 +6,9 @@ namespace Elsa.Dashboard.Options
     {
         public ElsaDashboardOptions()
         {
-            Scripts = new List<string>();
             ActivityDefinitions = new ActivityDefinitionList();
         }
         
-        public IList<string> Scripts { get; set; }
         public ActivityDefinitionList ActivityDefinitions { get; set; }
     }
 }
