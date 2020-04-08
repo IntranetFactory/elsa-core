@@ -27,6 +27,7 @@ export class DesignerHost {
         };
         this.onWorkflowChanged = (e) => {
             this.workflowChanged.emit(e.detail);
+            this.workflowData = JSON.stringify(e.detail);
         };
         this.initActivityDefinitions = () => {
             this.activityDefinitions = this.loadActivityDefinitions();
@@ -172,7 +173,7 @@ export class DesignerHost {
         },
         "workflowData": {
             "type": "string",
-            "mutable": false,
+            "mutable": true,
             "complexType": {
                 "original": "string",
                 "resolved": "string",
@@ -185,7 +186,7 @@ export class DesignerHost {
                 "text": ""
             },
             "attribute": "data-workflow",
-            "reflect": false
+            "reflect": true
         },
         "readonly": {
             "type": "boolean",

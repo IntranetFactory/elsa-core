@@ -576,6 +576,7 @@ class DesignerHost {
         };
         this.onWorkflowChanged = (e) => {
             this.workflowChanged.emit(e.detail);
+            this.workflowData = JSON.stringify(e.detail);
         };
         this.initActivityDefinitions = () => {
             this.activityDefinitions = this.loadActivityDefinitions();

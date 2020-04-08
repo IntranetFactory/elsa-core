@@ -25,26 +25,10 @@
 </head>
 
 <body>
-    <button type="button" onclick="loadWorkflow()">Request data</button>
 
-    <script>
-        function loadWorkflow() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    var workflowDefinition = JSON.parse(this.responseText);
-                    var designerHost = document.createElement("wf-designer-host");
-                    designerHost.setAttribute('data-activity-definitions', JSON.stringify(workflowDefinition.activityDefinitions));
-                    designerHost.setAttribute('data-workflow', JSON.stringify(workflowDefinition.workflowModel));
-                    document.body.appendChild(designerHost);
-                }
-            };
-
-            // this is hardcoded for test purposes only
-            xhttp.open("GET", "https://localhost:44332/Elsa/workflow-definition-version/LoadWorkflowDefinition?tenantId=1&id=dff5eac1631444c3a2baeea230778d4c", true);
-            xhttp.send();
-        }
-    </script>
+    <!-- Values are hardcoded temporarily -->
+    <button type="button" onclick="loadWorkflow('1', 'dff5eac1631444c3a2baeea230778d4c')">Load Workflow</button>
+    <button type="button" onclick="saveWorkflow('1', 'dff5eac1631444c3a2baeea230778d4c')">Save Workflow</button>
 
     <!-- TO DO: this is commented out until we decide if it should be completely removed -->
     @*<div class="card bg-secondary shadow">
@@ -142,7 +126,7 @@
 
     <script src="~/_content/Elsa.Dashboard/assets/js/plugins/jquery/dist/jquery.min.js"></script>
     <script src="~/_content/Elsa.Dashboard/assets/js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/_content/Elsa.Dashboard/assets/js/workflow-editor.js"></script>
+    <script src="~/_content/Elsa.Dashboard/assets/js/workflow-standalone-editor.js"></script>
 </body>
 </html>
 
