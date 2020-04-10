@@ -48,8 +48,10 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         [HttpGet("InvokeUserAction")]
-        public async Task<IActionResult> InvokeUserAction(string tenantId, string instanceId, string actionName, CancellationToken cancellationToken)
+        public async Task<IActionResult> InvokeUserAction(string instanceId, string actionName, CancellationToken cancellationToken)
         {
+            int? tenantId = 1;
+
             var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
 
             if (workflowInstance == null)

@@ -37,7 +37,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             await client.CreateDocumentWithRetriesAsync(collectionUrl, document, cancellationToken: cancellationToken);
             return Map(document);
         }
-        public async Task<WorkflowDefinition> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinition> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
@@ -46,7 +46,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return Map(document);
         }
 
-        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
@@ -63,7 +63,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return Map(document);
         }
 
-        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);

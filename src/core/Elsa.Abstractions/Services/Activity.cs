@@ -19,7 +19,7 @@ namespace Elsa.Services
         public virtual string Type => GetType().Name;
         public string? Id { get; set; }
         public string? Tag { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string? Name { get; set; }
         public string? DisplayName{ get; set; }
         public string? Description{ get; set; }

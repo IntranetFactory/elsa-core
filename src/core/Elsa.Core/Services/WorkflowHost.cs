@@ -53,7 +53,7 @@ namespace Elsa.Services
             this.logger = logger;
         }
 
-        public async Task<WorkflowExecutionContext?> RunWorkflowInstanceAsync(string tenantId, string workflowInstanceId, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext?> RunWorkflowInstanceAsync(int? tenantId, string workflowInstanceId, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
         {
             var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, workflowInstanceId, cancellationToken);
 
@@ -72,7 +72,7 @@ namespace Elsa.Services
             return await RunAsync(workflow, workflowInstance, activityId, input, cancellationToken);
         }
 
-        public async Task<WorkflowExecutionContext> RunWorkflowDefinitionAsync(string tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> RunWorkflowDefinitionAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
         {
             var workflow = await workflowRegistry.GetWorkflowAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
             var workflowInstance = await workflowActivator.ActivateAsync(workflow, correlationId, cancellationToken);
@@ -232,7 +232,7 @@ namespace Elsa.Services
 
         private WorkflowExecutionContext CreateWorkflowExecutionContext(
             string workflowInstanceId,
-            string tenantId, 
+            int? tenantId, 
             string workflowDefinitionId,
             int version,
             IEnumerable<IActivity> activities,

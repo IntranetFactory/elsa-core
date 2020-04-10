@@ -26,7 +26,7 @@ namespace Elsa.Services
         /// <summary>
         /// Unique identifier of this activity.
         /// </summary>
-        string? TenantId { get; set; }
+        int? TenantId { get; set; }
 
         /// <summary>
         /// Tag identifier of this activity.

@@ -25,7 +25,7 @@ namespace Elsa.Persistence.DocumentDb.Services
         }
 
         public async Task DeleteAsync(
-            string tenantId, 
+            int? tenantId, 
             string id,
             CancellationToken cancellationToken = default)
         {
@@ -34,7 +34,7 @@ namespace Elsa.Persistence.DocumentDb.Services
         }
 
         public async Task<WorkflowInstance> GetByCorrelationIdAsync(
-            string tenantId, 
+            int? tenantId, 
             string correlationId,
             CancellationToken cancellationToken = default)
         {
@@ -47,7 +47,7 @@ namespace Elsa.Persistence.DocumentDb.Services
         }
 
         public async Task<WorkflowInstance> GetByIdAsync(
-            string tenantId, 
+            int? tenantId, 
             string id,
             CancellationToken cancellationToken = default)
         {
@@ -59,7 +59,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return Map(document);
         }
 
-        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
@@ -70,7 +70,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return mapper.Map<IEnumerable<WorkflowInstance>>(query);
         }
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string tag,
             string? correlationId = null,
@@ -92,8 +92,30 @@ namespace Elsa.Persistence.DocumentDb.Services
             return instances.GetBlockingActivities(activityType);
         }
 
+        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+            int? tenantId,
+            string tag,
+            string? correlationId = null,
+            CancellationToken cancellationToken = default)
+        {
+            var client = storage.Client;
+            var collectionUrl = await GetCollectionUriAsync(cancellationToken);
+            var query = client
+                .CreateDocumentQuery<WorkflowInstanceDocument>(collectionUrl)
+                .Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
+
+            if (!string.IsNullOrWhiteSpace(correlationId))
+                query = query.Where(x => x.CorrelationId == correlationId);
+
+            query = query.Where(x => x.BlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId));
+            query = query.OrderByDescending(x => x.CreatedAt);
+
+            var instances = Map(query.ToList());
+            return instances.GetBlockingActivities();
+        }
+
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string? correlationId = null,
             CancellationToken cancellationToken = default)
@@ -115,7 +137,7 @@ namespace Elsa.Persistence.DocumentDb.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(
-            string tenantId, 
+            int? tenantId, 
             string definitionId,
             CancellationToken cancellationToken = default)
         {
@@ -128,7 +150,7 @@ namespace Elsa.Persistence.DocumentDb.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId, 
+            int? tenantId, 
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken = default)
@@ -142,7 +164,7 @@ namespace Elsa.Persistence.DocumentDb.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId, 
+            int? tenantId, 
             WorkflowStatus status, 
             CancellationToken cancellationToken = default)
         {

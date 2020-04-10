@@ -38,12 +38,12 @@ namespace Elsa.Persistence.MongoDb.Services
             await workflowDefinitionCollection.InsertOneAsync(definition, new InsertOneOptions(), cancellationToken);
             return definition;
         }
-        public Task<WorkflowDefinition> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinition> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             return workflowDefinitionCollection.AsQueryable().FirstOrDefaultAsync(x => x.TenantId == tenantId && x.Id == id, cancellationToken);
         }
 
-        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var query = workflowDefinitionCollection.AsQueryable().Where(x => x.TenantId == tenantId);
             var results = await query.ToListAsync(cancellationToken);
@@ -61,7 +61,7 @@ namespace Elsa.Persistence.MongoDb.Services
 
             return definition;
         }
-        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             await workflowDefinitionCollection.DeleteManyAsync(x => x.TenantId == tenantId && x.Id == id, cancellationToken);
             var result = await workflowDefinitionVersionCollection.DeleteManyAsync(x => x.DefinitionId == id, cancellationToken);

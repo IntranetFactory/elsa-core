@@ -29,7 +29,7 @@ namespace Elsa.Persistence.YesSql.StartupTasks
         }
 
         // tenantId has no other use than to enable project compilation and prevent errors
-        public async Task ExecuteAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task ExecuteAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             int currentVersion = await schemaVersionStore.GetVersionAsync();
 

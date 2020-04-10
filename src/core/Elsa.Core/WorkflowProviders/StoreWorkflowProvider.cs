@@ -24,7 +24,7 @@ namespace Elsa.WorkflowProviders
             this.activityResolver = activityResolver;
         }
 
-        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(string tenantId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(int? tenantId, CancellationToken cancellationToken)
         {
             var workflowDefinitionVersions = await store.ListAsync(tenantId, VersionOptions.All, cancellationToken);
             return workflowDefinitionVersions.Select(CreateWorkflow);

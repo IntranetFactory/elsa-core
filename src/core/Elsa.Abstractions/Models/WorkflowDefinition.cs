@@ -10,7 +10,7 @@ namespace Elsa.Models
             WorkflowDefinitionVersions = new List<WorkflowDefinitionVersion>();
         }
         public string Id { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public Instant CreatedAt { get; set; }
         public ICollection<WorkflowDefinitionVersion> WorkflowDefinitionVersions { get; set; }
     }

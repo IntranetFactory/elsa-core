@@ -10,19 +10,19 @@ namespace Elsa.Extensions
 {
     public static class WorkflowRegistryExtensions
     {
-        public static Task<Workflow> GetWorkflowAsync<T>(this IWorkflowRegistry workflowRegistry, string tenantId, CancellationToken cancellationToken) =>
+        public static Task<Workflow> GetWorkflowAsync<T>(this IWorkflowRegistry workflowRegistry, int? tenantId, CancellationToken cancellationToken) =>
             workflowRegistry.GetWorkflowAsync(tenantId, typeof(T).Name, VersionOptions.Latest, cancellationToken);
 
         public static Task<IEnumerable<(Workflow Workflow, IActivity Activity)>> GetWorkflowsByStartActivityAsync<T>(
             this IWorkflowRegistry workflowRegistry,
-            string tenantId, 
+            int? tenantId, 
             CancellationToken cancellationToken = default)
             where T : IActivity =>
             workflowRegistry.GetWorkflowsByStartActivityAsync(tenantId, typeof(T).Name, cancellationToken);
 
         public static async Task<IEnumerable<(Workflow Workflow, IActivity Activity)>> GetWorkflowsByStartActivityAsync(
             this IWorkflowRegistry workflowRegistry,
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             CancellationToken cancellationToken = default)
         {

@@ -9,7 +9,7 @@ namespace Elsa.WorkflowDesigner.Models
         {
         }
 
-        public ActivityModel(string id, string tenantId, string type, int? left, int? top, Variables state, bool blocking, bool executed, bool faulted, ActivityMessageModel? message = null)
+        public ActivityModel(string id, int? tenantId, string type, int? left, int? top, Variables state, bool blocking, bool executed, bool faulted, ActivityMessageModel? message = null)
         {
             Id = id;
             TenantId = tenantId;
@@ -51,7 +51,7 @@ namespace Elsa.WorkflowDesigner.Models
         }
 
         public string? Id { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string? Type { get; set; }
         public int? Left { get; set; }
         public int? Top { get; set; }

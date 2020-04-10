@@ -32,17 +32,17 @@ namespace Elsa.Persistence
             return result;
         }
 
-        public Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinitionVersion> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             return decoratedStore.GetByIdAsync(tenantId, id, cancellationToken);
         }
 
-        public Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinitionVersion> GetByIdAsync(int? tenantId, string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
         {
             return decoratedStore.GetByIdAsync(tenantId, definitionId, version, cancellationToken);
         }
 
-        public Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(string tenantId, VersionOptions version, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(int? tenantId, VersionOptions version, CancellationToken cancellationToken = default)
         {
             return decoratedStore.ListAsync(tenantId, version, cancellationToken);
         }
@@ -54,7 +54,7 @@ namespace Elsa.Persistence
             return updatedDefinitionVersion;
         }
 
-        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var count = await decoratedStore.DeleteAsync(tenantId, id, cancellationToken);
             await PublishUpdateEventAsync(cancellationToken);

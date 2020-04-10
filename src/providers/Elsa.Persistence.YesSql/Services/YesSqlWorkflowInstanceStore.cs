@@ -41,7 +41,7 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<WorkflowInstance> GetByIdAsync(
-            string tenantId,
+            int? tenantId,
             string id,
             CancellationToken cancellationToken)
         {
@@ -52,7 +52,7 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<WorkflowInstance> GetByCorrelationIdAsync(
-            string tenantId, 
+            int? tenantId, 
             string correlationId,
             CancellationToken cancellationToken = default)
         {
@@ -63,7 +63,7 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(
-            string tenantId, 
+            int? tenantId, 
             string definitionId,
             CancellationToken cancellationToken)
         {
@@ -74,7 +74,7 @@ namespace Elsa.Persistence.YesSql.Services
             return mapper.Map<IEnumerable<WorkflowInstance>>(documents);
         }
 
-        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(string tenantId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(int? tenantId, CancellationToken cancellationToken)
         {
             var documents = await session.Query<WorkflowInstanceDocument, WorkflowInstanceIndex>()
                 .Where(x => x.TenantId == tenantId)
@@ -83,7 +83,7 @@ namespace Elsa.Persistence.YesSql.Services
             return mapper.Map<IEnumerable<WorkflowInstance>>(documents);
         }
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
-            string tenantId,
+            int? tenantId,
             string activityType, 
             string tag, 
             string correlationId = null, 
@@ -105,8 +105,30 @@ namespace Elsa.Persistence.YesSql.Services
             return instances.GetBlockingActivities(activityType);
         }
 
+        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+            int? tenantId,
+            string tag,
+            string correlationId = null,
+            CancellationToken cancellationToken = default)
+        {
+            var query = session.Query<WorkflowInstanceDocument, WorkflowInstanceBlockingActivitiesIndex>();
+
+            query = query.Where(x => x.ProcessStatus == WorkflowStatus.Suspended && x.TenantId == tenantId);
+
+            if (!string.IsNullOrWhiteSpace(correlationId))
+                query = query.Where(x => x.CorrelationId == correlationId);
+
+            query = query.Where(x => x.Tag == tag && x.TenantId == tenantId);
+            query = query.OrderByDescending(x => x.CreatedAt);
+
+            var documents = await query.ListAsync();
+            var instances = mapper.Map<IEnumerable<WorkflowInstance>>(documents);
+
+            return instances.GetBlockingActivities();
+        }
+
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string correlationId = default,
             CancellationToken cancellationToken = default)
@@ -128,7 +150,7 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId, 
+            int? tenantId, 
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
@@ -142,7 +164,7 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId, 
+            int? tenantId, 
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
@@ -154,7 +176,7 @@ namespace Elsa.Persistence.YesSql.Services
         }
 
         public async Task DeleteAsync(
-            string tenantId, 
+            int? tenantId, 
             string id,
             CancellationToken cancellationToken = default)
         {

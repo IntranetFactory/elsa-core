@@ -20,7 +20,7 @@ namespace Elsa.Services
             this.serviceProvider = serviceProvider;
         }
         
-        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(string tenantId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(int? tenantId, CancellationToken cancellationToken)
         {
             using var scope = serviceProvider.CreateScope();
             var providers = scope.ServiceProvider.GetServices<IWorkflowProvider>();
@@ -28,7 +28,7 @@ namespace Elsa.Services
             return tasks.SelectMany(x => x).ToList();
         }
 
-        public async Task<Workflow> GetWorkflowAsync(string tenantId, string id, VersionOptions version, CancellationToken cancellationToken)
+        public async Task<Workflow> GetWorkflowAsync(int? tenantId, string id, VersionOptions version, CancellationToken cancellationToken)
         {
             var workflows = await GetWorkflowsAsync(tenantId, cancellationToken).ToListAsync();
 

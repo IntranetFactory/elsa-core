@@ -6,14 +6,14 @@ namespace Elsa.Models
         {
         }
 
-        public ScheduledActivity(string activityId, string tenantId, Variable? input = default)
+        public ScheduledActivity(string activityId, int? tenantId, Variable? input = default)
         {
             ActivityId = activityId;
             TenantId = tenantId;
             Input = input;
         }
         public string? ActivityId { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public Variable? Input { get; set; }
     }
 }

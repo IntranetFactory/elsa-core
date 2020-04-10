@@ -41,7 +41,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return Map(entity);
         }
 
-        public async Task<WorkflowDefinition> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinition> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var query = dbContext
                 .WorkflowDefinitions
@@ -52,7 +52,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
 
             return Map(entity);
         }
-        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var query = dbContext.WorkflowDefinitions.Where(x => x.TenantId == tenantId).Include(x => x.WorkflowDefinitionVersions).AsQueryable();
 
@@ -74,7 +74,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
 
             return Map(entity);
         }
-        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var definitions = await dbContext.WorkflowDefinitions
                 .Where(x => x.TenantId == tenantId && x.Id == id)

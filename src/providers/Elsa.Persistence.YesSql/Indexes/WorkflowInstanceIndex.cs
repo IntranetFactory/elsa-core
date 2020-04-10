@@ -9,7 +9,7 @@ namespace Elsa.Persistence.YesSql.Indexes
     public class WorkflowInstanceIndex : MapIndex
     {
         public string WorkflowInstanceId { get; set; }
-        public string TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string WorkflowDefinitionId { get; set; }
         public string CorrelationId { get; set; }
         public WorkflowStatus WorkflowStatus { get; set; }
@@ -19,7 +19,7 @@ namespace Elsa.Persistence.YesSql.Indexes
     public class WorkflowInstanceBlockingActivitiesIndex : MapIndex
     {
         public string ActivityId { get; set; }
-        public string TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string ActivityType { get; set; }
         public string Tag { get; set; }
         public string CorrelationId { get; set; }

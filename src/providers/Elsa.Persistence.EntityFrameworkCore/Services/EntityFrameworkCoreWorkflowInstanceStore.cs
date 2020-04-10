@@ -56,7 +56,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         }
 
         public async Task<WorkflowInstance> GetByIdAsync(
-            string tenantId, 
+            int? tenantId, 
             string id,
             CancellationToken cancellationToken = default)
         {
@@ -70,7 +70,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         }
 
         public async Task<WorkflowInstance> GetByCorrelationIdAsync(
-            string tenantId,
+            int? tenantId,
             string correlationId,
             CancellationToken cancellationToken = default)
         {
@@ -85,7 +85,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(
-            string tenantId,
+            int? tenantId,
             string definitionId,
             CancellationToken cancellationToken = default)
         {
@@ -100,7 +100,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return Map(documents);
         }
 
-        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var documents = await dbContext
                 .WorkflowInstances
@@ -112,7 +112,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return Map(documents);
         }
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string tag,
             string correlationId = default,
@@ -138,8 +138,34 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return instances.GetBlockingActivities(activityType);
         }
 
+        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+            int? tenantId,
+            string tag,
+            string correlationId = default,
+            CancellationToken cancellationToken = default)
+        {
+            var query = dbContext
+                .WorkflowInstances
+                .Include(x => x.Activities)
+                .Include(x => x.BlockingActivities)
+                .AsQueryable();
+
+            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
+
+            if (!string.IsNullOrWhiteSpace(correlationId))
+                query = query.Where(x => x.CorrelationId == correlationId);
+
+            query = query.Where(x => x.BlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId));
+            query = query.OrderByDescending(x => x.CreatedAt);
+
+            var documents = await query.ToListAsync(cancellationToken);
+            var instances = Map(documents);
+
+            return instances.GetBlockingActivities();
+        }
+
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string correlationId = default,
             CancellationToken cancellationToken = default)
@@ -165,7 +191,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId,
+            int? tenantId,
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken = default)
@@ -182,7 +208,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId,
+            int? tenantId,
             WorkflowStatus status,
             CancellationToken cancellationToken = default)
         {
@@ -197,7 +223,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return Map(documents);
         }
 
-        public async Task DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var record = await dbContext.WorkflowInstances.FirstOrDefaultAsync(x => x.TenantId == tenantId && x.InstanceId == id, cancellationToken);
 

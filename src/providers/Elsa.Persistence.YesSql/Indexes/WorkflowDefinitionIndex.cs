@@ -10,7 +10,7 @@ namespace Elsa.Persistence.YesSql.Indexes
     public class WorkflowDefinitionIndex : MapIndex
     {
         public string Id { get; set; }
-        public string TenantId { get; set; }
+        public int? TenantId { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 

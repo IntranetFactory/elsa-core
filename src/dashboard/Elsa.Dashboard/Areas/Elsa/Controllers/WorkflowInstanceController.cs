@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,9 +10,12 @@ using Elsa.Dashboard.Services;
 using Elsa.Extensions;
 using Elsa.Models;
 using Elsa.Persistence;
+using Elsa.Services;
 using Elsa.WorkflowDesigner.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Elsa.Dashboard.Areas.Elsa.Controllers
 {
@@ -21,24 +25,27 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
     {
         private readonly IWorkflowInstanceStore workflowInstanceStore;
         private readonly IWorkflowDefinitionVersionStore workflowDefinitionVersionStore;
+        private readonly IWorkflowHost workflowHost;
         private readonly IOptions<ElsaDashboardOptions> options;
         private readonly INotifier notifier;
 
         public WorkflowInstanceController(
             IWorkflowInstanceStore workflowInstanceStore,
             IWorkflowDefinitionVersionStore workflowDefinitionVersionStore,
+            IWorkflowHost workflowHost,
             IOptions<ElsaDashboardOptions> options,
             INotifier notifier)
         {
             this.workflowInstanceStore = workflowInstanceStore;
             this.workflowDefinitionVersionStore = workflowDefinitionVersionStore;
+            this.workflowHost = workflowHost;
             this.options = options;
             this.notifier = notifier;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index(
-            string tenantId, 
+            int? tenantId, 
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
@@ -74,7 +81,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         [HttpGet("details/{tenantId}/{id}")]
-        public async Task<IActionResult> Details(string tenantId, string id, string returnUrl, CancellationToken cancellationToken)
+        public async Task<IActionResult> Details(int? tenantId, string id, string returnUrl, CancellationToken cancellationToken)
         {
             var instance = await workflowInstanceStore.GetByIdAsync(tenantId, id, cancellationToken);
 
@@ -105,7 +112,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         [HttpPost("delete/{tenantId}/{id}")]
-        public async Task<IActionResult> Delete(string tenantId, string id, string returnUrl, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(int? tenantId, string id, string returnUrl, CancellationToken cancellationToken)
         {
             var instance = await workflowInstanceStore.GetByIdAsync(tenantId, id, cancellationToken);
 
@@ -119,6 +126,84 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 return Redirect(returnUrl);
 
             return RedirectToAction("Index", "WorkflowDefinition", new { tenantId = tenantId });
+        }
+
+        [HttpGet("ListWorkflowInstances")]
+        public async Task<IActionResult> ListWorkflowInstances()
+        {
+            int? tenantId = GetTenant();
+            IEnumerable<WorkflowInstance> instancesList = await workflowInstanceStore.ListAllAsync(tenantId);
+
+            if (instancesList.Count() > 0)
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                return Ok(JsonConvert.SerializeObject(instancesList, settings));
+            }
+
+            return NoContent();
+        }
+
+        [HttpGet("ListWorkflowInstancesByTag")]
+        public async Task<IActionResult> ListWorkflowInstancesByTag(string tag)
+        {
+            int? tenantId = GetTenant();
+            var instancesList = await workflowInstanceStore.ListByBlockingActivityTagAsync(tenantId, tag);
+
+            if (instancesList.Count() > 0)
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                return Ok(JsonConvert.SerializeObject(instancesList, settings));
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("CreateWorkflowInstance")]
+        public async Task<IActionResult> CreateWorkflowInstance(string definitionId, string? activityId, CancellationToken cancellationToken)
+        {
+            int? tenantId = GetTenant();
+            var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, definitionId, VersionOptions.Latest, cancellationToken);
+
+            if (definitionVersion == null)
+                return NotFound();
+
+            await workflowHost.RunWorkflowDefinitionAsync(tenantId, definitionId, activityId);
+            
+            return Ok();
+        }
+
+        [HttpPost("SubmitUserTaskDecision")]
+        public async Task<IActionResult> SubmitUserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
+        {
+            int? tenantId = GetTenant();
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
+
+            if (workflowInstance == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var blockingActivityId = workflowInstance.BlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
+                await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, decision);
+                return Ok();
+            }
+        }
+
+        // temporary solution that returns tenantId = 1 until integrated into the final project
+        private int GetTenant()
+        {
+            return 1;
         }
 
         private ActivityModel CreateActivityModel(

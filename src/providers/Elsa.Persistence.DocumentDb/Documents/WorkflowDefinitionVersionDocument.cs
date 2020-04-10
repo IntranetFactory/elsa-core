@@ -9,7 +9,7 @@ namespace Elsa.Persistence.DocumentDb.Documents
         [JsonProperty(PropertyName = "id")] 
         public string Id { get; set; }
         [JsonProperty(PropertyName = "tenantId")] 
-        public string TenantId { get; set; }
+        public int? TenantId { get; set; }
 
         [JsonProperty(PropertyName = "type")] 
         public string Type { get; } = nameof(WorkflowDefinitionVersionDocument);

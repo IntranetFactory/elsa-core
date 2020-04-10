@@ -6,15 +6,15 @@ namespace Elsa.Services
 {
     public interface IWorkflowPublisher
     {
-        WorkflowDefinitionVersion New(string tenantId);
+        WorkflowDefinitionVersion New(int? tenantId);
         
-        Task<WorkflowDefinitionVersion> PublishAsync(string tenantId, string id, CancellationToken cancellationToken = default);
+        Task<WorkflowDefinitionVersion> PublishAsync(int? tenantId, string id, CancellationToken cancellationToken = default);
 
         Task<WorkflowDefinitionVersion> PublishAsync(
             WorkflowDefinitionVersion workflowDefinitionVersion,
             CancellationToken cancellationToken = default);
 
-        Task<WorkflowDefinitionVersion> GetDraftAsync(string tenantId, string id, CancellationToken cancellationToken= default);
+        Task<WorkflowDefinitionVersion> GetDraftAsync(int? tenantId, string id, CancellationToken cancellationToken= default);
 
         Task<WorkflowDefinitionVersion> SaveDraftAsync(
             WorkflowDefinitionVersion workflowDefinitionVersion,

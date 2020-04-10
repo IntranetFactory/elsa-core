@@ -27,7 +27,7 @@ namespace Elsa.StartupTasks
             this.distributedLockProvider = distributedLockProvider;
         }
         
-        public async Task ExecuteAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task ExecuteAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             if (!await distributedLockProvider.AcquireLockAsync(GetType().Name, cancellationToken))
                 return;

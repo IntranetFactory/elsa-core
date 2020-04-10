@@ -8,7 +8,7 @@ namespace Elsa.WorkflowDesigner.Models
         {
         }
 
-        public ConnectionModel(string tenantId, string sourceActivityId, string destinationActivityId, string outcome)
+        public ConnectionModel(int? tenantId, string sourceActivityId, string destinationActivityId, string outcome)
         {
             TenantId = tenantId;
             SourceActivityId = sourceActivityId;
@@ -23,7 +23,7 @@ namespace Elsa.WorkflowDesigner.Models
             connectionDefinition.Outcome)
         {
         }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string? SourceActivityId { get; set; }
         public string? DestinationActivityId { get; set; }
         public string? Outcome { get; set; }

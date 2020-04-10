@@ -6,7 +6,7 @@ namespace Elsa.Models
         {
         }
 
-        public BlockingActivity(string activityId, string tenantId, string activityType, string tag)
+        public BlockingActivity(string activityId, int? tenantId, string activityType, string tag)
         {
             ActivityId = activityId;
             TenantId = tenantId;
@@ -15,7 +15,7 @@ namespace Elsa.Models
         }
         
         public string? ActivityId { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string? ActivityType { get; set; }
         public string Tag { get; set; }
     }

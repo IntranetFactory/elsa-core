@@ -6,14 +6,14 @@ namespace Elsa.Activities.Http.Models
         {
         }
 
-        public Signal(string tenantId, string name, string workflowInstanceId)
+        public Signal(int? tenantId, string name, string workflowInstanceId)
         {
             TenantId = tenantId;
             Name = name;
             WorkflowInstanceId = workflowInstanceId;
         }
 
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string Name { get; set; }
         public string WorkflowInstanceId { get; set; }
     }

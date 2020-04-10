@@ -37,12 +37,12 @@ namespace Elsa.Persistence.Memory
             definitions.Add(definition);
             return definition;
         }
-        public Task<WorkflowDefinition> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public Task<WorkflowDefinition> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var definition = definitions.FirstOrDefault(x => x.TenantId == tenantId && x.Id == id);
             return Task.FromResult(definition);
         }
-        public Task<IEnumerable<WorkflowDefinition>> ListAsync(string tenantId, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<WorkflowDefinition>> ListAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var query = definitions.Where(x => x.TenantId == tenantId).AsQueryable();
             return Task.FromResult(query.AsEnumerable());
@@ -57,7 +57,7 @@ namespace Elsa.Persistence.Memory
             return definition;
         }
 
-        public Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var count = definitions.RemoveAll(x => x.TenantId == tenantId && x.Id == id);
             return Task.FromResult(count);

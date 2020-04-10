@@ -67,7 +67,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Output")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("State")

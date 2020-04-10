@@ -36,7 +36,7 @@ namespace Elsa.Persistence.YesSql.Services
             return mapper.Map<WorkflowDefinition>(document);
         }
 
-        public async Task<WorkflowDefinition> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinition> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var query = session
                 .Query<WorkflowDefinitionDocument, WorkflowDefinitionIndex>() 
@@ -47,7 +47,7 @@ namespace Elsa.Persistence.YesSql.Services
             return mapper.Map<WorkflowDefinition>(document);
         }
 
-        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(string tenantId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowDefinition>> ListAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var query = session.Query<WorkflowDefinitionDocument, WorkflowDefinitionIndex>().Where(x => x.TenantId == tenantId);
             var documents = await query.ListAsync();
@@ -68,7 +68,7 @@ namespace Elsa.Persistence.YesSql.Services
 
             return mapper.Map<WorkflowDefinition>(document);
         }
-        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var definitionDocuments = (await session.Query<WorkflowDefinitionDocument, WorkflowDefinitionIndex>()
                     .Where(x => x.TenantId == tenantId && x.Id == id)

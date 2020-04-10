@@ -13,7 +13,7 @@ namespace Elsa.Extensions
     {
         public static Task<IEnumerable<(WorkflowInstance WorkflowInstance, ActivityInstance BlockingActivity)>> ListByBlockingActivityAsync<TActivity>(
             this IWorkflowInstanceStore store,
-            string tenantId, 
+            int? tenantId, 
             string? correlationId = default,
             Func<Variables, bool>? activityStatePredicate = default,
             CancellationToken cancellationToken = default) where TActivity : IActivity =>
@@ -21,7 +21,7 @@ namespace Elsa.Extensions
 
         public static async Task<IEnumerable<(WorkflowInstance WorkflowInstance, ActivityInstance BLockingActivity)>> ListByBlockingActivityAsync(
             this IWorkflowInstanceStore store,
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string? correlationId,
             Func<Variables, bool>? activityStatePredicate = default,

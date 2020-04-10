@@ -19,7 +19,7 @@ namespace Elsa.Models
 
         public ActivityDefinition() { }
 
-        public ActivityDefinition(string id, string tenantId, string type, Variables? state, int? left, int? top)
+        public ActivityDefinition(string id, int? tenantId, string type, Variables? state, int? left, int? top)
         {
             Id = id;
             TenantId = tenantId;
@@ -30,7 +30,7 @@ namespace Elsa.Models
         }
 
         public string Id { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string Type { get; set; }
         public string? Name { get; set; }
         public string? DisplayName { get; set; }

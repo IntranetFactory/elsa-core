@@ -30,7 +30,7 @@ namespace Elsa.Services
             this.clock = clock;
         }
 
-        public WorkflowDefinitionVersion New(string tenantId)
+        public WorkflowDefinitionVersion New(int? tenantId)
         {
             var definitionVersion = new WorkflowDefinitionVersion
             {
@@ -49,7 +49,7 @@ namespace Elsa.Services
         }
 
         public async Task<WorkflowDefinitionVersion> PublishAsync(
-            string tenantId, 
+            int? tenantId, 
             string id,
             CancellationToken cancellationToken)
         {
@@ -99,7 +99,7 @@ namespace Elsa.Services
         }
 
         public async Task<WorkflowDefinitionVersion> GetDraftAsync(
-            string tenantId, 
+            int? tenantId, 
             string id,
             CancellationToken cancellationToken)
         {

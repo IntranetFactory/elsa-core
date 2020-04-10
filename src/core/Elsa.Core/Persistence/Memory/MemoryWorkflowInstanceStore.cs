@@ -20,7 +20,7 @@ namespace Elsa.Persistence.Memory
             return Task.FromResult(instance);
         }
 
-        public Task<WorkflowInstance> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken)
+        public Task<WorkflowInstance> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken)
         {
 
             if(workflowInstances.ContainsKey(id))
@@ -35,7 +35,7 @@ namespace Elsa.Persistence.Memory
         }
 
         public Task<WorkflowInstance> GetByCorrelationIdAsync(
-            string tenantId, 
+            int? tenantId, 
             string correlationId,
             CancellationToken cancellationToken = default)
         {
@@ -44,7 +44,7 @@ namespace Elsa.Persistence.Memory
         }
 
         public Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(
-            string tenantId, 
+            int? tenantId, 
             string definitionId,
             CancellationToken cancellationToken)
         {
@@ -52,13 +52,13 @@ namespace Elsa.Persistence.Memory
             return Task.FromResult(workflows);
         }
 
-        public Task<IEnumerable<WorkflowInstance>> ListAllAsync(string tenantId, CancellationToken cancellationToken)
+        public Task<IEnumerable<WorkflowInstance>> ListAllAsync(int? tenantId, CancellationToken cancellationToken)
         {
             var workflows = workflowInstances.Values.Where(x => x.TenantId == tenantId).AsEnumerable();
             return Task.FromResult(workflows);
         }
         public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string tag,
             string? correlationId = null, 
@@ -78,8 +78,28 @@ namespace Elsa.Persistence.Memory
             return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
         }
 
+        public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+            int? tenantId,
+            string tag,
+            string? correlationId = null,
+            CancellationToken cancellationToken = default)
+        {
+            var query = workflowInstances.Values.AsQueryable();
+
+            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
+
+            if (!string.IsNullOrWhiteSpace(correlationId))
+                query = query.Where(x => x.CorrelationId == correlationId);
+
+            query = query.Where(
+                x => x.BlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId)
+            );
+
+            return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
+        }
+
         public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string? correlationId = default, 
             CancellationToken cancellationToken = default)
@@ -99,7 +119,7 @@ namespace Elsa.Persistence.Memory
         }
 
         public Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId, 
+            int? tenantId, 
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
@@ -109,7 +129,7 @@ namespace Elsa.Persistence.Memory
         }
 
         public Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId, 
+            int? tenantId, 
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
@@ -117,7 +137,7 @@ namespace Elsa.Persistence.Memory
             return Task.FromResult(query);
         }
 
-        public Task DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var instance = workflowInstances[id];
 

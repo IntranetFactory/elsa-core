@@ -30,7 +30,7 @@ namespace Elsa.Server.GraphQL
         }
 
         public async Task<IEnumerable<WorkflowDefinitionVersion>> GetWorkflowDefinitionVersions(
-            string tenantId, 
+            int? tenantId, 
             VersionOptionsInput? version,
             [Service] IWorkflowDefinitionVersionStore store,
             [Service] IMapper mapper,
@@ -41,7 +41,7 @@ namespace Elsa.Server.GraphQL
         }
         
         public async Task<WorkflowDefinitionVersion> GetWorkflowDefinitionVersion(
-            string? tenantId, 
+            int? tenantId, 
             string? id,
             string? definitionId,
             VersionOptionsInput? version,
@@ -57,7 +57,7 @@ namespace Elsa.Server.GraphQL
         }
 
         public async Task<IEnumerable<WorkflowInstance>> GetWorkflowInstances(
-            string tenantId, 
+            int? tenantId, 
             string definitionId, 
             WorkflowStatus? status,
             [Service] IWorkflowInstanceStore store,
@@ -66,11 +66,11 @@ namespace Elsa.Server.GraphQL
             if(status == null)
                 return await store.ListByDefinitionAsync(tenantId, definitionId, cancellationToken);
 
-            return await store.ListByStatusAsync(definitionId, status.Value, cancellationToken);
+            return await store.ListByStatusAsync(tenantId, definitionId, status.Value, cancellationToken);
         }
         
         public async Task<WorkflowInstance> GetWorkflowInstance(
-            string tenantId, 
+            int? tenantId, 
             string id,
             [Service] IWorkflowInstanceStore store,
             CancellationToken cancellationToken)

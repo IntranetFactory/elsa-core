@@ -18,7 +18,7 @@ namespace Elsa.Services.Models
             IClock clock,
             IServiceProvider serviceProvider,
             string definitionId,
-            string tenantId, 
+            int? tenantId, 
             string instanceId,
             int version,
             IEnumerable<IActivity> activities,
@@ -54,7 +54,7 @@ namespace Elsa.Services.Models
 
         public IServiceProvider ServiceProvider { get; }
         public string DefinitionId { get; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public ICollection<IActivity> Activities { get; }
         public ICollection<Connection> Connections { get; }
         public WorkflowStatus Status { get; set; }

@@ -30,7 +30,7 @@ namespace Elsa.Persistence.MongoDb.Services
         }
 
         public async Task<WorkflowInstance> GetByIdAsync(
-            string tenantId,
+            int? tenantId,
             string id,
             CancellationToken cancellationToken)
         {
@@ -38,7 +38,7 @@ namespace Elsa.Persistence.MongoDb.Services
         }
 
         public async Task<WorkflowInstance> GetByCorrelationIdAsync(
-            string tenantId,
+            int? tenantId,
             string correlationId,
             CancellationToken cancellationToken = default)
         {
@@ -48,7 +48,7 @@ namespace Elsa.Persistence.MongoDb.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByDefinitionAsync(
-            string tenantid, 
+            int? tenantid, 
             string definitionId,
             CancellationToken cancellationToken)
         {
@@ -58,7 +58,7 @@ namespace Elsa.Persistence.MongoDb.Services
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(string tenantId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<WorkflowInstance>> ListAllAsync(int? tenantId, CancellationToken cancellationToken)
         {
             return await collection
                 .AsQueryable()
@@ -68,7 +68,7 @@ namespace Elsa.Persistence.MongoDb.Services
         }
 
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType, 
             string tag, 
             string correlationId = null, 
@@ -88,8 +88,28 @@ namespace Elsa.Persistence.MongoDb.Services
 
             return instances.GetBlockingActivities(activityType);
         }
+        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+            int? tenantId,
+            string tag,
+            string correlationId = null,
+            CancellationToken cancellationToken = default)
+        {
+            var query = collection.AsQueryable();
+
+            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
+
+            if (!string.IsNullOrWhiteSpace(correlationId))
+                query = query.Where(x => x.CorrelationId == correlationId);
+
+            query = query.Where(x => x.BlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId));
+            query = query.OrderByDescending(x => x.CreatedAt);
+
+            var instances = await query.ToListAsync(cancellationToken);
+
+            return instances.GetBlockingActivities();
+        }
         public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
-            string tenantId, 
+            int? tenantId, 
             string activityType,
             string correlationId = default,
             CancellationToken cancellationToken = default)
@@ -110,7 +130,7 @@ namespace Elsa.Persistence.MongoDb.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId,
+            int? tenantId,
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
@@ -123,7 +143,7 @@ namespace Elsa.Persistence.MongoDb.Services
         }
 
         public async Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
-            string tenantId,
+            int? tenantId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
         {
@@ -135,7 +155,7 @@ namespace Elsa.Persistence.MongoDb.Services
         }
 
         public async Task DeleteAsync(
-            string tenantId, 
+            int? tenantId, 
             string id,
             CancellationToken cancellationToken = default)
         {

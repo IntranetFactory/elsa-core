@@ -33,7 +33,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return Map(document);
         }
 
-        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinitionVersion> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
@@ -42,7 +42,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return Map(document);
         }
 
-        public async Task<WorkflowDefinitionVersion> GetByIdAsync(string tenantId, string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
+        public async Task<WorkflowDefinitionVersion> GetByIdAsync(int? tenantId, string definitionId, VersionOptions version, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
@@ -52,7 +52,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return Map(document);
         }
         
-        public async Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default)
+        public async Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);
@@ -64,7 +64,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             return workflowDefinitionVersionDocuments.Count;
         }
 
-        public async Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(string tenantId, VersionOptions version, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WorkflowDefinitionVersion>> ListAsync(int? tenantId, VersionOptions version, CancellationToken cancellationToken = default)
         {
             var client = storage.Client;
             var collectionUrl = await GetCollectionUriAsync(cancellationToken);

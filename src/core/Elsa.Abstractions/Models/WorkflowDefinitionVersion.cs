@@ -13,7 +13,7 @@ namespace Elsa.Models
         }
 
         public WorkflowDefinitionVersion(string id,
-            string tenantId,
+            int? tenantId,
             string definitionId,
             int version,
             string name,
@@ -39,7 +39,7 @@ namespace Elsa.Models
         }
 
         public string? Id { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string? DefinitionId { get; set; }
         public int Version { get; set; }
         public string? Name { get; set; }

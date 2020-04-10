@@ -19,7 +19,7 @@ namespace Elsa.Services
             this.idGenerator = idGenerator;
         }
         
-        public async Task<WorkflowInstance> ActivateAsync(string tenantId, string definitionId, string? correlationId = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowInstance> ActivateAsync(int? tenantId, string definitionId, string? correlationId = default, CancellationToken cancellationToken = default)
         {
             var workflow = await workflowRegistry.GetWorkflowAsync(tenantId, definitionId, VersionOptions.Published, cancellationToken);
             return await ActivateAsync(workflow, correlationId, cancellationToken);

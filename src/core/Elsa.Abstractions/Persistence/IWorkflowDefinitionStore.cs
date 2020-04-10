@@ -9,9 +9,9 @@ namespace Elsa.Persistence
     {
         Task<WorkflowDefinition> SaveAsync(WorkflowDefinition definition, CancellationToken cancellationToken = default);
         Task<WorkflowDefinition> AddAsync(WorkflowDefinition definition, CancellationToken cancellationToken = default);
-        Task<WorkflowDefinition> GetByIdAsync(string tenantId, string id, CancellationToken cancellationToken = default);
-        Task<IEnumerable<WorkflowDefinition>> ListAsync(string tenantId, CancellationToken cancellationToken = default);
+        Task<WorkflowDefinition> GetByIdAsync(int? tenantId, string id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<WorkflowDefinition>> ListAsync(int? tenantId, CancellationToken cancellationToken = default);
         Task<WorkflowDefinition> UpdateAsync(WorkflowDefinition definition, CancellationToken cancellationToken = default);
-        Task<int> DeleteAsync(string tenantId, string id, CancellationToken cancellationToken = default);
+        Task<int> DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default);
     }
 }

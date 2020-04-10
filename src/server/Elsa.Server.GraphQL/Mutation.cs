@@ -22,7 +22,7 @@ namespace Elsa.Server.GraphQL
         }
         
         public async Task<WorkflowDefinitionVersion> SaveWorkflowDefinitionVersion(
-            string tenantId, 
+            int? tenantId, 
             string? id,
             WorkflowSaveAction saveAction,
             WorkflowInput workflowInput,
@@ -81,7 +81,7 @@ namespace Elsa.Server.GraphQL
         }
 
         public async Task<int> DeleteWorkflowDefinitionVersion(
-            string tenantId, 
+            int? tenantId, 
             string id,
             [Service] IWorkflowDefinitionVersionStore store,
             CancellationToken cancellationToken)

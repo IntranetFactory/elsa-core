@@ -14,7 +14,7 @@ namespace Elsa.Services.Models
 
         public Workflow(
             string? definitionId = default,
-            string? tenantId = default, 
+            int? tenantId = default, 
             int version = 1,
             bool isSingleton = false,
             bool isDisabled = false,
@@ -39,7 +39,7 @@ namespace Elsa.Services.Models
         }
 
         public string? DefinitionId { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public int Version { get; set; }
         public bool IsSingleton { get; set; }
         public bool IsDisabled { get; set; }

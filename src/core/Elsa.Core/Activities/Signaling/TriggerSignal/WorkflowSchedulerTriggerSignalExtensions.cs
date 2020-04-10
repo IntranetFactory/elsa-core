@@ -12,7 +12,7 @@ namespace Elsa
     {
         public static async Task TriggerSignalAsync(
             this IWorkflowScheduler workflowHost,
-            string tenantId, 
+            int? tenantId, 
             string signalName,
             Func<Variables, bool>? activityStatePredicate = null,
             string? correlationId = default,

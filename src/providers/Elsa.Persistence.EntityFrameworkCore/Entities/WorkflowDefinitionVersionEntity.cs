@@ -6,7 +6,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
     public class WorkflowDefinitionVersionEntity
     {
         public int Id { get; set; }
-        public string? TenantId { get; set; }
+        public int? TenantId { get; set; }
         public string VersionId { get; set; }
         public string DefinitionId { get; set; }
         public int Version { get; set; }

@@ -36,10 +36,10 @@ namespace Elsa.Services
             this.queue = queue;
         }
 
-        public async Task ScheduleWorkflowAsync(string tenantId, string instanceId, string? activityId = default, object? input = default, CancellationToken cancellationToken = default) => await serviceBus.Publish(new RunWorkflow(tenantId, instanceId, activityId, Variable.From(input)));
+        public async Task ScheduleWorkflowAsync(int? tenantId, string instanceId, string? activityId = default, object? input = default, CancellationToken cancellationToken = default) => await serviceBus.Publish(new RunWorkflow(tenantId, instanceId, activityId, Variable.From(input)));
 
         public async Task ScheduleNewWorkflowAsync(
-            string tenantId,
+            int? tenantId,
             string definitionId,
             object? input = default,
             string? correlationId = default,
@@ -53,7 +53,7 @@ namespace Elsa.Services
         }
 
         public async Task TriggerWorkflowsAsync(
-            string tenantId,
+            int? tenantId,
             string activityType,
             object? input = default,
             string? correlationId = default,
@@ -68,7 +68,7 @@ namespace Elsa.Services
         /// Find workflows exposing activities with the specified activity type as workflow triggers.
         /// </summary>
         private async Task ScheduleNewWorkflowsAsync(
-            string tenantId,
+            int? tenantId,
             string activityType,
             object? input = default,
             string? correlationId = default,
@@ -112,7 +112,7 @@ namespace Elsa.Services
         /// <summary>
         /// Find suspended workflow instances that are blocked on activities with the specified activity type.
         /// </summary>
-        private async Task ScheduleSuspendedWorkflowsAsync(string tenantId, string activityType, object? input, string? correlationId, Func<Variables, bool>? activityStatePredicate, CancellationToken cancellationToken)
+        private async Task ScheduleSuspendedWorkflowsAsync(int? tenantId, string activityType, object? input, string? correlationId, Func<Variables, bool>? activityStatePredicate, CancellationToken cancellationToken)
         {
             var tuples = await workflowInstanceStore.ListByBlockingActivityAsync(tenantId, activityType, correlationId, activityStatePredicate, cancellationToken);
 
@@ -139,6 +139,7 @@ namespace Elsa.Services
             foreach (var tuple in singletons)
             {
                 var instances = await workflowInstanceStore.ListByStatusAsync(
+                    tuple.Workflow.TenantId,
                     tuple.Workflow.DefinitionId,
                     WorkflowStatus.Suspended,
                     cancellationToken
@@ -155,8 +156,8 @@ namespace Elsa.Services
             Workflow workflow,
             CancellationToken cancellationToken)
         {
-            var suspendedInstances = await workflowInstanceStore.ListByStatusAsync(workflow.DefinitionId, WorkflowStatus.Suspended, cancellationToken).ToListAsync();
-            var idleInstances = await workflowInstanceStore.ListByStatusAsync(workflow.DefinitionId, WorkflowStatus.Idle, cancellationToken);
+            var suspendedInstances = await workflowInstanceStore.ListByStatusAsync(workflow.TenantId, workflow.DefinitionId, WorkflowStatus.Suspended, cancellationToken).ToListAsync();
+            var idleInstances = await workflowInstanceStore.ListByStatusAsync(workflow.TenantId, workflow.DefinitionId, WorkflowStatus.Idle, cancellationToken);
             var startActivities = workflow.GetStartActivities().Select(x => x.Id).ToList();
             var startedInstances = suspendedInstances.Where(x => x.BlockingActivities.Any(y => startActivities.Contains(y.ActivityId))).ToList();
 
