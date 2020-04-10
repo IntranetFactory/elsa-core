@@ -98,6 +98,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Dashboard.Web", "src\d
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.WorkflowDesigner", "src\dashboard\Elsa.WorkflowDesigner\Elsa.WorkflowDesigner.csproj", "{5F56B7C0-7E4E-430B-9F6F-70D3C36BE9DB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{000FE40D-2DB5-41F3-A904-D06C0933F76D}"
+	ProjectSection(SolutionItems) = preProject
+		API.md = API.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
