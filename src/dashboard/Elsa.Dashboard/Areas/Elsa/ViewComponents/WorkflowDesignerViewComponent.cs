@@ -1,11 +1,11 @@
+using Elsa.Dashboard.Areas.Elsa.ViewModels;
 using Elsa.Metadata;
-using Elsa.WorkflowDesigner.Models;
-using Elsa.WorkflowDesigner.ViewModels;
+using Elsa.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Elsa.WorkflowDesigner.ViewComponents
+namespace Elsa.Dashboard.Areas.Elsa.ViewComponents
 {
     public class WorkflowDesignerViewComponent : ViewComponent
     {

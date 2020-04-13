@@ -15,7 +15,6 @@ using Elsa.Persistence;
 using Elsa.Serialization;
 using Elsa.Serialization.Formatters;
 using Elsa.Services;
-using Elsa.WorkflowDesigner.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

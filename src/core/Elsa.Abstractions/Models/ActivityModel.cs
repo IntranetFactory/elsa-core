@@ -1,7 +1,4 @@
-using Elsa.Models;
-using Newtonsoft.Json.Linq;
-
-namespace Elsa.WorkflowDesigner.Models
+namespace Elsa.Models
 {
     public class ActivityModel
     {

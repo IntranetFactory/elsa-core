@@ -1,4 +1,4 @@
-namespace Elsa.WorkflowDesigner.Models
+namespace Elsa.Models
 {
     public class WorkflowExpressionOptions
     {

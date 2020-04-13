@@ -96,8 +96,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Dashboard", "src\dashb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Dashboard.Web", "src\dashboard\Elsa.Dashboard.Web\Elsa.Dashboard.Web.csproj", "{76BC82AD-B56F-4EF7-8AB4-CBFB0E78006C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.WorkflowDesigner", "src\dashboard\Elsa.WorkflowDesigner\Elsa.WorkflowDesigner.csproj", "{5F56B7C0-7E4E-430B-9F6F-70D3C36BE9DB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{000FE40D-2DB5-41F3-A904-D06C0933F76D}"
 	ProjectSection(SolutionItems) = preProject
 		API.md = API.md
@@ -230,10 +228,6 @@ Global
 		{76BC82AD-B56F-4EF7-8AB4-CBFB0E78006C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76BC82AD-B56F-4EF7-8AB4-CBFB0E78006C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76BC82AD-B56F-4EF7-8AB4-CBFB0E78006C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F56B7C0-7E4E-430B-9F6F-70D3C36BE9DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F56B7C0-7E4E-430B-9F6F-70D3C36BE9DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F56B7C0-7E4E-430B-9F6F-70D3C36BE9DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F56B7C0-7E4E-430B-9F6F-70D3C36BE9DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -277,7 +271,6 @@ Global
 		{384A81AB-65F4-44D1-9A70-B40DF1914491} = {DA71CDAA-8DD3-4D5F-9FBD-8E4B37A2D925}
 		{568DB78A-B9D5-4A94-AE51-4384FDC546DF} = {384A81AB-65F4-44D1-9A70-B40DF1914491}
 		{76BC82AD-B56F-4EF7-8AB4-CBFB0E78006C} = {384A81AB-65F4-44D1-9A70-B40DF1914491}
-		{5F56B7C0-7E4E-430B-9F6F-70D3C36BE9DB} = {384A81AB-65F4-44D1-9A70-B40DF1914491}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B0975FD-7050-48B0-88C5-48C33378E158}

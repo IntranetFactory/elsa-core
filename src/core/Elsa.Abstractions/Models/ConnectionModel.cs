@@ -1,6 +1,4 @@
-using Elsa.Models;
-
-namespace Elsa.WorkflowDesigner.Models
+namespace Elsa.Models
 {
     public class ConnectionModel
     {

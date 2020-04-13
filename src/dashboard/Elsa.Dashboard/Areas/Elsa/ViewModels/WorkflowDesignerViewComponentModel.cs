@@ -1,4 +1,4 @@
-namespace Elsa.WorkflowDesigner.ViewModels
+namespace Elsa.Dashboard.Areas.Elsa.ViewModels
 {
     public class WorkflowDesignerViewComponentModel
     {

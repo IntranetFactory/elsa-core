@@ -1,5 +1,5 @@
 using Elsa.Metadata;
-using Elsa.WorkflowDesigner.Models;
+using Elsa.Models;
 
 namespace Elsa.Dashboard.Areas.Elsa.ViewModels
 {

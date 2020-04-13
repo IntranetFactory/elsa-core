@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Elsa.Metadata;
 using Elsa.Models;
-using Elsa.WorkflowDesigner.Models;
 
 namespace Elsa.Dashboard.Areas.Elsa.ViewModels
 {
