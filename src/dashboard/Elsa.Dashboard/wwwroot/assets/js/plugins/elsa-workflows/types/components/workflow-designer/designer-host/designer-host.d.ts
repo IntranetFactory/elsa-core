@@ -2,13 +2,6 @@ import { EventEmitter } from '../../../stencil.core';
 import 'dragscroll';
 import { Activity, ActivityDefinition, Workflow, WorkflowFormatDescriptor } from "../../../models";
 import "../../../drivers";
-import '../../../plugins/console-activities';
-import '../../../plugins/control-flow-activities';
-import '../../../plugins/email-activities';
-import '../../../plugins/http-activities';
-import '../../../plugins/mass-transit-activities';
-import '../../../plugins/primitives-activities';
-import '../../../plugins/timer-activities';
 export declare class DesignerHost {
     activityEditor: HTMLWfActivityEditorElement;
     activityPicker: HTMLWfActivityPickerElement;
@@ -21,7 +14,6 @@ export declare class DesignerHost {
     activityDefinitionsData: string;
     workflowData: string;
     readonly: boolean;
-    pluginsData: string;
     newWorkflow(): Promise<void>;
     autoLayout(): Promise<void>;
     getWorkflow(): Promise<any>;
@@ -35,7 +27,6 @@ export declare class DesignerHost {
     onExportWorkflow(e: CustomEvent<WorkflowFormatDescriptor>): Promise<void>;
     onImportWorkflow(e: CustomEvent<Workflow>): Promise<void>;
     workflowChanged: EventEmitter;
-    private loadActivityDefinitions;
     private onWorkflowChanged;
     private initActivityDefinitions;
     private initFieldDrivers;

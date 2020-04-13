@@ -10,6 +10,5 @@ export class WorkflowPluginStore {
 const pluginStore = new WorkflowPluginStore();
 const win = window;
 const elsa = win.elsa || {};
-elsa.pluginStore = pluginStore;
 win.elsa = elsa;
 export default pluginStore;

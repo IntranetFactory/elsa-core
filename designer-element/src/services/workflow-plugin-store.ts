@@ -16,7 +16,6 @@ const pluginStore = new WorkflowPluginStore();
 const win = window as any;
 const elsa = win.elsa as Elsa || {} as Elsa;
 
-elsa.pluginStore = pluginStore;
 win.elsa = elsa;
 
 export default pluginStore;

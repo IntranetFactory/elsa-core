@@ -3,15 +3,7 @@ import 'dragscroll';
 import {Activity, ActivityDefinition, Workflow, WorkflowFormatDescriptor} from "../../../models";
 import "../../../drivers";
 import DisplayManager from '../../../services/display-manager';
-import pluginStore from '../../../services/workflow-plugin-store';
 import {deepClone} from "../../../utils/deep-clone";
-import '../../../plugins/console-activities';
-import '../../../plugins/control-flow-activities';
-import '../../../plugins/email-activities';
-import '../../../plugins/http-activities';
-import '../../../plugins/mass-transit-activities';
-import '../../../plugins/primitives-activities';
-import '../../../plugins/timer-activities';
 import {
   BooleanFieldDriver,
   ExpressionFieldDriver,
@@ -39,7 +31,6 @@ export class DesignerHost {
   @Prop({ attribute: "data-activity-definitions" }) activityDefinitionsData: string;
   @Prop({ mutable: true, reflect: true, attribute: "data-workflow" }) workflowData: string;
   @Prop({ attribute: "readonly" }) readonly: boolean;
-  @Prop({ attribute: "plugins" }) pluginsData: string;
 
   @Method()
   async newWorkflow() {
@@ -108,26 +99,12 @@ export class DesignerHost {
   @Event()
   workflowChanged: EventEmitter;
 
-  private loadActivityDefinitions = (): Array<ActivityDefinition> => {
-    const pluginsData = this.pluginsData || '';
-    const pluginNames = pluginsData.split(/[ ,]+/).map(x => x.trim());
-
-    return pluginStore
-      .list()
-      .filter(x => pluginNames.indexOf(x.getName()) > -1)
-      .filter(x => !!x.getActivityDefinitions)
-      .map(x => x.getActivityDefinitions())
-      .reduce((a, b) => a.concat(b), []);
-  };
-
   private onWorkflowChanged = (e: CustomEvent<Workflow>) => {
     this.workflowChanged.emit(e.detail);
     this.workflowData = JSON.stringify(e.detail);
   };
 
   private initActivityDefinitions = () => {
-    this.activityDefinitions = this.loadActivityDefinitions();
-
     if (!!this.activityDefinitionsData) {
       const definitions = JSON.parse(this.activityDefinitionsData);
       this.activityDefinitions = [...this.activityDefinitions, ...definitions]

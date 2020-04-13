@@ -69,7 +69,6 @@ export namespace Components {
     'getWorkflow': () => Promise<any>;
     'import': () => Promise<void>;
     'newWorkflow': () => Promise<void>;
-    'pluginsData': string;
     'readonly': boolean;
     'showActivityPicker': () => Promise<void>;
     'workflow': Workflow;
@@ -259,7 +258,6 @@ declare namespace LocalJSX {
     'activityDefinitionsData'?: string;
     'canvasHeight'?: string;
     'onWorkflowChanged'?: (event: CustomEvent<any>) => void;
-    'pluginsData'?: string;
     'readonly'?: boolean;
     'workflow'?: Workflow;
     'workflowData'?: string;
