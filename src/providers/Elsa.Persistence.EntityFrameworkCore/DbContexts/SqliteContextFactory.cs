@@ -14,7 +14,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             //var connectionString = Environment.GetEnvironmentVariable("EF_CONNECTIONSTRING");
             var connectionString = "Data Source=C:\\Dev\\elsa-core\\src\\dashboard\\Elsa.Dashboard.Web\\elsa.dashboard-web.db;Cache=Shared";
 
-            if(connectionString == null)
+            if (connectionString == null)
                 throw new InvalidOperationException(@"Set the EF_CONNECTIONSTRING environment variable to a valid SQLite connection string. E.g. SET EF_CONNECTIONSTRING=Data Source=c:\data\elsa.db;Cache=Shared;");
 
             optionsBuilder.UseSqlite(
