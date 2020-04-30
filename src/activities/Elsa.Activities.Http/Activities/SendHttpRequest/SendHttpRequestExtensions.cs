@@ -12,10 +12,10 @@ namespace Elsa.Activities.Http
 {
     public static class SendHttpRequestExtensions
     {
-        public static SendHttpRequest WithUrl(this SendHttpRequest activity, IWorkflowExpression<PathString> value) => activity.With(x => x.Url, value);
-        public static SendHttpRequest WithUrl(this SendHttpRequest activity, Func<ActivityExecutionContext, PathString> value) => activity.With(x => x.Url, new CodeExpression<PathString>(value));
-        public static SendHttpRequest WithUrl(this SendHttpRequest activity, Func<PathString> value) => activity.With(x => x.Url, new CodeExpression<PathString>(value));
-        public static SendHttpRequest WithUrl(this SendHttpRequest activity, PathString value) => activity.With(x => x.Url, new CodeExpression<PathString>(value));
+        public static SendHttpRequest WithUrl(this SendHttpRequest activity, IWorkflowExpression<string> value) => activity.With(x => x.Url, value);
+        public static SendHttpRequest WithUrl(this SendHttpRequest activity, Func<ActivityExecutionContext, string> value) => activity.With(x => x.Url, new CodeExpression<string>(value));
+        public static SendHttpRequest WithUrl(this SendHttpRequest activity, Func<string> value) => activity.With(x => x.Url, new CodeExpression<string>(value));
+        public static SendHttpRequest WithUrl(this SendHttpRequest activity, string value) => activity.With(x => x.Url, new CodeExpression<string>(value));
         public static SendHttpRequest WithMethod(this SendHttpRequest activity, string value) => activity.With(x => x.Method, value);
         public static SendHttpRequest WithContent(this SendHttpRequest activity, IWorkflowExpression<string>? value) => activity.With(x => x.Content, value);
         public static SendHttpRequest WithContent(this SendHttpRequest activity, Func<ActivityExecutionContext, string> value) => activity.With(x => x.Content, new CodeExpression<string>(value));
