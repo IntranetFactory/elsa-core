@@ -43,9 +43,9 @@ namespace Elsa.Activities.Http
         /// The URL to invoke. 
         /// </summary>
         [ActivityProperty(Hint = "The URL to send the HTTP request to.")]
-        public IWorkflowExpression<PathString> Url
+        public IWorkflowExpression<string> Url
         {
-            get => GetState<IWorkflowExpression<PathString>>();
+            get => GetState<IWorkflowExpression<string>>();
             set => SetState(value);
         }
 
@@ -78,10 +78,9 @@ namespace Elsa.Activities.Http
         /// The Content Type header to send along with the request body.
         /// </summary>
         [ActivityProperty(
-            Type = ActivityPropertyTypes.Select,
+            Type = ActivityPropertyTypes.Expression,
             Hint = "The content type to send with the request (if applicable)."
         )]
-        [SelectOptions("text/plain", "text/html", "application/json", "application/xml")]
         public IWorkflowExpression<string> ContentType
         {
             get => GetState<IWorkflowExpression<string>>();
