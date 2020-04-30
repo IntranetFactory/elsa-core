@@ -30,15 +30,6 @@ namespace Elsa.Activities.UserTask.Activities
             set => SetState(value);
         }
 
-        [ActivityProperty(
-            Type = ActivityPropertyTypes.Text,
-            Hint = "The name of the variable to store the decision into.")]
-        public string VariableName
-        {
-            get => GetState<string>();
-            set => SetState(value);
-        }
-
         /// <summary>
         /// Only a user or a group of users that belong to this tag will see the activity. 
         /// </summary>
@@ -64,15 +55,7 @@ namespace Elsa.Activities.UserTask.Activities
         protected override IActivityExecutionResult OnResume(ActivityExecutionContext context)
         {
             var userAction = GetUserAction(context);
-
-            // We must return Done(Variable.From(userAction)) since returning Done(userAction) prevents the workflow from continuing to the next activity.
-            //return Done(userAction);
-
-            // We set the variable with specified name so that it can be used in next activities.
-            VariableName = VariableName == "" ? "Decision" : VariableName;
-            context.SetVariable(VariableName, userAction);
-            return Done(Variable.From(userAction));
-
+            return Done(userAction);
         }
 
         private string GetUserAction(ActivityExecutionContext context) => context.Input?.GetValue<string>();
