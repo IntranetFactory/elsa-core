@@ -20,7 +20,7 @@ function loadWorkflow(tenantId, workflowId) {
     xhttp.send();
 }
 
-function createWorkflow(tenantId, workflowName) {
+function createWorkflow(workflowName) {
     var xhttp = new XMLHttpRequest();
 
     xhttp.onreadystatechange = function () {
@@ -36,9 +36,9 @@ function createWorkflow(tenantId, workflowName) {
     };
 
     model = {
-        TenantId: tenantId,
-        Name: workflowName,
-        Json: "{\"activities\":[],\"connections\":[]}"
+        id: null,
+        name: workflowName,
+        workflowModel: JSON.parse("{\"activities\":[],\"connections\":[]}")
     }
 
     xhttp.open("POST", "https://localhost:44332/Elsa/workflow-definition-version/SaveWorkflowDefinition", true);
@@ -46,7 +46,7 @@ function createWorkflow(tenantId, workflowName) {
     xhttp.send(JSON.stringify(model));
 }
 
-function saveWorkflow(tenantId, workflowId) {
+function saveWorkflow(workflowId) {
     var xhttp = new XMLHttpRequest();
 
     xhttp.onreadystatechange = function () {
@@ -58,18 +58,16 @@ function saveWorkflow(tenantId, workflowId) {
     var designerHost = document.getElementById(workflowId);
 
     model = {
-        Id: workflowId,
-        TenantId: tenantId,
-        Json: designerHost.getAttribute("data-workflow"),
-        Name: "Simple Test Workflow"
-    }
+        id: workflowId,
+        workflowModel: JSON.parse(designerHost.getAttribute("data-workflow"))
+    };
 
     xhttp.open("POST", "https://localhost:44332/Elsa/workflow-definition-version/SaveWorkflowDefinition", true);
     xhttp.setRequestHeader("Content-type", "application/json;charset=UTF-8");
     xhttp.send(JSON.stringify(model));
 }
 
-function publishWorkflow(tenantId, workflowId) {
+function publishWorkflow(workflowId) {
     var xhttp = new XMLHttpRequest();
 
     xhttp.onreadystatechange = function () {
@@ -81,10 +79,8 @@ function publishWorkflow(tenantId, workflowId) {
     var designerHost = document.getElementById(workflowId);
 
     model = {
-        Id: workflowId,
-        TenantId: tenantId,
-        Json: designerHost.getAttribute("data-workflow"),
-        Name: "Simple Test Workflow"
+        id: workflowId,
+        workflowModel: JSON.parse(designerHost.getAttribute("data-workflow")),
     }
 
     xhttp.open("POST", "https://localhost:44332/Elsa/workflow-definition-version/PublishWorkflowDefinition", true);

@@ -1,6 +1,7 @@
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Dashboard.Areas.Elsa.ViewModels;
@@ -18,6 +19,7 @@ using Elsa.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Elsa.Dashboard.Areas.Elsa.Controllers
@@ -62,7 +64,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
             foreach (var workflow in workflows)
             {
-                var workflowModel = await CreateWorkflowDefinitionListItemModelAsync(workflow, cancellationToken);
+                var workflowModel = await CreateWorkflowDefinitionListItemModelAsync(tenantId, workflow, cancellationToken);
                 workflowModels.Add(workflowModel);
             }
 
@@ -89,7 +91,6 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 IsDisabled = workflowDefinitionVersion.IsDisabled,
                 Description = workflowDefinitionVersion.Description
             };
-
 
             return View(model);
         }
@@ -157,34 +158,52 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         [HttpPost("SaveWorkflowDefinition")]
-        public async Task<IActionResult> SaveWorkflowDefinition([FromBody]WorkflowDefinitionVersionEditModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> SaveWorkflowDefinition(CancellationToken cancellationToken)
         {
+            int tenantId = GetTenant();
+            string workflowDefinitionJson;
+
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                workflowDefinitionJson = await reader.ReadToEndAsync();
+            }
+
+            string workflowId = JObject.Parse(workflowDefinitionJson)["id"].ToString();
+            WorkflowDefinitionVersionEditModel workflowModel = JsonConvert.DeserializeObject<WorkflowDefinitionVersionEditModel>(workflowDefinitionJson);
             WorkflowDefinitionVersion workflowDefinitionVersion = new WorkflowDefinitionVersion();
 
-            if (model.Id == null)
+            if (workflowId == "")
             {
-                workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(model, workflowDefinitionVersion);
+                workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, workflowModel, workflowDefinitionVersion);
                 workflowDefinitionVersion = await publisher.SaveDraftAsync(workflowDefinitionVersion, cancellationToken);
-                notifier.Notify("Workflow successfully saved as a draft.", NotificationType.Success);
-                await SaveAsync(model, workflowDefinitionVersion, cancellationToken);
+                await SaveAsync(workflowModel, workflowDefinitionVersion, cancellationToken);
                 var workflowJson = CreateWorkflowDesignerJson(workflowDefinitionVersion);
                 return Ok(workflowJson);
             }
             else
             {
-                workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(model.TenantId, model.Id, VersionOptions.Latest, cancellationToken);
-                workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(model, workflowDefinitionVersion);
+                workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, workflowId, VersionOptions.Latest, cancellationToken);
+                workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, workflowModel, workflowDefinitionVersion);
                 await publisher.SaveDraftAsync(workflowDefinitionVersion, cancellationToken);
-                notifier.Notify("Workflow successfully saved as a draft.", NotificationType.Success);
                 return NoContent();
             }
         }
 
         [HttpPost("PublishWorkflowDefinition")]
-        public async Task<IActionResult> PublishWorkflowDefinition([FromBody]WorkflowDefinitionVersionEditModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PublishWorkflowDefinition(CancellationToken cancellationToken)
         {
-            var workflowDefinitionVersion = await publisher.GetDraftAsync(model.TenantId, model.Id, cancellationToken);
-            workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(model, workflowDefinitionVersion);
+            int tenantId = GetTenant();
+            string workflowDefinitionJson;
+
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                workflowDefinitionJson = await reader.ReadToEndAsync();
+            }
+
+            string workflowId = JObject.Parse(workflowDefinitionJson)["id"].ToString();
+            WorkflowDefinitionVersionEditModel workflowModel = JsonConvert.DeserializeObject<WorkflowDefinitionVersionEditModel>(workflowDefinitionJson);
+            var workflowDefinitionVersion = await publisher.GetDraftAsync(tenantId, workflowId, cancellationToken);
+            workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, workflowModel, workflowDefinitionVersion);
             await publisher.PublishAsync(workflowDefinitionVersion, cancellationToken);
             notifier.Notify("Workflow successfully published.", NotificationType.Success);
             return NoContent();
@@ -247,7 +266,9 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             WorkflowDefinitionVersion workflowDefinitionVersion,
             CancellationToken cancellationToken)
         {
-            workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(model, workflowDefinitionVersion);
+            int tenantId = GetTenant();
+            model.WorkflowModel = serializer.Deserialize<WorkflowModel>(model.Json, JsonTokenFormatter.FormatName);
+            workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, model, workflowDefinitionVersion);
 
             var publish = model.SubmitAction == "publish";
 
@@ -292,7 +313,6 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             dynamic workflowData = new
             {
                 Id = workflowDefinitionVersion.DefinitionId,
-                TenantId = workflowDefinitionVersion.TenantId,
                 ActivityDefinitions = activityDefinitions.ToArray(),
                 WorkflowModel = workflowModel
             };
@@ -307,42 +327,51 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         // deserializes workflow posted from view and updates existing workflow definition properties
-        private async Task<WorkflowDefinitionVersion> UpdateExistingDefinitionVersionPropertiesFromModel(WorkflowDefinitionVersionEditModel model, WorkflowDefinitionVersion workflowDefinitionVersion = null)
+        private async Task<WorkflowDefinitionVersion> UpdateExistingDefinitionVersionPropertiesFromModel(int tenantId, WorkflowDefinitionVersionEditModel model, WorkflowDefinitionVersion workflowDefinitionVersion = null)
         {
-            var postedWorkflow = serializer.Deserialize<WorkflowModel>(model.Json, JsonTokenFormatter.FormatName);
+            dynamic workflowModel = model.WorkflowModel;
+            var activities = workflowModel.GetType().GetProperty("Activities").GetValue(workflowModel, null);
+            var connections = workflowModel.GetType().GetProperty("Connections").GetValue(workflowModel, null);
+            
+            workflowDefinitionVersion.Activities.Clear();
 
-            workflowDefinitionVersion.Activities = postedWorkflow.Activities
-                .Select(x => new ActivityDefinition(x.Id, x.TenantId, x.Type, x.State, x.Left, x.Top))
-                .ToList();
+            foreach (var activity in activities)
+            {
+                workflowDefinitionVersion.Activities.Add(new ActivityDefinition(activity.Id, tenantId, activity.Type, activity.State, activity.Left, activity.Top));
+            }
 
             foreach (var activity in workflowDefinitionVersion.Activities)
             {
-                activity.TenantId = model.TenantId;
+                activity.TenantId = tenantId;
             }
 
-            workflowDefinitionVersion.Connections = postedWorkflow.Connections.Select(
-                x => new ConnectionDefinition(x.TenantId, x.SourceActivityId, x.DestinationActivityId, x.Outcome)).ToList();
+            workflowDefinitionVersion.Connections.Clear();
+
+            foreach (var connection in connections)
+            {
+                workflowDefinitionVersion.Connections.Add(new ConnectionDefinition(tenantId, connection.SourceActivityId, connection.DestinationActivityId, connection.Outcome));
+            }
 
             foreach (var connection in workflowDefinitionVersion.Connections)
             {
-                connection.TenantId = model.TenantId;
+                connection.TenantId = tenantId;
             }
 
-            workflowDefinitionVersion.TenantId = model.TenantId;
+            workflowDefinitionVersion.TenantId = tenantId;
             workflowDefinitionVersion.Description = model.Description;
-            workflowDefinitionVersion.Name = model.Name;
+            workflowDefinitionVersion.Name = model.Name == null ? "New workflow" : model.Name;
             workflowDefinitionVersion.IsDisabled = model.IsDisabled;
             workflowDefinitionVersion.IsSingleton = model.IsSingleton;
-
             return workflowDefinitionVersion;
         }
 
         private async Task<WorkflowDefinitionVersionListItemModel> CreateWorkflowDefinitionListItemModelAsync(
+            int? tenantId,
             WorkflowDefinitionVersion workflowDefinitionVersion,
             CancellationToken cancellationToken)
         {
             var instances = await workflowInstanceStore
-                .ListByDefinitionAsync(workflowDefinitionVersion.TenantId, workflowDefinitionVersion.DefinitionId, cancellationToken)
+                .ListByDefinitionAsync(tenantId, workflowDefinitionVersion.DefinitionId, cancellationToken)
                 .ToListAsync();
 
             return new WorkflowDefinitionVersionListItemModel
