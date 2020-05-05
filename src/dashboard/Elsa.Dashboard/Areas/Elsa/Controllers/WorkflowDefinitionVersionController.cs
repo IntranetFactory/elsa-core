@@ -116,6 +116,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 Connections = workflowDefinitionVersion.Connections.Select(x => new ConnectionModel(x)).ToList()
             };
 
+            var nesto = serializer.Serialize(workflowModel, JsonTokenFormatter.FormatName);
+
             var model = new WorkflowDefinitionVersionEditModel
             {
                 Id = workflowDefinitionVersion.DefinitionId,
@@ -168,21 +170,18 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 workflowDefinitionJson = await reader.ReadToEndAsync();
             }
 
-            string workflowId = JObject.Parse(workflowDefinitionJson)["id"].ToString();
-            WorkflowDefinitionVersionEditModel workflowModel = JsonConvert.DeserializeObject<WorkflowDefinitionVersionEditModel>(workflowDefinitionJson);
+            WorkflowDefinitionVersionEditModel workflowModel = serializer.Deserialize<WorkflowDefinitionVersionEditModel>(workflowDefinitionJson, JsonTokenFormatter.FormatName);
             WorkflowDefinitionVersion workflowDefinitionVersion = new WorkflowDefinitionVersion();
 
-            if (workflowId == "")
+            if (workflowModel.Id == null)
             {
-                workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, workflowModel, workflowDefinitionVersion);
-                workflowDefinitionVersion = await publisher.SaveDraftAsync(workflowDefinitionVersion, cancellationToken);
                 await SaveAsync(workflowModel, workflowDefinitionVersion, cancellationToken);
                 var workflowJson = CreateWorkflowDesignerJson(workflowDefinitionVersion);
                 return Ok(workflowJson);
             }
             else
             {
-                workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, workflowId, VersionOptions.Latest, cancellationToken);
+                workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, workflowModel.Id, VersionOptions.Latest, cancellationToken);
                 workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, workflowModel, workflowDefinitionVersion);
                 await publisher.SaveDraftAsync(workflowDefinitionVersion, cancellationToken);
                 return NoContent();
@@ -200,9 +199,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 workflowDefinitionJson = await reader.ReadToEndAsync();
             }
 
-            string workflowId = JObject.Parse(workflowDefinitionJson)["id"].ToString();
-            WorkflowDefinitionVersionEditModel workflowModel = JsonConvert.DeserializeObject<WorkflowDefinitionVersionEditModel>(workflowDefinitionJson);
-            var workflowDefinitionVersion = await publisher.GetDraftAsync(tenantId, workflowId, cancellationToken);
+            WorkflowDefinitionVersionEditModel workflowModel = serializer.Deserialize<WorkflowDefinitionVersionEditModel>(workflowDefinitionJson, JsonTokenFormatter.FormatName);
+            var workflowDefinitionVersion = await publisher.GetDraftAsync(tenantId, workflowModel.Id, cancellationToken);
             workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, workflowModel, workflowDefinitionVersion);
             await publisher.PublishAsync(workflowDefinitionVersion, cancellationToken);
             notifier.Notify("Workflow successfully published.", NotificationType.Success);
@@ -223,7 +221,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return Ok(workflowJson);
         }
 
-        [HttpPost("DeleteWorkflowDefinition")]
+        [HttpDelete("DeleteWorkflowDefinition")]
         public async Task<IActionResult> DeleteWorkflowDefinition(string id)
         {
             int? tenantId = GetTenant();
@@ -267,7 +265,10 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             CancellationToken cancellationToken)
         {
             int tenantId = GetTenant();
-            model.WorkflowModel = serializer.Deserialize<WorkflowModel>(model.Json, JsonTokenFormatter.FormatName);
+
+            if (model.Json != null)
+                model.WorkflowModel = serializer.Deserialize<WorkflowModel>(model.Json, JsonTokenFormatter.FormatName);
+
             workflowDefinitionVersion = await UpdateExistingDefinitionVersionPropertiesFromModel(tenantId, model, workflowDefinitionVersion);
 
             var publish = model.SubmitAction == "publish";
