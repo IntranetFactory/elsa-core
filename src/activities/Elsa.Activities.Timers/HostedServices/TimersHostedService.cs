@@ -39,10 +39,10 @@ namespace Elsa.Activities.Timers.HostedServices
                     {
                         using var scope = serviceProvider.CreateScope();
                         var workflowScheduler = scope.ServiceProvider.GetRequiredService<IWorkflowScheduler>();
-                        // TO DO : inspect if tenantId should be passed here
-                        await workflowScheduler.TriggerWorkflowsAsync(null, nameof(TimerEvent), cancellationToken: stoppingToken);
-                        await workflowScheduler.TriggerWorkflowsAsync(null, nameof(CronEvent), cancellationToken: stoppingToken);
-                        await workflowScheduler.TriggerWorkflowsAsync(null, nameof(InstantEvent), cancellationToken: stoppingToken);
+                        // tenantId is required in order to trigger the correct workflow
+                        await workflowScheduler.TriggerWorkflowsAsync(GetTenant(), nameof(TimerEvent), cancellationToken: stoppingToken);
+                        await workflowScheduler.TriggerWorkflowsAsync(GetTenant(), nameof(CronEvent), cancellationToken: stoppingToken);
+                        await workflowScheduler.TriggerWorkflowsAsync(GetTenant(), nameof(InstantEvent), cancellationToken: stoppingToken);
                     }
                     catch (Exception ex)
                     {
@@ -56,6 +56,11 @@ namespace Elsa.Activities.Timers.HostedServices
 
                 await Task.Delay(options.Value.SweepInterval.ToTimeSpan(), stoppingToken);
             }
+        }
+
+        private int GetTenant()
+        {
+            return 1;
         }
     }
 }

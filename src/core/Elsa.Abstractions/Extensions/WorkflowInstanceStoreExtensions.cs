@@ -30,9 +30,9 @@ namespace Elsa.Extensions
             var tuples = await store.ListByBlockingActivityAsync(tenantId, activityType, correlationId, cancellationToken);
             var query =
                 from item in tuples
-                let workflowInstance = item.WorkflowInstance
-                let blockingActivity = item.BlockingActivity
-                let activityInstance = workflowInstance.Activities.First(x => x.Id == blockingActivity.ActivityId)
+                let workflowInstance = item.Item1
+                let blockingActivity = item.Item2
+                let activityInstance = workflowInstance.Activities.First(x => x.ActivityId == blockingActivity.ActivityId)
                 select (workflowInstance, activityInstance);
 
             if (activityStatePredicate != null)

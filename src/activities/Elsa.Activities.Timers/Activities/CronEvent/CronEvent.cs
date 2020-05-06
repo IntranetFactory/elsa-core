@@ -8,6 +8,7 @@ using Elsa.Services.Models;
 using NCrontab;
 using NodaTime;
 using Elsa.ExpressionTypes;
+using Elsa.Design;
 
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Timers
@@ -31,6 +32,19 @@ namespace Elsa.Activities.Timers
         public IWorkflowExpression<string> CronExpression
         {
             get => GetState<IWorkflowExpression<string>>(() => new LiteralExpression<string>("* * * * *"));
+            set => SetState(value);
+        }
+
+        /// <summary>
+        /// Only a user or a group of users that belong to this tag will see the activity. 
+        /// </summary>
+        [ActivityProperty(
+            Type = ActivityPropertyTypes.Text,
+            Hint = "Only a user or a group of users that belong to this tag will see the activity."
+        )]
+        public string Tag
+        {
+            get => GetState<string>();
             set => SetState(value);
         }
 

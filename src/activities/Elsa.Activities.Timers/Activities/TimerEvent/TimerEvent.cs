@@ -7,6 +7,7 @@ using Elsa.Services;
 using Elsa.Services.Models;
 using NodaTime;
 using Elsa.ExpressionTypes;
+using Elsa.Design;
 
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Timers
@@ -28,6 +29,19 @@ namespace Elsa.Activities.Timers
         public IWorkflowExpression<Duration> Timeout
         {
             get => GetState<IWorkflowExpression<Duration>>(() => new LiteralExpression<Duration>("00:01:00"));
+            set => SetState(value);
+        }
+
+        /// <summary>
+        /// Only a user or a group of users that belong to this tag will see the activity. 
+        /// </summary>
+        [ActivityProperty(
+            Type = ActivityPropertyTypes.Text,
+            Hint = "Only a user or a group of users that belong to this tag will see the activity."
+        )]
+        public string Tag
+        {
+            get => GetState<string>();
             set => SetState(value);
         }
 

@@ -16,6 +16,7 @@ namespace Elsa.Models
         }
         
         public string? Id { get; set; }
+        public string ActivityId { get; set; }
         public int? TenantId { get; set; }
         public string? Type { get; set; }
         public Variables? State { get; set; }
