@@ -24,27 +24,36 @@ export class DefaultActivityHandler {
         this.updateEditor = (activity, formData) => FormUpdater.updateEditor(activity, formData);
         this.getOutcomes = (activity, definition) => {
             let outcomes = [];
+            let lambdaOutcomes = [];
+            let allOutcomes = [];
             if (!!definition) {
                 const lambda = definition.outcomes;
-                if (lambda instanceof Array) {
-                    outcomes = lambda;
-                }
-                else {
-                    const value = eval(lambda);
-                    if (value instanceof Array)
-                        outcomes = value;
-                    else if (value instanceof Function) {
-                        try {
-                            outcomes = value({ activity, definition, state: activity.state });
+                outcomes = lambda;
+                outcomes.forEach(function (outcome) {
+                    if (outcome.indexOf('=>') >= 0) {
+                        const value = eval(outcome);
+                        if (value instanceof Array) {
+                            lambdaOutcomes = value;
                         }
-                        catch (e) {
-                            console.warn(e);
-                            outcomes = [];
+                        else if (value instanceof Function) {
+                            try {
+                                lambdaOutcomes = value({ activity, definition, state: activity.state });
+                            }
+                            catch (e) {
+                                console.warn(e);
+                                lambdaOutcomes = [];
+                            }
                         }
+                        lambdaOutcomes.forEach(function (lambdaOutcome) {
+                            allOutcomes.push(lambdaOutcome);
+                        });
                     }
-                }
+                    else {
+                        allOutcomes.push(outcome);
+                    }
+                });
             }
-            return !!outcomes ? outcomes : [];
+            return !!allOutcomes ? allOutcomes : [];
         };
     }
 }

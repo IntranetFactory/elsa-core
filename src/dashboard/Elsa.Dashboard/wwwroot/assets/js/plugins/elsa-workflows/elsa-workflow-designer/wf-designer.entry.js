@@ -1,7 +1,7 @@
 import { r as registerInstance, h, c as createEvent, d as getElement } from './chunk-25ccd4a5.js';
 import { c as createCommonjsModule, a as commonjsGlobal, b as commonjsRequire, d as deepClone } from './chunk-b68c6ae2.js';
 import { A as ActivityDisplayMode } from './chunk-4e91c3fe.js';
-import { A as ActivityManager } from './chunk-490e3781.js';
+import { A as ActivityManager } from './chunk-90c7a796.js';
 
 var jsplumb = createCommonjsModule(function (module, exports) {
 /**

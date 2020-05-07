@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Elsa.Attributes;
 using Elsa.Results;
 using Elsa.Services;
@@ -11,7 +11,7 @@ namespace Elsa.Activities.ControlFlow
         Category = "Control Flow",
         Description = "Fork workflow execution into multiple branches.",
         Icon = "fas fa-code-branch fa-rotate-180",
-        Outcomes = new[] { "x => x.state.branches" })]
+        Outcomes = new[] { "x => x.state.branches.value" })]
     public class Fork : Activity
     {
         [ActivityProperty(

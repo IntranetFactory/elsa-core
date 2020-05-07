@@ -16,7 +16,7 @@ namespace Elsa.Activities.UserTask.Activities
     [ActivityDefinition(
         Category = "User Tasks",
         Description = "Triggers when a user action is received.",
-        Outcomes = new[] { OutcomeNames.Done, "x => x.state.actions" }
+        Outcomes = new[] { OutcomeNames.Done, "x => x.state.actions.value" }
     )]
     public class UserTask : Activity
     {

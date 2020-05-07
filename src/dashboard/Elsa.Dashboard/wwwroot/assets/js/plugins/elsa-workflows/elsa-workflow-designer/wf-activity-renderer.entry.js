@@ -1,7 +1,7 @@
 import { r as registerInstance, h, H as Host } from './chunk-25ccd4a5.js';
 import { D as DisplayManager } from './chunk-5dfd54dd.js';
 import { A as ActivityDisplayMode } from './chunk-4e91c3fe.js';
-import { A as ActivityManager } from './chunk-490e3781.js';
+import { A as ActivityManager } from './chunk-90c7a796.js';
 
 class ActivityRenderer {
     constructor(hostRef) {

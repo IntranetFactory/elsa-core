@@ -31,29 +31,40 @@ export class DefaultActivityHandler implements ActivityHandler {
 
   getOutcomes = (activity: Activity, definition: ActivityDefinition): Array<string> => {
     let outcomes = [];
+    let lambdaOutcomes = [];
+    let allOutcomes = [];
 
     if (!!definition) {
       const lambda = definition.outcomes;
+      outcomes = lambda as Array<string>;
 
-      if (lambda instanceof Array) {
-        outcomes = lambda as Array<string>;
-      } else {
-        const value = eval(lambda);
+      outcomes.forEach(function(outcome) {
+        if(outcome.indexOf('=>') >= 0)
+        {
+          const value = eval(outcome);
 
-        if (value instanceof Array)
-          outcomes = value;
-
-        else if (value instanceof Function) {
-          try {
-            outcomes = value({ activity, definition, state: activity.state });
-          } catch (e) {
-            console.warn(e);
-            outcomes = [];
+          if(value instanceof Array)
+          {
+            lambdaOutcomes = value;
+          } else if(value instanceof Function) {
+            try {
+              lambdaOutcomes = value({ activity, definition, state: activity.state });
+            } catch (e) {
+              console.warn(e);
+              lambdaOutcomes = [];
+            }
           }
+
+          lambdaOutcomes.forEach(function(lambdaOutcome) {
+            allOutcomes.push(lambdaOutcome);
+          });
+        } else {
+          allOutcomes.push(outcome);
         }
-      }
+      });
+
     }
 
-    return !!outcomes ? outcomes : [];
+    return !!allOutcomes ? allOutcomes : [];
   }
 }
