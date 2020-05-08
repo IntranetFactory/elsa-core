@@ -29,7 +29,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var existingEntity = await dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .FirstOrDefaultAsync(x => x.TenantId == instance.TenantId && x.InstanceId == instance.Id, cancellationToken: cancellationToken);
 
             if (existingEntity == null)
@@ -43,9 +43,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             else
             {
                 dbContext.WorkflowInstanceTasks.RemoveRange(existingEntity.WorkflowInstanceTasks);
-                dbContext.BlockingActivities.RemoveRange(existingEntity.BlockingActivities);
                 existingEntity.WorkflowInstanceTasks.Clear();
-                existingEntity.BlockingActivities.Clear();
 
                 var entity = mapper.Map(instance, existingEntity);
 
@@ -63,7 +61,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var document = await dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.InstanceId == id, cancellationToken);
 
             return Map(document);
@@ -77,7 +74,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var document = await dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.CorrelationId == correlationId)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -92,7 +88,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var documents = await dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
@@ -105,13 +100,12 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var documents = await dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
             return Map(documents);
         }
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceTask)>> ListByBlockingActivityTagAsync(
             int? tenantId, 
             string activityType,
             string tag,
@@ -121,7 +115,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var query = dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .AsQueryable();
 
             query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
@@ -129,7 +122,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag && y.TenantId == tenantId));
+            query = query.Where(x => x.WorkflowInstanceTasks.Any(y => y.Type == activityType && y.Tag == tag && y.TenantId == tenantId));
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var documents = await query.ToListAsync(cancellationToken);
@@ -138,7 +131,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return instances.GetBlockingActivities(activityType);
         }
 
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceTask)>> ListByBlockingActivityTagAsync(
             int? tenantId,
             string tag,
             string correlationId = default,
@@ -147,7 +140,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var query = dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .AsQueryable();
 
             query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
@@ -155,7 +147,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.BlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId));
+            query = query.Where(x => x.WorkflowInstanceTasks.Any(y => y.Tag == tag && y.TenantId == tenantId));
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var documents = await query.ToListAsync(cancellationToken);
@@ -164,7 +156,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return instances.GetBlockingActivities();
         }
 
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceTask)>> ListByBlockingActivityAsync(
             int? tenantId, 
             string activityType,
             string correlationId = default,
@@ -173,7 +165,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var query = dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .AsQueryable();
 
             query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
@@ -181,7 +172,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.TenantId == tenantId));
+            query = query.Where(x => x.WorkflowInstanceTasks.Any(y => y.Type == activityType && y.TenantId == tenantId));
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var documents = await query.ToListAsync(cancellationToken);
@@ -199,7 +190,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var documents = await dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId && x.Status == status)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
@@ -215,7 +205,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var documents = await dbContext
                 .WorkflowInstances
                 .Include(x => x.WorkflowInstanceTasks)
-                .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.Status == status)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
@@ -234,12 +223,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .Where(x => x.TenantId == tenantId && x.WorkflowInstance.InstanceId == id)
                 .ToListAsync(cancellationToken);
 
-            var blockingActivityRecords = await dbContext.BlockingActivities
-                .Where(x => x.TenantId == tenantId && x.WorkflowInstance.InstanceId == id)
-                .ToListAsync(cancellationToken);
-            
             dbContext.WorkflowInstanceTasks.RemoveRange(workflowInstanceTaskRecords);
-            dbContext.BlockingActivities.RemoveRange(blockingActivityRecords);
             dbContext.WorkflowInstances.Remove(record);
             
             await dbContext.SaveChangesAsync(cancellationToken);

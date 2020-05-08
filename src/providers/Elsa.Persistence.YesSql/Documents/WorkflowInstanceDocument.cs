@@ -21,7 +21,7 @@ namespace Elsa.Persistence.YesSql.Documents
         public IDictionary<string, WorkflowInstanceTask> WorkflowInstanceTasks { get; set; } = new Dictionary<string, WorkflowInstanceTask>();
         public Variables Variables { get; set; }
         public Variables Input { get; set; }
-        public HashSet<BlockingActivity> BlockingActivities { get; set; }
+        public HashSet<WorkflowInstanceTask> BlockingActivities { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
         public WorkflowFault Fault { get; set; }
         public Stack<string> ScheduledActivities { get; set; }

@@ -49,9 +49,9 @@ namespace Elsa.Persistence.YesSql.Indexes
                         .Select(
                             activity => new WorkflowInstanceBlockingActivitiesIndex
                             {
-                                ActivityId = activity.ActivityId,
+                                ActivityId = activity.Id,
                                 TenantId = activity.TenantId,
-                                ActivityType = activity.ActivityType,
+                                ActivityType = activity.Type,
                                 Tag = activity.Tag,
                                 CorrelationId = workflowInstance.CorrelationId,
                                 ProcessStatus = workflowInstance.Status,

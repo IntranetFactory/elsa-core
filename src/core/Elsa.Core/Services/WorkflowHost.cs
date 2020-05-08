@@ -198,9 +198,9 @@ namespace Elsa.Services
         private WorkflowExecutionContext CreateWorkflowExecutionContext(Workflow workflow, WorkflowInstance workflowInstance)
         {
             var activityLookup = workflow.Activities.ToDictionary(x => x.Id);
-            var workflowInstanceTaskLookup = workflowInstance.WorkflowInstanceTasks.ToDictionary(x => x.ActivityId);
+            var workflowInstanceTaskLookup = workflowInstance.WorkflowInstanceTasks.ToDictionary(x => x.Id);
             var scheduledActivities = new Stack<ScheduledActivity>(workflowInstance.ScheduledActivities.Reverse().Select(x => CreateScheduledActivity(x, activityLookup)));
-            var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.ActivityId]));
+            var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.Id]));
             var variables = workflowInstance.Variables;
             var status = workflowInstance.Status;
             var persistenceBehavior = workflow.PersistenceBehavior;

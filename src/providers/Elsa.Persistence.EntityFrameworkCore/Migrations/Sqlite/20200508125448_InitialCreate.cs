@@ -77,29 +77,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateTable(
-                name: "BlockingActivities",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TenantId = table.Column<int>(nullable: true),
-                    WorkflowInstanceId = table.Column<int>(nullable: false),
-                    ActivityId = table.Column<string>(nullable: false),
-                    ActivityType = table.Column<string>(nullable: false),
-                    Tag = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BlockingActivities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BlockingActivities_WorkflowInstances_WorkflowInstanceId",
-                        column: x => x.WorkflowInstanceId,
-                        principalTable: "WorkflowInstances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ScheduledActivityEntity",
                 columns: table => new
                 {
@@ -200,11 +177,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 column: "WorkflowDefinitionVersionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BlockingActivities_WorkflowInstanceId",
-                table: "BlockingActivities",
-                column: "WorkflowInstanceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ConnectionDefinitions_WorkflowDefinitionVersionId",
                 table: "ConnectionDefinitions",
                 column: "WorkflowDefinitionVersionId");
@@ -229,9 +201,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
         {
             migrationBuilder.DropTable(
                 name: "ActivityDefinitions");
-
-            migrationBuilder.DropTable(
-                name: "BlockingActivities");
 
             migrationBuilder.DropTable(
                 name: "ConnectionDefinitions");

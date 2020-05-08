@@ -141,8 +141,8 @@ namespace Elsa.Services.Models
         {
             workflowInstance.Variables = Variables;
             workflowInstance.ScheduledActivities = new Stack<Elsa.Models.ScheduledActivity>(ScheduledActivities.Select(x => new Elsa.Models.ScheduledActivity(x.Activity.Id, workflowInstance.TenantId, x.Input)));
-            workflowInstance.WorkflowInstanceTasks = Activities.Select(x => new WorkflowInstanceTask(x.Id, workflowInstance.TenantId, x.Type, x.State, x.Output)).ToList();
-            workflowInstance.BlockingActivities = new HashSet<BlockingActivity>(BlockingActivities.Select(x => new BlockingActivity(x.Id, workflowInstance.TenantId, x.Type, x.Tag)), new BlockingActivityEqualityComparer());
+            workflowInstance.WorkflowInstanceTasks = Activities.Select(x => new WorkflowInstanceTask(x.Id, workflowInstance.TenantId, x.Type, x.Tag, x.State, x.Output)).ToList();
+            workflowInstance.BlockingActivities = new HashSet<WorkflowInstanceTask>(BlockingActivities.Select(x => new WorkflowInstanceTask(x.Id, workflowInstance.TenantId, x.Type, x.Tag, x.State, x.Output)), new BlockingActivityEqualityComparer());
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;
             workflowInstance.Output = Output;
@@ -152,7 +152,7 @@ namespace Elsa.Services.Models
             {
                 foreach(var activity in workflowInstance.WorkflowInstanceTasks)
                 {
-                    if(blockingActivity.ActivityId == activity.Id)
+                    if(blockingActivity.Id == activity.Id)
                     {
                         if(activity.State["tag"].Value != null)
                         {

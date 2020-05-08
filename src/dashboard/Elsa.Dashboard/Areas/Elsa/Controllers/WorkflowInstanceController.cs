@@ -193,7 +193,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             }
             else
             {
-                var blockingActivityId = workflowInstance.BlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
+                var blockingActivityId = workflowInstance.BlockingActivities.Select(x => x.Id).FirstOrDefault();
                 await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, decision);
                 return Ok();
             }
@@ -209,7 +209,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             ActivityDefinition activityDefinition,
             WorkflowInstance workflowInstance)
         {
-            var isBlocking = workflowInstance.BlockingActivities.Any(x => x.ActivityId == activityDefinition.Id);
+            var isBlocking = workflowInstance.BlockingActivities.Any(x => x.Id == activityDefinition.Id);
             var logEntry = workflowInstance.ExecutionLog.OrderByDescending(x => x.Timestamp)
                 .FirstOrDefault(x => x.ActivityId == activityDefinition.Id);
             var isExecuted = logEntry != null;

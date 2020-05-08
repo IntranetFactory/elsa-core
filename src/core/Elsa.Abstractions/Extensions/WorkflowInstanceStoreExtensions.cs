@@ -32,7 +32,7 @@ namespace Elsa.Extensions
                 from item in tuples
                 let workflowInstance = item.Item1
                 let blockingActivity = item.Item2
-                let workflowInstanceTask = workflowInstance.WorkflowInstanceTasks.First(x => x.ActivityId == blockingActivity.ActivityId)
+                let workflowInstanceTask = workflowInstance.WorkflowInstanceTasks.First(x => x.Id == blockingActivity.Id)
                 select (workflowInstance, workflowInstanceTask);
 
             if (activityStatePredicate != null)

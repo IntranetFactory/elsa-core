@@ -117,7 +117,7 @@ namespace Elsa.Services
             var tuples = await workflowInstanceStore.ListByBlockingActivityAsync(tenantId, activityType, correlationId, activityStatePredicate, cancellationToken);
 
             foreach (var (workflowInstance, blockingActivity) in tuples) 
-                await ScheduleWorkflowAsync(workflowInstance.TenantId, workflowInstance.Id, blockingActivity.ActivityId, input, cancellationToken);
+                await ScheduleWorkflowAsync(workflowInstance.TenantId, workflowInstance.Id, blockingActivity.Id, input, cancellationToken);
         }
 
         private async Task ScheduleWorkflowAsync(Workflow workflow, IActivity activity, object? input, string? correlationId, CancellationToken cancellationToken)
@@ -159,7 +159,7 @@ namespace Elsa.Services
             var suspendedInstances = await workflowInstanceStore.ListByStatusAsync(workflow.TenantId, workflow.DefinitionId, WorkflowStatus.Suspended, cancellationToken).ToListAsync();
             var idleInstances = await workflowInstanceStore.ListByStatusAsync(workflow.TenantId, workflow.DefinitionId, WorkflowStatus.Idle, cancellationToken);
             var startActivities = workflow.GetStartActivities().Select(x => x.Id).ToList();
-            var startedInstances = suspendedInstances.Where(x => x.BlockingActivities.Any(y => startActivities.Contains(y.ActivityId))).ToList();
+            var startedInstances = suspendedInstances.Where(x => x.BlockingActivities.Any(y => startActivities.Contains(y.Id))).ToList();
 
             return idleInstances.Concat(startedInstances);
         }

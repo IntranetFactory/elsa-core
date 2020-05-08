@@ -3,9 +3,9 @@ using Elsa.Models;
 
 namespace Elsa.Comparers
 {
-    public class BlockingActivityEqualityComparer : IEqualityComparer<BlockingActivity>
+    public class BlockingActivityEqualityComparer : IEqualityComparer<WorkflowInstanceTask>
     {
-        public bool Equals(BlockingActivity x, BlockingActivity y) => x.ActivityId.Equals(y.ActivityId);
-        public int GetHashCode(BlockingActivity obj) => obj.ActivityId.GetHashCode();
+        public bool Equals(WorkflowInstanceTask x, WorkflowInstanceTask y) => x.Id.Equals(y.Id);
+        public int GetHashCode(WorkflowInstanceTask obj) => obj.Id.GetHashCode();
     }
 }

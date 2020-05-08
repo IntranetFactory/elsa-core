@@ -53,7 +53,7 @@ namespace Elsa.Persistence.DocumentDb.Documents
         [JsonProperty(PropertyName = "input")] public Variable? Output { get; set; }
 
         [JsonProperty(PropertyName = "blockingActivities")]
-        public HashSet<BlockingActivity> BlockingActivities { get; set; }
+        public HashSet<WorkflowInstanceTask> BlockingActivities { get; set; }
 
         [JsonProperty(PropertyName = "scheduledActivities")]
         public Stack<string> ScheduledActivities { get; set; }
