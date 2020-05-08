@@ -64,14 +64,10 @@ namespace Elsa.Activities.UserTask.Activities
         protected override IActivityExecutionResult OnResume(ActivityExecutionContext context)
         {
             var userAction = GetUserAction(context);
-
-            // we must return Done(Variable.From(userAction)) since returning Done(userAction) prevents the workflow from continuing.
-            //return Done(userAction);
-
             // We set the variable with specified name so that it can be used in next activities.
             VariableName = VariableName == "" ? "Decision" : VariableName;
             context.SetVariable(VariableName, userAction);
-            return Done(Variable.From(userAction));
+            return Done(userAction);
         }
 
         private string GetUserAction(ActivityExecutionContext context) => context.Input?.GetValue<string>();

@@ -15,6 +15,7 @@ using Elsa.Results;
 using Elsa.Services;
 using Elsa.Services.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using HttpRequestHeaders = Elsa.Activities.Http.Models.HttpRequestHeaders;
 
 // ReSharper disable once CheckNamespace
@@ -155,7 +156,11 @@ namespace Elsa.Activities.Http
             var outcomes = new List<string> { OutcomeNames.Done, statusOutcome };
 
             if (!isSupportedStatusCode)
+            {
                 outcomes.Add("UnSupportedStatusCode");
+                LocalizedString message = new LocalizedString("Error", "Status code " + statusCode.ToString() + ": " + response.ReasonPhrase.ToString().ToLower());
+                return Fault(message);
+            }
 
             return Done(outcomes, responseModel);
         }
