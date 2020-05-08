@@ -198,7 +198,7 @@ namespace Elsa.Services
         private WorkflowExecutionContext CreateWorkflowExecutionContext(Workflow workflow, WorkflowInstance workflowInstance)
         {
             var activityLookup = workflow.Activities.ToDictionary(x => x.Id);
-            var activityInstanceLookup = workflowInstance.Activities.ToDictionary(x => x.ActivityId);
+            var workflowInstanceTaskLookup = workflowInstance.WorkflowInstanceTasks.ToDictionary(x => x.ActivityId);
             var scheduledActivities = new Stack<ScheduledActivity>(workflowInstance.ScheduledActivities.Reverse().Select(x => CreateScheduledActivity(x, activityLookup)));
             var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.ActivityId]));
             var variables = workflowInstance.Variables;
@@ -207,12 +207,12 @@ namespace Elsa.Services
 
             foreach (var activity in workflow.Activities)
             {
-                if (!activityInstanceLookup.ContainsKey(activity.Id))
+                if (!workflowInstanceTaskLookup.ContainsKey(activity.Id))
                     continue;
 
-                var activityInstance = activityInstanceLookup[activity.Id];
-                activity.State = activityInstance.State;
-                activity.Output = activityInstance.Output;
+                var workflowInstanceTask = workflowInstanceTaskLookup[activity.Id];
+                activity.State = workflowInstanceTask.State;
+                activity.Output = workflowInstanceTask.Output;
             }
 
             return CreateWorkflowExecutionContext(

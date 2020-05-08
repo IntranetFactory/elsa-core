@@ -18,7 +18,7 @@ namespace Elsa.Persistence.YesSql.Documents
         public DateTime? FinishedAt { get; set; }
         public DateTime? FaultedAt { get; set; }
         public DateTime? AbortedAt { get; set; }
-        public IDictionary<string, ActivityInstance> Activities { get; set; } = new Dictionary<string, ActivityInstance>();
+        public IDictionary<string, WorkflowInstanceTask> WorkflowInstanceTasks { get; set; } = new Dictionary<string, WorkflowInstanceTask>();
         public Variables Variables { get; set; }
         public Variables Input { get; set; }
         public HashSet<BlockingActivity> BlockingActivities { get; set; }

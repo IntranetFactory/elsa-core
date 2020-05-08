@@ -46,11 +46,11 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
                 .ForCtorParam("id", p => p.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.Id, d => d.MapFrom(s => s.ActivityId));
 
-            CreateMap<ActivityInstance, ActivityInstanceEntity>()
+            CreateMap<WorkflowInstanceTask, WorkflowInstanceTaskEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.Id));
 
-            CreateMap<ActivityInstanceEntity, ActivityInstance>().ForMember(d => d.Id, d => d.MapFrom(s => s.ActivityId));
+            CreateMap<WorkflowInstanceTaskEntity, WorkflowInstanceTask>().ForMember(d => d.Id, d => d.MapFrom(s => s.ActivityId));
             CreateMap<BlockingActivity, BlockingActivityEntity>().ReverseMap();
             CreateMap<ConnectionDefinition, ConnectionDefinitionEntity>().ReverseMap();
         }

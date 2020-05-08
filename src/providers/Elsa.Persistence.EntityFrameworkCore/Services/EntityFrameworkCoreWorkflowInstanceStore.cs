@@ -28,7 +28,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var existingEntity = await dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .FirstOrDefaultAsync(x => x.TenantId == instance.TenantId && x.InstanceId == instance.Id, cancellationToken: cancellationToken);
 
@@ -42,9 +42,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             }
             else
             {
-                dbContext.ActivityInstances.RemoveRange(existingEntity.Activities);
+                dbContext.WorkflowInstanceTasks.RemoveRange(existingEntity.WorkflowInstanceTasks);
                 dbContext.BlockingActivities.RemoveRange(existingEntity.BlockingActivities);
-                existingEntity.Activities.Clear();
+                existingEntity.WorkflowInstanceTasks.Clear();
                 existingEntity.BlockingActivities.Clear();
 
                 var entity = mapper.Map(instance, existingEntity);
@@ -62,7 +62,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var document = await dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.InstanceId == id, cancellationToken);
 
@@ -76,7 +76,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var document = await dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.CorrelationId == correlationId)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -91,7 +91,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var documents = await dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId)
                 .OrderByDescending(x => x.CreatedAt)
@@ -104,7 +104,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var documents = await dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId)
                 .OrderByDescending(x => x.CreatedAt)
@@ -120,7 +120,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var query = dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .AsQueryable();
 
@@ -146,7 +146,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var query = dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .AsQueryable();
 
@@ -172,7 +172,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var query = dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .AsQueryable();
 
@@ -198,7 +198,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var documents = await dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.DefinitionId == definitionId && x.Status == status)
                 .OrderByDescending(x => x.CreatedAt)
@@ -214,7 +214,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var documents = await dbContext
                 .WorkflowInstances
-                .Include(x => x.Activities)
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.BlockingActivities)
                 .Where(x => x.TenantId == tenantId && x.Status == status)
                 .OrderByDescending(x => x.CreatedAt)
@@ -230,7 +230,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             if (record == null)
                 return;
 
-            var activityInstanceRecords = await dbContext.ActivityInstances
+            var workflowInstanceTaskRecords = await dbContext.WorkflowInstanceTasks
                 .Where(x => x.TenantId == tenantId && x.WorkflowInstance.InstanceId == id)
                 .ToListAsync(cancellationToken);
 
@@ -238,7 +238,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .Where(x => x.TenantId == tenantId && x.WorkflowInstance.InstanceId == id)
                 .ToListAsync(cancellationToken);
             
-            dbContext.ActivityInstances.RemoveRange(activityInstanceRecords);
+            dbContext.WorkflowInstanceTasks.RemoveRange(workflowInstanceTaskRecords);
             dbContext.BlockingActivities.RemoveRange(blockingActivityRecords);
             dbContext.WorkflowInstances.Remove(record);
             

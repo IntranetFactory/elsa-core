@@ -11,7 +11,7 @@ namespace Elsa.Extensions
 {
     public static class WorkflowInstanceStoreExtensions
     {
-        public static Task<IEnumerable<(WorkflowInstance WorkflowInstance, ActivityInstance BlockingActivity)>> ListByBlockingActivityAsync<TActivity>(
+        public static Task<IEnumerable<(WorkflowInstance WorkflowInstance, WorkflowInstanceTask blockingWorkflowInstanceTask)>> ListByBlockingActivityAsync<TActivity>(
             this IWorkflowInstanceStore store,
             int? tenantId, 
             string? correlationId = default,
@@ -19,7 +19,7 @@ namespace Elsa.Extensions
             CancellationToken cancellationToken = default) where TActivity : IActivity =>
             store.ListByBlockingActivityAsync(tenantId, typeof(TActivity).Name, correlationId, activityStatePredicate, cancellationToken);
 
-        public static async Task<IEnumerable<(WorkflowInstance WorkflowInstance, ActivityInstance BLockingActivity)>> ListByBlockingActivityAsync(
+        public static async Task<IEnumerable<(WorkflowInstance WorkflowInstance, WorkflowInstanceTask blockingWorkflowInstanceTask)>> ListByBlockingActivityAsync(
             this IWorkflowInstanceStore store,
             int? tenantId, 
             string activityType,
@@ -32,12 +32,12 @@ namespace Elsa.Extensions
                 from item in tuples
                 let workflowInstance = item.Item1
                 let blockingActivity = item.Item2
-                let activityInstance = workflowInstance.Activities.First(x => x.ActivityId == blockingActivity.ActivityId)
-                select (workflowInstance, activityInstance);
+                let workflowInstanceTask = workflowInstance.WorkflowInstanceTasks.First(x => x.ActivityId == blockingActivity.ActivityId)
+                select (workflowInstance, workflowInstanceTask);
 
             if (activityStatePredicate != null)
             {
-                query = query.Where(tuple => activityStatePredicate(tuple.activityInstance.State));
+                query = query.Where(tuple => activityStatePredicate(tuple.workflowInstanceTask.State));
             }
 
             return query;

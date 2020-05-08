@@ -139,7 +139,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionVersion.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
-            var activityInstanceRecords = await dbContext.ActivityInstances
+            var workflowInstanceTaskRecords = await dbContext.WorkflowInstanceTasks
                 .Where(x => x.TenantId == tenantId && x.WorkflowInstance.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
@@ -154,7 +154,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             dbContext.WorkflowDefinitions.RemoveRange(definitionRecords);
             dbContext.ActivityDefinitions.RemoveRange(activityDefinitionRecords);
             dbContext.ConnectionDefinitions.RemoveRange(connectionRecords);
-            dbContext.ActivityInstances.RemoveRange(activityInstanceRecords);
+            dbContext.WorkflowInstanceTasks.RemoveRange(workflowInstanceTaskRecords);
             dbContext.BlockingActivities.RemoveRange(blockingActivityRecords);
 
             await dbContext.SaveChangesAsync(cancellationToken);

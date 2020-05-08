@@ -9,7 +9,7 @@ namespace Elsa.Models
         public WorkflowInstance()
         {
             Variables = new Variables();
-            Activities = new List<ActivityInstance>();
+            WorkflowInstanceTasks = new List<WorkflowInstanceTask>();
             BlockingActivities = new HashSet<BlockingActivity>(new BlockingActivityEqualityComparer());
             ExecutionLog = new List<ExecutionLogEntry>();
             ScheduledActivities = new Stack<ScheduledActivity>();
@@ -32,7 +32,7 @@ namespace Elsa.Models
         // Variables? Input is inserted because of mapping problems and until we figure out what Output is for.
         public Variables? Input { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
-        public ICollection<ActivityInstance> Activities { get; set; }
+        public ICollection<WorkflowInstanceTask> WorkflowInstanceTasks { get; set; }
         public HashSet<BlockingActivity> BlockingActivities { get; set; }
         public Stack<ScheduledActivity> ScheduledActivities { get; set; }
 

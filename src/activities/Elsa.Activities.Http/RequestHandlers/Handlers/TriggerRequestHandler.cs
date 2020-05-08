@@ -63,11 +63,11 @@ namespace Elsa.Activities.Http.RequestHandlers.Handlers
                 : new EmptyResult();
         }
 
-        private IEnumerable<(WorkflowInstance WorkflowInstance, ActivityInstance BlockingActivity)> Filter(
-            IEnumerable<(WorkflowInstance WorkflowInstance, ActivityInstance BlockingActivity)> items,
+        private IEnumerable<(WorkflowInstance WorkflowInstance, WorkflowInstanceTask blockingWorkflowInstanceTask)> Filter(
+            IEnumerable<(WorkflowInstance WorkflowInstance, WorkflowInstanceTask blockingWorkflowInstanceTask)> items,
             PathString path,
             string method) =>
-            items.Where(x => IsMatch(x.BlockingActivity.State, path, method));
+            items.Where(x => IsMatch(x.blockingWorkflowInstanceTask.State, path, method));
 
         private IEnumerable<(Workflow Workflow, IActivity Activity)> Filter(
             IEnumerable<(Workflow Workflow, IActivity Activity)> items,
@@ -94,13 +94,13 @@ namespace Elsa.Activities.Http.RequestHandlers.Handlers
             }
         }
 
-        private async Task InvokeWorkflowsToResumeAsync(IEnumerable<(WorkflowInstance, ActivityInstance)> items)
+        private async Task InvokeWorkflowsToResumeAsync(IEnumerable<(WorkflowInstance, WorkflowInstanceTask)> items)
         {
-            foreach (var (workflowInstance, activity) in items)
+            foreach (var (workflowInstance, workflowInstanceTask) in items)
             {
                 await workflowHost.RunWorkflowInstanceAsync(
                     workflowInstance,
-                    activity.Id,
+                    workflowInstanceTask.Id,
                     cancellationToken: cancellationToken);
             }
         }

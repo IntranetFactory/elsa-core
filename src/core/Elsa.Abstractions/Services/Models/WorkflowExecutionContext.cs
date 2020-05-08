@@ -141,7 +141,7 @@ namespace Elsa.Services.Models
         {
             workflowInstance.Variables = Variables;
             workflowInstance.ScheduledActivities = new Stack<Elsa.Models.ScheduledActivity>(ScheduledActivities.Select(x => new Elsa.Models.ScheduledActivity(x.Activity.Id, workflowInstance.TenantId, x.Input)));
-            workflowInstance.Activities = Activities.Select(x => new ActivityInstance(x.Id, workflowInstance.TenantId, x.Type, x.State, x.Output)).ToList();
+            workflowInstance.WorkflowInstanceTasks = Activities.Select(x => new WorkflowInstanceTask(x.Id, workflowInstance.TenantId, x.Type, x.State, x.Output)).ToList();
             workflowInstance.BlockingActivities = new HashSet<BlockingActivity>(BlockingActivities.Select(x => new BlockingActivity(x.Id, workflowInstance.TenantId, x.Type, x.Tag)), new BlockingActivityEqualityComparer());
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;
@@ -150,7 +150,7 @@ namespace Elsa.Services.Models
             // Add tags to blocking activities when instantiating a workflow
             foreach(var blockingActivity in workflowInstance.BlockingActivities)
             {
-                foreach(var activity in workflowInstance.Activities)
+                foreach(var activity in workflowInstance.WorkflowInstanceTasks)
                 {
                     if(blockingActivity.ActivityId == activity.Id)
                     {
