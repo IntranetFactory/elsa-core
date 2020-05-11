@@ -2,6 +2,7 @@ using Elsa.Models;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Entities
 {
+    // 'task' branch change
     public class ActivityInstanceEntity
     {
         public int Id { get; set; }
