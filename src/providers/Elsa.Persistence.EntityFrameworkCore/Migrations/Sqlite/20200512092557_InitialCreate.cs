@@ -100,28 +100,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateTable(
-                name: "ScheduledActivityEntity",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TenantId = table.Column<int>(nullable: true),
-                    WorkflowInstanceId = table.Column<int>(nullable: false),
-                    ActivityId = table.Column<string>(nullable: false),
-                    Input = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ScheduledActivityEntity", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ScheduledActivityEntity_WorkflowInstances_WorkflowInstanceId",
-                        column: x => x.WorkflowInstanceId,
-                        principalTable: "WorkflowInstances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ActivityDefinitions",
                 columns: table => new
                 {
@@ -186,11 +164,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 column: "WorkflowDefinitionVersionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScheduledActivityEntity_WorkflowInstanceId",
-                table: "ScheduledActivityEntity",
-                column: "WorkflowInstanceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_WorkflowDefinitionVersions_DefinitionId",
                 table: "WorkflowDefinitionVersions",
                 column: "DefinitionId");
@@ -208,13 +181,10 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 name: "ConnectionDefinitions");
 
             migrationBuilder.DropTable(
-                name: "ScheduledActivityEntity");
+                name: "WorkflowInstances");
 
             migrationBuilder.DropTable(
                 name: "WorkflowDefinitionVersions");
-
-            migrationBuilder.DropTable(
-                name: "WorkflowInstances");
 
             migrationBuilder.DropTable(
                 name: "WorkflowDefinitions");

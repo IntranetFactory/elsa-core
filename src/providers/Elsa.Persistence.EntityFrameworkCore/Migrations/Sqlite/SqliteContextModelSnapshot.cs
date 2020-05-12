@@ -119,32 +119,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.ToTable("ConnectionDefinitions");
                 });
 
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ScheduledActivityEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ActivityId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Input")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("TenantId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("WorkflowInstanceId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorkflowInstanceId");
-
-                    b.ToTable("ScheduledActivityEntity");
-                });
-
             modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -293,15 +267,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionVersionEntity", "WorkflowDefinitionVersion")
                         .WithMany("Connections")
                         .HasForeignKey("WorkflowDefinitionVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ScheduledActivityEntity", b =>
-                {
-                    b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceEntity", "WorkflowInstance")
-                        .WithMany("ScheduledActivities")
-                        .HasForeignKey("WorkflowInstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

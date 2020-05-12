@@ -116,8 +116,6 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 Connections = workflowDefinitionVersion.Connections.Select(x => new ConnectionModel(x)).ToList()
             };
 
-            var nesto = serializer.Serialize(workflowModel, JsonTokenFormatter.FormatName);
-
             var model = new WorkflowDefinitionVersionEditModel
             {
                 Id = workflowDefinitionVersion.DefinitionId,

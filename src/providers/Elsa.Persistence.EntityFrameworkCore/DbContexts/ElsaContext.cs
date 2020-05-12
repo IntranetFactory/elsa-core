@@ -52,7 +52,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             ConfigureWorkflowInstance(modelBuilder);
             ConfigureActivityDefinition(modelBuilder);
             ConfigureBlockingActivity(modelBuilder);
-            ConfigureScheduledActivity(modelBuilder);
             ConfigureConnectionDefinition(modelBuilder);
         }
 
@@ -83,7 +82,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
                 // Apply the custom mapping to support the non-default schema to the types in used in this context.
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<ActivityDefinitionEntity>(DbContextCustomSchema));
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<BlockingActivityEntity>(DbContextCustomSchema));
-                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<ScheduledActivityEntity>(DbContextCustomSchema));
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<ConnectionDefinitionEntity>(DbContextCustomSchema));
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowDefinitionEntity>(DbContextCustomSchema));
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowDefinitionVersionEntity>(DbContextCustomSchema));
@@ -129,10 +127,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             entity
                 .HasMany(x => x.BlockingActivities)
                 .WithOne(x => x.WorkflowInstance);
-            
-            entity
-                .HasMany(x => x.ScheduledActivities)
-                .WithOne(x => x.WorkflowInstance);
         }
 
         private void ConfigureActivityDefinition(ModelBuilder modelBuilder)
@@ -163,17 +157,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             var entity = modelBuilder.Entity<BlockingActivityEntity>();
 
             entity.HasKey(x => x.Id);
-        }
-        
-        private void ConfigureScheduledActivity(ModelBuilder modelBuilder)
-        {
-            var entity = modelBuilder.Entity<ScheduledActivityEntity>();
-
-            entity.HasKey(x => x.Id);
-
-            entity
-                .Property(x => x.Input)
-                .HasConversion(x => Serialize(x), x => Deserialize<Variable>(x));
         }
 
         private string Serialize(object value)
