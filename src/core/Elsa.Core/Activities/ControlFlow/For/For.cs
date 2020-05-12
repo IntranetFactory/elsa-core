@@ -58,7 +58,8 @@ namespace Elsa.Activities.ControlFlow
                 var input = currentValue;
                 currentValue += step;
                 CurrentValue = currentValue;
-                return Combine(Schedule(this), Done(OutcomeNames.Iterate, Variable.From(input)));
+                // SchedulingLogic
+                //return Combine(Schedule(this), Done(OutcomeNames.Iterate, Variable.From(input)));
             }
 
             CurrentValue = null;

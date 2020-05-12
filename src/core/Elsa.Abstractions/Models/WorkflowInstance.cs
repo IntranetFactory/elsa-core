@@ -11,7 +11,8 @@ namespace Elsa.Models
             Variables = new Variables();
             BlockingActivities = new HashSet<BlockingActivity>(new BlockingActivityEqualityComparer());
             ExecutionLog = new List<ExecutionLogEntry>();
-            ScheduledActivities = new Stack<ScheduledActivity>();
+            // SchedulingLogic
+            //ScheduledActivities = new Stack<ScheduledActivity>();
         }
 
         public string? Id { get; set; }
@@ -32,7 +33,9 @@ namespace Elsa.Models
         public Variables? Input { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
         public HashSet<BlockingActivity> BlockingActivities { get; set; }
-        public Stack<ScheduledActivity> ScheduledActivities { get; set; }
+
+        // SchedulingLogic
+        //public Stack<ScheduledActivity> ScheduledActivities { get; set; }
 
 
     }

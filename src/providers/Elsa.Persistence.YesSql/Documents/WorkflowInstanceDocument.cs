@@ -23,6 +23,5 @@ namespace Elsa.Persistence.YesSql.Documents
         public HashSet<BlockingActivity> BlockingActivities { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
         public WorkflowFault Fault { get; set; }
-        public Stack<string> ScheduledActivities { get; set; }
     }
 }

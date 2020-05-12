@@ -28,8 +28,9 @@ namespace Elsa.Activities.ControlFlow
         {
             var loop = await context.EvaluateAsync(Condition, cancellationToken);
 
-            if (loop)
-                return Combine(Schedule(this), Done(OutcomeNames.Iterate));
+            // SchedulingLogic
+            //if (loop)
+            //    return Combine(Schedule(this), Done(OutcomeNames.Iterate));
 
             return Done();
         }
