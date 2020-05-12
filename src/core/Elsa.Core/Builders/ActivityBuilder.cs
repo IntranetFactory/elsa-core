@@ -42,6 +42,6 @@ namespace Elsa.Builders
         }
 
         public IActivity BuildActivity() => Activity;
-        public Workflow Build() => WorkflowBuilder.Build();
+        public WorkflowDefinitionActiveVersion Build() => WorkflowBuilder.Build();
     }
 }

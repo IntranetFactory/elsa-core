@@ -38,8 +38,8 @@ namespace Elsa.Core.UnitTests
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
 
             workflowActivatorMock
-                .Setup(x => x.ActivateAsync(It.IsAny<Workflow>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Workflow workflow, string? correlationId, CancellationToken cancellationToken) => new WorkflowInstance());
+                .Setup(x => x.ActivateAsync(It.IsAny<WorkflowDefinitionActiveVersion>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string? correlationId, CancellationToken cancellationToken) => new WorkflowInstance());
            
             // TO DO: check if this is needed
             //workflowHost = new WorkflowHost(
@@ -58,8 +58,8 @@ namespace Elsa.Core.UnitTests
         {
             var activityExecutionResultMock = new Mock<IActivityExecutionResult>();
             var activity = CreateActivity(activityExecutionResult: activityExecutionResultMock.Object);
-            var workflow = CreateWorkflow(activity);
-            var executionContext = await workflowHost.RunWorkflowAsync(workflow);
+            var workflowDefinitionActiveVersion = CreateWorkflowDefinitionActiveVersion(activity);
+            var executionContext = await workflowHost.RunWorkflowAsync(workflowDefinitionActiveVersion);
 
             Assert.Equal(WorkflowStatus.Completed, executionContext.CreateWorkflowInstance().Status);
         }
@@ -69,8 +69,8 @@ namespace Elsa.Core.UnitTests
         {
             var activityExecutionResultMock = new Mock<IActivityExecutionResult>();
             var activity = CreateActivity(true, activityExecutionResultMock.Object);
-            var workflow = CreateWorkflow(activity);
-            var executionContext = await workflowHost.RunWorkflowAsync(workflow);
+            var workflowDefinitionActiveVersion = CreateWorkflowDefinitionActiveVersion(activity);
+            var executionContext = await workflowHost.RunWorkflowAsync(workflowDefinitionActiveVersion);
 
             activityExecutionResultMock
                 .Verify(x => x.ExecuteAsync(It.IsAny<ActivityExecutionContext>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -95,11 +95,11 @@ namespace Elsa.Core.UnitTests
             return activityMock.Object;
         }
 
-        private Workflow CreateWorkflow(IActivity activity)
+        private WorkflowDefinitionActiveVersion CreateWorkflowDefinitionActiveVersion(IActivity activity)
         {
-            var workflow = new Workflow();
-            workflow.Activities.Add(activity);
-            return workflow;
+            var workflowDefinitionActiveVersion = new WorkflowDefinitionActiveVersion();
+            workflowDefinitionActiveVersion.Activities.Add(activity);
+            return workflowDefinitionActiveVersion;
         }
     }
 }

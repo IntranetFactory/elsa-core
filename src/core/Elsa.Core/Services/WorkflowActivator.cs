@@ -21,21 +21,21 @@ namespace Elsa.Services
         
         public async Task<WorkflowInstance> ActivateAsync(int? tenantId, string definitionId, string? correlationId = default, CancellationToken cancellationToken = default)
         {
-            var workflow = await workflowRegistry.GetWorkflowAsync(tenantId, definitionId, VersionOptions.Published, cancellationToken);
-            return await ActivateAsync(workflow, correlationId, cancellationToken);
+            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, definitionId, VersionOptions.Published, cancellationToken);
+            return await ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
         }
 
-        public Task<WorkflowInstance> ActivateAsync(Workflow workflow, string? correlationId = default, CancellationToken cancellationToken = default)
+        public Task<WorkflowInstance> ActivateAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string? correlationId = default, CancellationToken cancellationToken = default)
         {
             var workflowInstance = new WorkflowInstance
             {
                 Id = idGenerator.Generate(),
-                TenantId = workflow.TenantId,
+                TenantId = workflowDefinitionActiveVersion.TenantId,
                 Status = WorkflowStatus.Idle,
-                Version = workflow.Version,
+                Version = workflowDefinitionActiveVersion.Version,
                 CorrelationId = correlationId,
                 CreatedAt = clock.GetCurrentInstant(),
-                DefinitionId = workflow.DefinitionId
+                DefinitionId = workflowDefinitionActiveVersion.DefinitionId
             };
 
             return Task.FromResult(workflowInstance);

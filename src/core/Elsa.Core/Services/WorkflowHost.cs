@@ -71,28 +71,28 @@ namespace Elsa.Services
 
         public async Task<WorkflowExecutionContext?> RunWorkflowInstanceAsync(WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
         {
-            var workflow = await workflowRegistry.GetWorkflowAsync(workflowInstance.TenantId, workflowInstance.DefinitionId, VersionOptions.SpecificVersion(workflowInstance.Version), cancellationToken);
-            return await RunAsync(workflow, workflowInstance, activityId, input, cancellationToken);
+            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(workflowInstance.TenantId, workflowInstance.DefinitionId, VersionOptions.SpecificVersion(workflowInstance.Version), cancellationToken);
+            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
 
         public async Task<WorkflowExecutionContext> RunWorkflowDefinitionAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
         {
-            var workflow = await workflowRegistry.GetWorkflowAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
-            var workflowInstance = await workflowActivator.ActivateAsync(workflow, correlationId, cancellationToken);
+            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
+            var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
 
-            return await RunAsync(workflow, workflowInstance, activityId, input, cancellationToken);
+            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
 
-        public async Task<WorkflowExecutionContext> RunWorkflowAsync(Workflow workflow, string? activityId = default, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> RunWorkflowAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string? activityId = default, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
         {
-            var workflowInstance = await workflowActivator.ActivateAsync(workflow, correlationId, cancellationToken);
-            return await RunAsync(workflow, workflowInstance, activityId, input, cancellationToken);
+            var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
+            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
 
-        private async Task<WorkflowExecutionContext> RunAsync(Workflow workflow, WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
+        private async Task<WorkflowExecutionContext> RunAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
         {
-            var workflowExecutionContext = await CreateWorkflowExecutionContext(workflow, workflowInstance);
-            var activity = activityId != null ? workflow.GetActivity(activityId) : default;
+            var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
+            var activity = activityId != null ? workflowDefinitionActiveVersion.GetActivity(activityId) : default;
 
             switch (workflowExecutionContext.Status)
             {
@@ -198,17 +198,17 @@ namespace Elsa.Services
             return new ScheduledActivity(activity, scheduledActivityModel.Input);
         }
 
-        private async Task<WorkflowExecutionContext> CreateWorkflowExecutionContext(Workflow workflow, WorkflowInstance workflowInstance)
+        private async Task<WorkflowExecutionContext> CreateWorkflowExecutionContext(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, WorkflowInstance workflowInstance)
         {
-            var activityLookup = workflow.Activities.ToDictionary(x => x.Id);
+            var activityLookup = workflowDefinitionActiveVersion.Activities.ToDictionary(x => x.Id);
             var workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(workflowInstance.TenantId, workflowInstance.DefinitionId, VersionOptions.Latest);
             var scheduledActivities = new Stack<ScheduledActivity>(workflowInstance.ScheduledActivities.Reverse().Select(x => CreateScheduledActivity(x, activityLookup)));
             var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.ActivityId]));
             var variables = workflowInstance.Variables;
             var status = workflowInstance.Status;
-            var persistenceBehavior = workflow.PersistenceBehavior;
+            var persistenceBehavior = workflowDefinitionActiveVersion.PersistenceBehavior;
 
-            foreach (var activity in workflow.Activities)
+            foreach (var activity in workflowDefinitionActiveVersion.Activities)
             {
                 if (!workflowDefinitionVersion.Activities.Any(x => x.Id == activity.Id))
                     continue;
@@ -225,10 +225,10 @@ namespace Elsa.Services
             return CreateWorkflowExecutionContext(
                 workflowInstance.Id,
                 workflowInstance.TenantId,
-                workflow.DefinitionId,
-                workflow.Version,
-                workflow.Activities,
-                workflow.Connections,
+                workflowDefinitionActiveVersion.DefinitionId,
+                workflowDefinitionActiveVersion.Version,
+                workflowDefinitionActiveVersion.Activities,
+                workflowDefinitionActiveVersion.Connections,
                 scheduledActivities,
                 blockingActivities,
                 workflowInstance.CorrelationId,

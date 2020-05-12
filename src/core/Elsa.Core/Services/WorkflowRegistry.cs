@@ -20,19 +20,19 @@ namespace Elsa.Services
             this.serviceProvider = serviceProvider;
         }
         
-        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(int? tenantId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<WorkflowDefinitionActiveVersion>> GetWorkflowDefinitionActiveVersionsAsync(int? tenantId, CancellationToken cancellationToken)
         {
             using var scope = serviceProvider.CreateScope();
             var providers = scope.ServiceProvider.GetServices<IWorkflowProvider>();
-            var tasks = await Task.WhenAll(providers.Select(x => x.GetWorkflowsAsync(tenantId, cancellationToken)));
+            var tasks = await Task.WhenAll(providers.Select(x => x.GetWorkflowDefinitionActiveVersionsAsync(tenantId, cancellationToken)));
             return tasks.SelectMany(x => x).ToList();
         }
 
-        public async Task<Workflow> GetWorkflowAsync(int? tenantId, string id, VersionOptions version, CancellationToken cancellationToken)
+        public async Task<WorkflowDefinitionActiveVersion> GetWorkflowDefinitionActiveVersionAsync(int? tenantId, string id, VersionOptions version, CancellationToken cancellationToken)
         {
-            var workflows = await GetWorkflowsAsync(tenantId, cancellationToken).ToListAsync();
+            var workflowDefinitionActiveVersions = await GetWorkflowDefinitionActiveVersionsAsync(tenantId, cancellationToken).ToListAsync();
 
-            return workflows
+            return workflowDefinitionActiveVersions
                 .Where(x => x.DefinitionId == id)
                 .OrderByDescending(x => x.Version)
                 .WithVersion(version).FirstOrDefault();

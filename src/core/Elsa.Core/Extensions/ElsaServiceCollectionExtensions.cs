@@ -118,7 +118,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddStartupRunner()
                 .AddTransient<IActivityResolver, ActivityResolver>()
                 .AddTransient<IWorkflowProvider, StoreWorkflowProvider>()
-                .AddTransient<IWorkflowProvider, CodeWorkflowProvider>()
                 .AddTransient<IWorkflowBuilder, WorkflowBuilder>()
                 .AddTransient<Func<IWorkflowBuilder>>(sp => sp.GetRequiredService<IWorkflowBuilder>)
                 .AddStartupTask<StartServiceBusTask>()

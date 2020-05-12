@@ -34,6 +34,6 @@ namespace Elsa.Builders
             return activityBuilder;
         }
 
-        public Workflow Build() => WorkflowBuilder.Build();
+        public WorkflowDefinitionActiveVersion Build() => WorkflowBuilder.Build();
     }
 }

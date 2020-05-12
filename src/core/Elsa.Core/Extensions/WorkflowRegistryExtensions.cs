@@ -10,31 +10,31 @@ namespace Elsa.Extensions
 {
     public static class WorkflowRegistryExtensions
     {
-        public static Task<Workflow> GetWorkflowAsync<T>(this IWorkflowRegistry workflowRegistry, int? tenantId, CancellationToken cancellationToken) =>
-            workflowRegistry.GetWorkflowAsync(tenantId, typeof(T).Name, VersionOptions.Latest, cancellationToken);
+        public static Task<WorkflowDefinitionActiveVersion> GetWorkflowDefinitionActiveVersionAsync<T>(this IWorkflowRegistry workflowRegistry, int? tenantId, CancellationToken cancellationToken) =>
+            workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, typeof(T).Name, VersionOptions.Latest, cancellationToken);
 
-        public static Task<IEnumerable<(Workflow Workflow, IActivity Activity)>> GetWorkflowsByStartActivityAsync<T>(
+        public static Task<IEnumerable<(WorkflowDefinitionActiveVersion WorkflowDefinitionActiveVersion, IActivity Activity)>> GetWorkflowsByStartActivityAsync<T>(
             this IWorkflowRegistry workflowRegistry,
             int? tenantId, 
             CancellationToken cancellationToken = default)
             where T : IActivity =>
             workflowRegistry.GetWorkflowsByStartActivityAsync(tenantId, typeof(T).Name, cancellationToken);
 
-        public static async Task<IEnumerable<(Workflow Workflow, IActivity Activity)>> GetWorkflowsByStartActivityAsync(
+        public static async Task<IEnumerable<(WorkflowDefinitionActiveVersion WorkflowDefinitionActiveVersion, IActivity Activity)>> GetWorkflowsByStartActivityAsync(
             this IWorkflowRegistry workflowRegistry,
             int? tenantId, 
             string activityType,
             CancellationToken cancellationToken = default)
         {
             // TO DO: inspect if tenantId should be passed here
-            var workflows = await workflowRegistry.GetWorkflowsAsync(tenantId, cancellationToken);
+            var workflowDefinitionActiveVersions = await workflowRegistry.GetWorkflowDefinitionActiveVersionsAsync(tenantId, cancellationToken);
 
             var query =
-                from workflow in workflows
-                where workflow.IsPublished
-                from activity in workflow.GetStartActivities()
+                from workflowDefinitionActiveVersion in workflowDefinitionActiveVersions
+                where workflowDefinitionActiveVersion.IsPublished
+                from activity in workflowDefinitionActiveVersion.GetStartActivities()
                 where activity.Type == activityType
-                select (workflow, activity);
+                select (workflowDefinitionActiveVersion, activity);
 
             return query.Distinct();
         }

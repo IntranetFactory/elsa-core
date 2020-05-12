@@ -4,7 +4,7 @@ namespace Elsa.Services
 {
     public interface IWorkflowSchedulerQueue
     {
-        void Enqueue(Workflow workflow, IActivity activity, object? input, string? correlationId);
-        (Workflow Workflow, IActivity Activity, object? Input, string? CorrelationId)? Dequeue(string workflowDefinitionId, string activityId);
+        void Enqueue(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, IActivity activity, object? input, string? correlationId);
+        (WorkflowDefinitionActiveVersion WorkflowDefinitionActiveVersion, IActivity Activity, object? Input, string? CorrelationId)? Dequeue(string workflowDefinitionId, string activityId);
     }
 }

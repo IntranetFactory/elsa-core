@@ -4,15 +4,15 @@ using Elsa.Models;
 
 namespace Elsa.Services.Models
 {
-    public class Workflow
+    public class WorkflowDefinitionActiveVersion
     {
-        public Workflow()
+        public WorkflowDefinitionActiveVersion()
         {
             Activities = new List<IActivity>();
             Connections = new List<Connection>();
         }
 
-        public Workflow(
+        public WorkflowDefinitionActiveVersion(
             string? definitionId = default,
             int? tenantId = default, 
             int version = 1,

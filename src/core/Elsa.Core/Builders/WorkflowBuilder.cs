@@ -94,14 +94,14 @@ namespace Elsa.Builders
             return activity;
         }
 
-        public Workflow Build()
+        public WorkflowDefinitionActiveVersion Build()
         {
             var definitionId = !string.IsNullOrWhiteSpace(Id) ? Id : idGenerator.Generate();
             var activities = activityBuilders.Select(x => x.BuildActivity()).ToList();
             var connections = connectionBuilders.Select(x => x.BuildConnection()).ToList();
             
             // TO DO: inspect if tenantId should be passed here
-            var workflow = new Workflow(
+            var workflowDefinitionActiveVersion = new WorkflowDefinitionActiveVersion(
                 definitionId, 
                 null,
                 Version, 
@@ -117,13 +117,13 @@ namespace Elsa.Builders
             // Generate deterministic activity ids.
             var id = 1;
 
-            foreach (var activity in workflow.Activities)
+            foreach (var activity in workflowDefinitionActiveVersion.Activities)
             {
                 if (string.IsNullOrEmpty(activity.Id))
                     activity.Id = $"activity-{id++}";
             }
             
-            return workflow;
+            return workflowDefinitionActiveVersion;
         }
         
         public T New<T>(T activity, Action<ActivityBuilder>? branch = default) where T : class, IActivity
@@ -187,19 +187,19 @@ namespace Elsa.Builders
         public ActivityBuilder Then<T>(Action<T>? setup = default, Action<ActivityBuilder>? branch = default) where T : class, IActivity => StartWith(setup, branch);
         public ActivityBuilder Then<T>(T activity, Action<ActivityBuilder>? branch = default) where T : class, IActivity => StartWith(activity, branch);
         
-        public Workflow Build(IWorkflow workflow)
+        public WorkflowDefinitionActiveVersion Build(IWorkflow workflow)
         {
             WithId(workflow.GetType().Name);
             workflow.Build(this);
             return Build();
         }
 
-        public Workflow Build(Type workflowType)
+        public WorkflowDefinitionActiveVersion Build(Type workflowType)
         {
             var workflow = (IWorkflow)ActivatorUtilities.GetServiceOrCreateInstance(ServiceProvider, workflowType);
             return Build(workflow);
         }
 
-        public Workflow Build<T>() where T : IWorkflow => Build(typeof(T));
+        public WorkflowDefinitionActiveVersion Build<T>() where T : IWorkflow => Build(typeof(T));
     }
 }

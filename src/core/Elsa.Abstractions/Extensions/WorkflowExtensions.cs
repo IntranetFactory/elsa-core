@@ -8,10 +8,10 @@ namespace Elsa.Extensions
 {
     public static class WorkflowExtensions
     {
-        public static IEnumerable<Workflow> WithVersion(this IEnumerable<Workflow> query, VersionOptions version) 
+        public static IEnumerable<WorkflowDefinitionActiveVersion> WithVersion(this IEnumerable<WorkflowDefinitionActiveVersion> query, VersionOptions version) 
             => query.AsQueryable().WithVersion(version);
 
-        public static IQueryable<Workflow> WithVersion(this IQueryable<Workflow> query, VersionOptions version)
+        public static IQueryable<WorkflowDefinitionActiveVersion> WithVersion(this IQueryable<WorkflowDefinitionActiveVersion> query, VersionOptions version)
         {
             if (version.IsDraft)
                 query = query.Where(x => !x.IsPublished);
@@ -31,41 +31,41 @@ namespace Elsa.Extensions
             return query.OrderByDescending(x => x.Version);
         }
         
-        public static IEnumerable<IActivity> GetStartActivities(this Workflow workflow)
+        public static IEnumerable<IActivity> GetStartActivities(this WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion)
         {
-            var destinationActivityIds = workflow.Connections.Select(x => x.Target.Activity.Id).Distinct().ToLookup(x => x);
+            var destinationActivityIds = workflowDefinitionActiveVersion.Connections.Select(x => x.Target.Activity.Id).Distinct().ToLookup(x => x);
 
             var query =
-                from activity in workflow.Activities
+                from activity in workflowDefinitionActiveVersion.Activities
                 where !destinationActivityIds.Contains(activity.Id)
                 select activity;
 
             return query;
         }
 
-        public static IActivity GetActivity(this Workflow workflow, string id) => workflow.Activities.FirstOrDefault(x => x.Id == id);
+        public static IActivity GetActivity(this WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string id) => workflowDefinitionActiveVersion.Activities.FirstOrDefault(x => x.Id == id);
 
-        public static IEnumerable<Connection> GetInboundConnections(this Workflow workflow, string activityId)
+        public static IEnumerable<Connection> GetInboundConnections(this WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string activityId)
         {
-            return workflow.Connections.Where(x => x.Target.Activity.Id == activityId).ToList();
+            return workflowDefinitionActiveVersion.Connections.Where(x => x.Target.Activity.Id == activityId).ToList();
         }
 
-        public static IEnumerable<Connection> GetOutboundConnections(this Workflow workflow, string activityId)
+        public static IEnumerable<Connection> GetOutboundConnections(this WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string activityId)
         {
-            return workflow.Connections.Where(x => x.Source.Activity.Id == activityId).ToList();
+            return workflowDefinitionActiveVersion.Connections.Where(x => x.Source.Activity.Id == activityId).ToList();
         }
 
         /// <summary>
         /// Returns the full path of incoming activities.
         /// </summary>
-        public static IEnumerable<string> GetInboundActivityPath(this Workflow workflow, string activityId)
+        public static IEnumerable<string> GetInboundActivityPath(this WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string activityId)
         {
-            return workflow.GetInboundActivityPathInternal(activityId, activityId).Distinct().ToList();
+            return workflowDefinitionActiveVersion.GetInboundActivityPathInternal(activityId, activityId).Distinct().ToList();
         }
 
-        private static IEnumerable<string> GetInboundActivityPathInternal(this Workflow workflowInstance, string activityId, string startingPointActivityId)
+        private static IEnumerable<string> GetInboundActivityPathInternal(this WorkflowDefinitionActiveVersion workflowDefinitionActiveVersionInstance, string activityId, string startingPointActivityId)
         {
-            foreach (var connection in workflowInstance.GetInboundConnections(activityId))
+            foreach (var connection in workflowDefinitionActiveVersionInstance.GetInboundConnections(activityId))
             {
                 // Circuit breaker: Detect workflows that implement repeating flows to prevent an infinite loop here.
                 if (connection.Source.Activity.Id == startingPointActivityId)
@@ -73,7 +73,7 @@ namespace Elsa.Extensions
 
                 yield return connection.Source.Activity.Id;
 
-                foreach (var parentActivityId in workflowInstance
+                foreach (var parentActivityId in workflowDefinitionActiveVersionInstance
                     .GetInboundActivityPathInternal(connection.Source.Activity.Id, startingPointActivityId)
                     .Distinct())
                     yield return parentActivityId;

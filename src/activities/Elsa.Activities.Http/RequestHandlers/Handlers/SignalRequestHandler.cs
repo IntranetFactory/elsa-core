@@ -72,7 +72,7 @@ namespace Elsa.Activities.Http.RequestHandlers.Handlers
         {
             var input = Variable.From(signal.Name);
 
-            var workflowDefinition = await workflowRegistry.GetWorkflowAsync(
+            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(
                 workflowInstanceModel.TenantId,
                 workflowInstanceModel.DefinitionId,
                 VersionOptions.SpecificVersion(workflowInstanceModel.Version),

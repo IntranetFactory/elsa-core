@@ -45,11 +45,11 @@ namespace Elsa.Services
             string? correlationId = default,
             CancellationToken cancellationToken = default)
         {
-            var workflow = await workflowRegistry.GetWorkflowAsync(tenantId, definitionId, VersionOptions.Published, cancellationToken);
-            var startActivities = workflow.GetStartActivities();
+            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, definitionId, VersionOptions.Published, cancellationToken);
+            var startActivities = workflowDefinitionActiveVersion.GetStartActivities();
 
             foreach (var activity in startActivities)
-                await ScheduleWorkflowAsync(workflow, activity, input, correlationId, cancellationToken);
+                await ScheduleWorkflowAsync(workflowDefinitionActiveVersion, activity, input, correlationId, cancellationToken);
         }
 
         public async Task TriggerWorkflowsAsync(
@@ -75,19 +75,19 @@ namespace Elsa.Services
             Func<Variables, bool>? activityStatePredicate = default,
             CancellationToken cancellationToken = default)
         {
-            var workflows = await workflowRegistry.GetWorkflowsAsync(tenantId, cancellationToken);
+            var workflowDefinitionActiveVersions = await workflowRegistry.GetWorkflowDefinitionActiveVersionsAsync(tenantId, cancellationToken);
 
             var query =
-                from workflow in workflows
-                where workflow.IsPublished
-                from activity in workflow.GetStartActivities()
+                from workflowDefinitionActiveVersion in workflowDefinitionActiveVersions
+                where workflowDefinitionActiveVersion.IsPublished
+                from activity in workflowDefinitionActiveVersion.GetStartActivities()
                 where activity.Type == activityType
-                select (workflow, activity);
+                select (workflowDefinitionActiveVersion, activity);
 
             if (activityStatePredicate != null)
                 query = query.Where(x => activityStatePredicate(x.Item2.State));
 
-            var tuples = (IList<(Workflow Workflow, IActivity Activity)>)query.ToList();
+            var tuples = (IList<(WorkflowDefinitionActiveVersion WorkflowDefinitionActiveVersion, IActivity Activity)>)query.ToList();
 
             tuples = await FilterRunningSingletonsAsync(tuples, cancellationToken).ToListAsync();
             
@@ -121,27 +121,27 @@ namespace Elsa.Services
             //    await ScheduleWorkflowAsync(workflowInstance.TenantId, workflowInstance.Id, blockingActivity.Id, input, cancellationToken);
         }
 
-        private async Task ScheduleWorkflowAsync(Workflow workflow, IActivity activity, object? input, string? correlationId, CancellationToken cancellationToken)
+        private async Task ScheduleWorkflowAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, IActivity activity, object? input, string? correlationId, CancellationToken cancellationToken)
         {
-            var workflowInstance = await workflowActivator.ActivateAsync(workflow, correlationId, cancellationToken);
+            var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
             await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
             await ScheduleWorkflowAsync(workflowInstance.TenantId, workflowInstance.Id, activity.Id, input, cancellationToken);
         }
 
-        private async Task<IEnumerable<(Workflow, IActivity)>> FilterRunningSingletonsAsync(
-            IEnumerable<(Workflow Workflow, IActivity Activity)> tuples,
+        private async Task<IEnumerable<(WorkflowDefinitionActiveVersion, IActivity)>> FilterRunningSingletonsAsync(
+            IEnumerable<(WorkflowDefinitionActiveVersion WorkflowDefinitionActiveVersion, IActivity Activity)> tuples,
             CancellationToken cancellationToken)
         {
             var tupleList = tuples.ToList();
-            var transients = tupleList.Where(x => !x.Workflow.IsSingleton).ToList();
-            var singletons = tupleList.Where(x => x.Workflow.IsSingleton).ToList();
+            var transients = tupleList.Where(x => !x.WorkflowDefinitionActiveVersion.IsSingleton).ToList();
+            var singletons = tupleList.Where(x => x.WorkflowDefinitionActiveVersion.IsSingleton).ToList();
             var result = transients.ToList();
 
             foreach (var tuple in singletons)
             {
                 var instances = await workflowInstanceStore.ListByStatusAsync(
-                    tuple.Workflow.TenantId,
-                    tuple.Workflow.DefinitionId,
+                    tuple.WorkflowDefinitionActiveVersion.TenantId,
+                    tuple.WorkflowDefinitionActiveVersion.DefinitionId,
                     WorkflowStatus.Suspended,
                     cancellationToken
                 );
@@ -154,12 +154,12 @@ namespace Elsa.Services
         }
 
         private async Task<IEnumerable<WorkflowInstance>> GetStartedWorkflowsAsync(
-            Workflow workflow,
+            WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion,
             CancellationToken cancellationToken)
         {
-            var suspendedInstances = await workflowInstanceStore.ListByStatusAsync(workflow.TenantId, workflow.DefinitionId, WorkflowStatus.Suspended, cancellationToken).ToListAsync();
-            var idleInstances = await workflowInstanceStore.ListByStatusAsync(workflow.TenantId, workflow.DefinitionId, WorkflowStatus.Idle, cancellationToken);
-            var startActivities = workflow.GetStartActivities().Select(x => x.Id).ToList();
+            var suspendedInstances = await workflowInstanceStore.ListByStatusAsync(workflowDefinitionActiveVersion.TenantId, workflowDefinitionActiveVersion.DefinitionId, WorkflowStatus.Suspended, cancellationToken).ToListAsync();
+            var idleInstances = await workflowInstanceStore.ListByStatusAsync(workflowDefinitionActiveVersion.TenantId, workflowDefinitionActiveVersion.DefinitionId, WorkflowStatus.Idle, cancellationToken);
+            var startActivities = workflowDefinitionActiveVersion.GetStartActivities().Select(x => x.Id).ToList();
             var startedInstances = suspendedInstances.Where(x => x.BlockingActivities.Any(y => startActivities.Contains(y.ActivityId))).ToList();
 
             return idleInstances.Concat(startedInstances);
@@ -178,7 +178,7 @@ namespace Elsa.Services
             if (entry == null)
                 return;
             
-            await ScheduleWorkflowAsync(entry.Value.Workflow, entry.Value.Activity, entry.Value.Input, entry.Value.CorrelationId, cancellationToken);
+            await ScheduleWorkflowAsync(entry.Value.WorkflowDefinitionActiveVersion, entry.Value.Activity, entry.Value.Input, entry.Value.CorrelationId, cancellationToken);
         }
     }
 }

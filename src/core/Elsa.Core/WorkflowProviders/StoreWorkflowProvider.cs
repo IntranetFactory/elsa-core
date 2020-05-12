@@ -24,17 +24,17 @@ namespace Elsa.WorkflowProviders
             this.activityResolver = activityResolver;
         }
 
-        public async Task<IEnumerable<Workflow>> GetWorkflowsAsync(int? tenantId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<WorkflowDefinitionActiveVersion>> GetWorkflowDefinitionActiveVersionsAsync(int? tenantId, CancellationToken cancellationToken)
         {
             var workflowDefinitionVersions = await store.ListAsync(tenantId, VersionOptions.All, cancellationToken);
             return workflowDefinitionVersions.Select(CreateWorkflow);
         }
 
-        private Workflow CreateWorkflow(WorkflowDefinitionVersion definitionVersion)
+        private WorkflowDefinitionActiveVersion CreateWorkflow(WorkflowDefinitionVersion definitionVersion)
         {
             var resolvedActivities = definitionVersion.Activities.Select(ResolveActivity).ToDictionary(x => x.Id);
 
-            var workflow = new Workflow
+            var workflowDefinitionActiveVersion = new WorkflowDefinitionActiveVersion
             {
                 DefinitionId = definitionVersion.DefinitionId,
                 TenantId = definitionVersion.TenantId,
@@ -51,7 +51,7 @@ namespace Elsa.WorkflowProviders
                 Connections = definitionVersion.Connections.Select(x => ResolveConnection(x, resolvedActivities)).ToList()
             };
 
-            return workflow;
+            return workflowDefinitionActiveVersion;
         }
 
         private static Connection ResolveConnection(ConnectionDefinition connectionDefinition, IReadOnlyDictionary<string?, IActivity> activityDictionary)

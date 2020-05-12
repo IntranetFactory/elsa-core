@@ -14,7 +14,7 @@ namespace Elsa.Services
             CancellationToken cancellationToken = default);
         
         Task<WorkflowInstance> ActivateAsync(
-            Workflow workflow, 
+            WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, 
             string? correlationId = default, 
             CancellationToken cancellationToken = default);
     }
