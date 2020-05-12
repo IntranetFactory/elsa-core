@@ -41,9 +41,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddHttpContextAccessor()
                 .AddNotificationHandlers(typeof(ServiceCollectionExtensions))
                 .AddDataProtection();
-            
+
+            // TO DO: check if TriggerRequestHandler should be removed
             return services
-                .AddRequestHandler<TriggerRequestHandler>()
+                //.AddRequestHandler<TriggerRequestHandler>()
                 .AddRequestHandler<SignalRequestHandler>();
         }
         

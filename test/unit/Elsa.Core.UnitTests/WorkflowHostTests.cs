@@ -40,16 +40,17 @@ namespace Elsa.Core.UnitTests
             workflowActivatorMock
                 .Setup(x => x.ActivateAsync(It.IsAny<Workflow>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Workflow workflow, string? correlationId, CancellationToken cancellationToken) => new WorkflowInstance());
-
-            workflowHost = new WorkflowHost(
-                workflowRegistryMock.Object,
-                workflowInstanceStoreMock.Object,
-                workflowActivatorMock.Object,
-                workflowExpressionEvaluatorMock.Object,
-                clock,
-                mediatorMock.Object,
-                serviceProvider,
-                logger);
+           
+            // TO DO: check if this is needed
+            //workflowHost = new WorkflowHost(
+            //   workflowRegistryMock.Object,
+            //   workflowInstanceStoreMock.Object,
+            //   workflowActivatorMock.Object,
+            //   workflowExpressionEvaluatorMock.Object,
+            //   clock,
+            //   mediatorMock.Object,
+            //   serviceProvider,
+            //   logger);
         }
 
         [Fact(DisplayName = "Can run simple workflow to completed state.")]

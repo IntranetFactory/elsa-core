@@ -39,6 +39,7 @@ namespace Elsa.Models
         public int? Top { get; set; }
         public bool PersistWorkflow { get; set; }
         public Variables? State { get; set; }
+        public Variable? Output { get; set; }
     }
 
     public class ActivityDefinition<T> : ActivityDefinition where T : IActivity

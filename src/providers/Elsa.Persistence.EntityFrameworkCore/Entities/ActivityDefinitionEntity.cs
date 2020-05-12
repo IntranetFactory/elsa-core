@@ -12,5 +12,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         public int Left { get; set; }
         public int Top { get; set; }
         public Variables State { get; set; }
+        public Variable? Output { get; set; }
     }
 }

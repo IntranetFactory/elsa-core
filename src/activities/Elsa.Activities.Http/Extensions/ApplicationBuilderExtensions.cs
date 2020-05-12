@@ -9,8 +9,9 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseHttpActivities(this IApplicationBuilder app)
         {
+            // TO DO: check if TriggerRequestHandler should be removed
             return app
-                .UseRequestHandler<TriggerRequestHandler>()
+                //.UseRequestHandler<TriggerRequestHandler>()
                 .UseRequestHandler<SignalRequestHandler>("/workflows/signal");
         }
 

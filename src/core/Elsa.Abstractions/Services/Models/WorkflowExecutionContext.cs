@@ -141,26 +141,10 @@ namespace Elsa.Services.Models
         {
             workflowInstance.Variables = Variables;
             workflowInstance.ScheduledActivities = new Stack<Elsa.Models.ScheduledActivity>(ScheduledActivities.Select(x => new Elsa.Models.ScheduledActivity(x.Activity.Id, workflowInstance.TenantId, x.Input)));
-            workflowInstance.Activities = Activities.Select(x => new ActivityInstance(x.Id, workflowInstance.TenantId, x.Type, x.State, x.Output)).ToList();
             workflowInstance.BlockingActivities = new HashSet<BlockingActivity>(BlockingActivities.Select(x => new BlockingActivity(x.Id, workflowInstance.TenantId, x.Type, x.Tag)), new BlockingActivityEqualityComparer());
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;
             workflowInstance.Output = Output;
-
-            // Add tags to blocking activities when instantiating a workflow
-            foreach(var blockingActivity in workflowInstance.BlockingActivities)
-            {
-                foreach(var activity in workflowInstance.Activities)
-                {
-                    if(blockingActivity.ActivityId == activity.Id)
-                    {
-                        if(activity.State["tag"].Value != null)
-                        {
-                            blockingActivity.Tag = activity.State["tag"].Value.ToString();
-                        }
-                    }
-                }
-            }
 
             var executionLog = workflowInstance.ExecutionLog.Concat(ExecutionLog.Select(x => new Elsa.Models.ExecutionLogEntry(x.Activity.Id, x.Timestamp)));
             workflowInstance.ExecutionLog = executionLog.ToList();

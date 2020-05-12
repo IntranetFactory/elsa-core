@@ -26,6 +26,7 @@ namespace Elsa.Services
 
         private readonly IWorkflowRegistry workflowRegistry;
         private readonly IWorkflowInstanceStore workflowInstanceStore;
+        private readonly IWorkflowDefinitionVersionStore workflowDefinitionVersionStore;
         private readonly IWorkflowActivator workflowActivator;
         private readonly IExpressionEvaluator expressionEvaluator;
         private readonly IClock clock;
@@ -36,6 +37,7 @@ namespace Elsa.Services
         public WorkflowHost(
             IWorkflowRegistry workflowRegistry,
             IWorkflowInstanceStore workflowInstanceStore,
+            IWorkflowDefinitionVersionStore workflowDefinitionVersionStore,
             IWorkflowActivator workflowActivator,
             IExpressionEvaluator expressionEvaluator,
             IClock clock,
@@ -45,6 +47,7 @@ namespace Elsa.Services
         {
             this.workflowRegistry = workflowRegistry;
             this.workflowInstanceStore = workflowInstanceStore;
+            this.workflowDefinitionVersionStore = workflowDefinitionVersionStore;
             this.workflowActivator = workflowActivator;
             this.expressionEvaluator = expressionEvaluator;
             this.clock = clock;
@@ -88,7 +91,7 @@ namespace Elsa.Services
 
         private async Task<WorkflowExecutionContext> RunAsync(Workflow workflow, WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
         {
-            var workflowExecutionContext = CreateWorkflowExecutionContext(workflow, workflowInstance);
+            var workflowExecutionContext = await CreateWorkflowExecutionContext(workflow, workflowInstance);
             var activity = activityId != null ? workflow.GetActivity(activityId) : default;
 
             switch (workflowExecutionContext.Status)
@@ -195,10 +198,10 @@ namespace Elsa.Services
             return new ScheduledActivity(activity, scheduledActivityModel.Input);
         }
 
-        private WorkflowExecutionContext CreateWorkflowExecutionContext(Workflow workflow, WorkflowInstance workflowInstance)
+        private async Task<WorkflowExecutionContext> CreateWorkflowExecutionContext(Workflow workflow, WorkflowInstance workflowInstance)
         {
             var activityLookup = workflow.Activities.ToDictionary(x => x.Id);
-            var activityInstanceLookup = workflowInstance.Activities.ToDictionary(x => x.ActivityId);
+            var workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(workflowInstance.TenantId, workflowInstance.DefinitionId, VersionOptions.Latest);
             var scheduledActivities = new Stack<ScheduledActivity>(workflowInstance.ScheduledActivities.Reverse().Select(x => CreateScheduledActivity(x, activityLookup)));
             var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.ActivityId]));
             var variables = workflowInstance.Variables;
@@ -207,12 +210,16 @@ namespace Elsa.Services
 
             foreach (var activity in workflow.Activities)
             {
-                if (!activityInstanceLookup.ContainsKey(activity.Id))
+                if (!workflowDefinitionVersion.Activities.Any(x => x.Id == activity.Id))
                     continue;
 
-                var activityInstance = activityInstanceLookup[activity.Id];
-                activity.State = activityInstance.State;
-                activity.Output = activityInstance.Output;
+                var activityInstance = workflowDefinitionVersion.Activities.Where(x => x.Id == activity.Id).FirstOrDefault();
+
+                if(activityInstance != null)
+                {
+                    activity.State = activityInstance.State;
+                    activity.Output = activityInstance.Output;
+                }
             }
 
             return CreateWorkflowExecutionContext(

@@ -43,9 +43,6 @@ namespace Elsa.Persistence.DocumentDb.Documents
         [JsonProperty(PropertyName = "abortedAt")]
         public DateTime? AbortedAt { get; set; }
 
-        [JsonProperty(PropertyName = "activities")]
-        public IDictionary<string, ActivityInstance> Activities { get; set; } = new Dictionary<string, ActivityInstance>();
-
         [JsonProperty(PropertyName = "variables")]
         public Variables Variables { get; set; }
 
