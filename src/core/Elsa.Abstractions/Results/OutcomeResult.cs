@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Elsa.Models;
@@ -33,8 +33,7 @@ namespace Elsa.Results
             var workflowExecutionContext = activityExecutionContext.WorkflowExecutionContext;
             var nextActivities = GetNextActivities(workflowExecutionContext, activityExecutionContext.Activity, Outcomes).ToList();
             
-            // SchedulingLogic
-            //workflowExecutionContext.ScheduleActivities(nextActivities, Output);
+            workflowExecutionContext.ScheduleActivities(nextActivities, Output);
         }
         
         private IEnumerable<IActivity> GetNextActivities(WorkflowExecutionContext workflowContext, IActivity source, IEnumerable<string> outcomes)

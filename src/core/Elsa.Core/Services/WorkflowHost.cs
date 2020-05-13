@@ -13,8 +13,7 @@ using Elsa.Services.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-// SchedulingLogic
-//using ScheduledActivity = Elsa.Services.Models.ScheduledActivity;
+using ScheduledActivity = Elsa.Services.Models.ScheduledActivity;
 
 namespace Elsa.Services
 {
@@ -143,8 +142,7 @@ namespace Elsa.Services
                 return;
 
             workflowExecutionContext.Status = WorkflowStatus.Running;
-            // SchedulingLogic
-            //workflowExecutionContext.ScheduleActivity(activity, input);
+            workflowExecutionContext.ScheduleActivity(activity, input);
             await RunAsync(workflowExecutionContext, Execute, cancellationToken);
         }
 
@@ -160,8 +158,7 @@ namespace Elsa.Services
             
             workflowExecutionContext.BlockingActivities.Remove(activity);
             workflowExecutionContext.Status = WorkflowStatus.Running;
-            // SchedulingLogic
-            //workflowExecutionContext.ScheduleActivity(activity, input);
+            workflowExecutionContext.ScheduleActivity(activity, input);
             await RunAsync(workflowExecutionContext, Resume, cancellationToken);
         }
         
@@ -176,39 +173,36 @@ namespace Elsa.Services
             ActivityOperation activityOperation,
             CancellationToken cancellationToken = default)
         {
-            // SchedulingLogic
-            //while (workflowExecutionContext.HasScheduledActivities)
-            //{
-            //    var scheduledActivity = workflowExecutionContext.PopScheduledActivity();
-            //    var currentActivity = scheduledActivity.Activity;
-            //    var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, scheduledActivity.Input);
-            //    var result = await activityOperation(activityExecutionContext, currentActivity, cancellationToken);
+            while (workflowExecutionContext.HasScheduledActivities)
+            {
+                var scheduledActivity = workflowExecutionContext.PopScheduledActivity();
+                var currentActivity = scheduledActivity.Activity;
+                var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, scheduledActivity.Input);
+                var result = await activityOperation(activityExecutionContext, currentActivity, cancellationToken);
 
-            //    await mediator.Publish(new ActivityExecuting(activityExecutionContext), cancellationToken);
-            //    await result.ExecuteAsync(activityExecutionContext, cancellationToken);
-            //    await mediator.Publish(new ActivityExecuted(activityExecutionContext), cancellationToken);
+                await mediator.Publish(new ActivityExecuting(activityExecutionContext), cancellationToken);
+                await result.ExecuteAsync(activityExecutionContext, cancellationToken);
+                await mediator.Publish(new ActivityExecuted(activityExecutionContext), cancellationToken);
 
-            //    activityOperation = Execute;
-            //    workflowExecutionContext.CompletePass();
-            //}
+                activityOperation = Execute;
+                workflowExecutionContext.CompletePass();
+            }
 
             if (workflowExecutionContext.Status == WorkflowStatus.Running)
                 workflowExecutionContext.Complete();
         }
 
-        // SchedulingLogic
-        //private ScheduledActivity CreateScheduledActivity(Elsa.Models.ScheduledActivity scheduledActivityModel, IDictionary<string, IActivity> activityLookup)
-        //{
-        //    var activity = activityLookup[scheduledActivityModel.ActivityId];
-        //    return new ScheduledActivity(activity, scheduledActivityModel.Input);
-        //}
+        private ScheduledActivity CreateScheduledActivity(Elsa.Models.ScheduledActivity scheduledActivityModel, IDictionary<string, IActivity> activityLookup)
+        {
+            var activity = activityLookup[scheduledActivityModel.ActivityId];
+            return new ScheduledActivity(activity, scheduledActivityModel.Input);
+        }
 
         private async Task<WorkflowExecutionContext> CreateWorkflowExecutionContext(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, WorkflowInstance workflowInstance)
         {
             var activityLookup = workflowDefinitionActiveVersion.Activities.ToDictionary(x => x.Id);
             var workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(workflowInstance.TenantId, workflowInstance.DefinitionId, VersionOptions.Latest);
-            // SchedulingLogic
-            //var scheduledActivities = new Stack<ScheduledActivity>(workflowInstance.ScheduledActivities.Reverse().Select(x => CreateScheduledActivity(x, activityLookup)));
+            var scheduledActivities = new Stack<ScheduledActivity>(workflowInstance.ScheduledActivities.Reverse().Select(x => CreateScheduledActivity(x, activityLookup)));
             var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.ActivityId]));
             var variables = workflowInstance.Variables;
             var status = workflowInstance.Status;
@@ -228,7 +222,6 @@ namespace Elsa.Services
                 }
             }
 
-            // SchedulingLogic
             return CreateWorkflowExecutionContext(
                 workflowInstance.Id,
                 workflowInstance.TenantId,
@@ -236,7 +229,7 @@ namespace Elsa.Services
                 workflowDefinitionActiveVersion.Version,
                 workflowDefinitionActiveVersion.Activities,
                 workflowDefinitionActiveVersion.Connections,
-                //scheduledActivities,
+                scheduledActivities,
                 blockingActivities,
                 workflowInstance.CorrelationId,
                 variables,
@@ -251,8 +244,7 @@ namespace Elsa.Services
             int version,
             IEnumerable<IActivity> activities,
             IEnumerable<Connection> connections,
-            // SchedulingLogic
-            //IEnumerable<ScheduledActivity>? scheduledActivities = default,
+            IEnumerable<ScheduledActivity>? scheduledActivities = default,
             IEnumerable<IActivity>? blockingActivities = default,
             string? correlationId = default,
             Variables? variables = default,
@@ -268,7 +260,7 @@ namespace Elsa.Services
                 version,
                 activities,
                 connections,
-                //scheduledActivities,
+                scheduledActivities,
                 blockingActivities,
                 correlationId,
                 variables,

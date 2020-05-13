@@ -23,8 +23,7 @@ namespace Elsa.Services.Models
             int version,
             IEnumerable<IActivity> activities,
             IEnumerable<Connection> connections,
-            // SchedulingLogic
-            //IEnumerable<ScheduledActivity>? scheduledActivities = default,
+            IEnumerable<ScheduledActivity>? scheduledActivities = default,
             IEnumerable<IActivity>? blockingActivities = default,
             string? correlationId = default,
             Variables? variables = default,
@@ -43,8 +42,7 @@ namespace Elsa.Services.Models
             Connections = connections.ToList();
             ExpressionEvaluator = expressionEvaluator;
             Clock = clock;
-            // SchedulingLogic
-            //ScheduledActivities = scheduledActivities != null ? new Stack<ScheduledActivity>(scheduledActivities) : new Stack<ScheduledActivity>();
+            ScheduledActivities = scheduledActivities != null ? new Stack<ScheduledActivity>(scheduledActivities) : new Stack<ScheduledActivity>();
             BlockingActivities = blockingActivities != null ? new HashSet<IActivity>(blockingActivities) : new HashSet<IActivity>();
             Variables = variables ?? new Variables();
             Status = status;
@@ -60,35 +58,32 @@ namespace Elsa.Services.Models
         public ICollection<IActivity> Activities { get; }
         public ICollection<Connection> Connections { get; }
         public WorkflowStatus Status { get; set; }
-        // SchedulingLogic
-        //public Stack<ScheduledActivity> ScheduledActivities { get; }
+        public Stack<ScheduledActivity> ScheduledActivities { get; }
         public HashSet<IActivity> BlockingActivities { get; }
         public Variables Variables { get; }
-        // SchedulingLogic
-        //public bool HasScheduledActivities => ScheduledActivities.Any();
-        //public ScheduledActivity? ScheduledActivity { get; private set; }
+        public bool HasScheduledActivities => ScheduledActivities.Any();
+        public ScheduledActivity? ScheduledActivity { get; private set; }
         public WorkflowFault? WorkflowFault { get; private set; }
         public Variable? Output { get; set; }
 
-        // SchedulingLogic
-        //public void ScheduleActivities(IEnumerable<IActivity> activities, Variable? input = default)
-        //{
-        //    foreach (var activity in activities)
-        //        ScheduleActivity(activity, input);
-        //}
+        public void ScheduleActivities(IEnumerable<IActivity> activities, Variable? input = default)
+        {
+            foreach (var activity in activities)
+                ScheduleActivity(activity, input);
+        }
 
-        //public void ScheduleActivities(IEnumerable<ScheduledActivity> activities)
-        //{
-        //    foreach (var activity in activities)
-        //        ScheduleActivity(activity);
-        //}
+        public void ScheduleActivities(IEnumerable<ScheduledActivity> activities)
+        {
+            foreach (var activity in activities)
+                ScheduleActivity(activity);
+        }
 
-        //public void ScheduleActivity(IActivity activity, object? input = default) => ScheduleActivity(new ScheduledActivity(activity, input));
-        //public void ScheduleActivity(IActivity activity, Variable? input = default) => ScheduleActivity(new ScheduledActivity(activity, input));
-        //public void ScheduleActivity(ScheduledActivity activity) => ScheduledActivities.Push(activity);
+        public void ScheduleActivity(IActivity activity, object? input = default) => ScheduleActivity(new ScheduledActivity(activity, input));
+        public void ScheduleActivity(IActivity activity, Variable? input = default) => ScheduleActivity(new ScheduledActivity(activity, input));
+        public void ScheduleActivity(ScheduledActivity activity) => ScheduledActivities.Push(activity);
 
-        //public ScheduledActivity PopScheduledActivity() => ScheduledActivity = ScheduledActivities.Pop();
-        //public ScheduledActivity PeekScheduledActivity() => ScheduledActivities.Peek();
+        public ScheduledActivity PopScheduledActivity() => ScheduledActivity = ScheduledActivities.Pop();
+        public ScheduledActivity PeekScheduledActivity() => ScheduledActivities.Peek();
         public IExpressionEvaluator ExpressionEvaluator { get; }
         public IClock Clock { get; }
         public string InstanceId { get; set; }
@@ -145,8 +140,7 @@ namespace Elsa.Services.Models
         public WorkflowInstance UpdateWorkflowInstance(WorkflowInstance workflowInstance)
         {
             workflowInstance.Variables = Variables;
-            // SchedulingLogic
-            //workflowInstance.ScheduledActivities = new Stack<Elsa.Models.ScheduledActivity>(ScheduledActivities.Select(x => new Elsa.Models.ScheduledActivity(x.Activity.Id, workflowInstance.TenantId, x.Input)));
+            workflowInstance.ScheduledActivities = new Stack<Elsa.Models.ScheduledActivity>(ScheduledActivities.Select(x => new Elsa.Models.ScheduledActivity(x.Activity.Id, workflowInstance.TenantId, x.Input)));
             workflowInstance.BlockingActivities = new HashSet<BlockingActivity>(BlockingActivities.Select(x => new BlockingActivity(x.Id, workflowInstance.TenantId, x.Type, x.Tag)), new BlockingActivityEqualityComparer());
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;

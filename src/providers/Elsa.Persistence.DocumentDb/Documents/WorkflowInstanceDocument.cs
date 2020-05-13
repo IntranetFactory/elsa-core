@@ -52,6 +52,9 @@ namespace Elsa.Persistence.DocumentDb.Documents
         [JsonProperty(PropertyName = "blockingActivities")]
         public HashSet<BlockingActivity> BlockingActivities { get; set; }
 
+        [JsonProperty(PropertyName = "scheduledActivities")]
+        public Stack<string> ScheduledActivities { get; set; }
+
         [JsonProperty(PropertyName = "executionLog")]
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
 
