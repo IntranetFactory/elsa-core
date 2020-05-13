@@ -46,8 +46,6 @@ namespace Elsa.Models
         public string? Description { get; set; }
         public Variables? Variables { get; set; }
         public bool IsSingleton { get; set; }
-        public WorkflowPersistenceBehavior PersistenceBehavior { get; set; }
-        public bool DeleteCompletedInstances { get; set; }
         public bool IsDisabled { get; set; }
         public bool IsPublished { get; set; }
         public bool IsLatest { get; set; }

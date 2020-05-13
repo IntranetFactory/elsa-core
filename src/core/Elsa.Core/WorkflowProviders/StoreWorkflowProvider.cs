@@ -45,8 +45,6 @@ namespace Elsa.WorkflowProviders
                 IsPublished = definitionVersion.IsPublished,
                 IsDisabled = definitionVersion.IsDisabled,
                 IsSingleton = definitionVersion.IsSingleton,
-                PersistenceBehavior = definitionVersion.PersistenceBehavior,
-                DeleteCompletedInstances = definitionVersion.DeleteCompletedInstances,
                 Activities = resolvedActivities.Values,
                 Connections = definitionVersion.Connections.Select(x => ResolveConnection(x, resolvedActivities)).ToList()
             };

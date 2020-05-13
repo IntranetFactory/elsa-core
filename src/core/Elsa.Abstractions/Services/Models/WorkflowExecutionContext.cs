@@ -28,7 +28,6 @@ namespace Elsa.Services.Models
             string? correlationId = default,
             Variables? variables = default,
             WorkflowStatus status = WorkflowStatus.Running,
-            WorkflowPersistenceBehavior persistenceBehavior = WorkflowPersistenceBehavior.WorkflowExecuted,
             WorkflowFault? workflowFault = default,
             IEnumerable<ExecutionLogEntry>? executionLog = default)
         {
@@ -46,7 +45,6 @@ namespace Elsa.Services.Models
             BlockingActivities = blockingActivities != null ? new HashSet<IActivity>(blockingActivities) : new HashSet<IActivity>();
             Variables = variables ?? new Variables();
             Status = status;
-            PersistenceBehavior = persistenceBehavior;
             WorkflowFault = workflowFault;
             ExecutionLog = executionLog?.ToList() ?? new List<ExecutionLogEntry>();
             IsFirstPass = true;
@@ -89,8 +87,6 @@ namespace Elsa.Services.Models
         public string InstanceId { get; set; }
         public int Version { get; }
         public string CorrelationId { get; set; }
-        public WorkflowPersistenceBehavior PersistenceBehavior { get; set; }
-        public bool DeleteCompletedInstances { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; }
         public bool IsFirstPass { get; private set; }
 

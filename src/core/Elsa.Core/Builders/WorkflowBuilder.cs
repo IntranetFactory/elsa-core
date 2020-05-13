@@ -35,8 +35,6 @@ namespace Elsa.Builders
         public string? Description { get; private set; }
         public int Version { get; private set; }
         public bool IsSingleton { get; private set; }
-        public WorkflowPersistenceBehavior PersistenceBehavior { get; private set; }
-        public bool DeleteCompletedInstances { get; private set; }
 
         public IWorkflowBuilder WithId(string value)
         {
@@ -71,18 +69,6 @@ namespace Elsa.Builders
         public IWorkflowBuilder AsTransient()
         {
             IsSingleton = false;
-            return this;
-        }
-
-        public IWorkflowBuilder WithPersistenceBehavior(WorkflowPersistenceBehavior value)
-        {
-            PersistenceBehavior = value;
-            return this;
-        }
-
-        public IWorkflowBuilder WithDeleteCompletedInstances(bool value)
-        {
-            DeleteCompletedInstances = value;
             return this;
         }
 
