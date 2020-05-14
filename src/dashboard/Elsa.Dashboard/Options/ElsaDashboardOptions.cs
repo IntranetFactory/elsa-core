@@ -6,9 +6,9 @@ namespace Elsa.Dashboard.Options
     {
         public ElsaDashboardOptions()
         {
-            ActivityDefinitions = new ActivityDefinitionList();
+            WorkflowDefinitionActivities = new WorkflowDefinitionActivityList();
         }
         
-        public ActivityDefinitionList ActivityDefinitions { get; set; }
+        public WorkflowDefinitionActivityList WorkflowDefinitionActivities { get; set; }
     }
 }

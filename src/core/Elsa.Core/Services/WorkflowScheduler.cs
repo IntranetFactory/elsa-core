@@ -160,7 +160,7 @@ namespace Elsa.Services
             var suspendedInstances = await workflowInstanceStore.ListByStatusAsync(workflowDefinitionActiveVersion.TenantId, workflowDefinitionActiveVersion.DefinitionId, WorkflowStatus.Suspended, cancellationToken).ToListAsync();
             var idleInstances = await workflowInstanceStore.ListByStatusAsync(workflowDefinitionActiveVersion.TenantId, workflowDefinitionActiveVersion.DefinitionId, WorkflowStatus.Idle, cancellationToken);
             var startActivities = workflowDefinitionActiveVersion.GetStartActivities().Select(x => x.Id).ToList();
-            var startedInstances = suspendedInstances.Where(x => x.BlockingActivities.Any(y => startActivities.Contains(y.ActivityId))).ToList();
+            var startedInstances = suspendedInstances.Where(x => x.WorkflowInstanceBlockingActivities.Any(y => startActivities.Contains(y.ActivityId))).ToList();
 
             return idleInstances.Concat(startedInstances);
         }

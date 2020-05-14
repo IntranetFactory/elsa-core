@@ -9,7 +9,7 @@ using Elsa.Services.Models;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Control Flow",
         Description = "Execute while a given condition is true.",
         Icon = "far fa-circle",

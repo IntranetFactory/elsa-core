@@ -13,7 +13,7 @@ namespace Elsa.Activities.Console
     /// <summary>
     /// Writes a text string to the console.
     /// </summary>
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Console",
         Description = "Write text to standard out.",
         Icon = "fas fa-terminal",

@@ -27,10 +27,10 @@ namespace Elsa.Persistence.DocumentDb.Documents
         public string Description { get; set; }
 
         [JsonProperty(PropertyName = "activities")]
-        public IList<ActivityDefinition> Activities { get; set; }
+        public IList<WorkflowDefinitionActivity> Activities { get; set; }
 
         [JsonProperty(PropertyName = "connections")]
-        public IList<ConnectionDefinition> Connections { get; set; }
+        public IList<WorkflowDefinitionConnection> Connections { get; set; }
 
         [JsonProperty(PropertyName = "variables")]
         public Variables Variables { get; set; }

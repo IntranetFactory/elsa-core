@@ -13,7 +13,7 @@ namespace Elsa.Activities.Reflection.Activities
     /// <summary>
     /// Split object in multiple parts to process separately.
     /// </summary>
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Reflection",
         Description = "Split object in multiple parts to process separately.",
         RuntimeDescription = "Split object in multiple parts to process separately.",

@@ -48,7 +48,6 @@ namespace Elsa.Services.Models
         public bool IsPublished { get; set; }
         public bool IsLatest { get; set; }
         public ICollection<IActivity> Activities { get; set; }
-
         public ICollection<Connection> Connections { get; set; }
     }
 }

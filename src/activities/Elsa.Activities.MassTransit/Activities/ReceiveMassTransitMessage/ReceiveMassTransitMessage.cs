@@ -11,7 +11,7 @@ using Elsa.Services.Models;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.MassTransit
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "MassTransit",
         DisplayName = "Receive MassTransit Message",
         Description = "Receive a message via MassTransit."

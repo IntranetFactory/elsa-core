@@ -2,7 +2,7 @@ using Elsa.Models;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Entities
 {
-    public class ActivityDefinitionEntity
+    public class WorkflowDefinitionActivityEntity
     {
         public int Id { get; set; }
         public int? TenantId { get; set; }

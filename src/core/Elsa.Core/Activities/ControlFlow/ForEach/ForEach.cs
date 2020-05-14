@@ -12,7 +12,7 @@ using Elsa.Services.Models;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Control Flow",
         Description = "Iterate over a collection.",
         Icon = "far fa-circle",

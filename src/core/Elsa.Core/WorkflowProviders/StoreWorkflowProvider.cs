@@ -52,15 +52,15 @@ namespace Elsa.WorkflowProviders
             return workflowDefinitionActiveVersion;
         }
 
-        private static Connection ResolveConnection(ConnectionDefinition connectionDefinition, IReadOnlyDictionary<string?, IActivity> activityDictionary)
+        private static Connection ResolveConnection(WorkflowDefinitionConnection workflowDefinitionConnection, IReadOnlyDictionary<string?, IActivity> activityDictionary)
         {
-            var source = activityDictionary[connectionDefinition.SourceActivityId];
-            var target = activityDictionary[connectionDefinition.DestinationActivityId];
-            var outcome = connectionDefinition.Outcome;
+            var source = activityDictionary[workflowDefinitionConnection.SourceActivityId];
+            var target = activityDictionary[workflowDefinitionConnection.DestinationActivityId];
+            var outcome = workflowDefinitionConnection.Outcome;
 
             return new Connection(source, target, outcome);
         }
 
-        private IActivity ResolveActivity(ActivityDefinition activityDefinition) => activityResolver.ResolveActivity(activityDefinition);
+        private IActivity ResolveActivity(WorkflowDefinitionActivity workflowDefinitionActivity) => activityResolver.ResolveActivity(workflowDefinitionActivity);
     }
 }

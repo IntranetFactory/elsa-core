@@ -8,7 +8,7 @@ using Elsa.Models;
 using Elsa.Results;
 using Elsa.Services.Models;
 using Microsoft.Extensions.Localization;
-using ScheduledActivity = Elsa.Services.Models.ScheduledActivity;
+using WorkflowInstanceTask = Elsa.Services.Models.WorkflowInstanceTask;
 
 namespace Elsa.Services
 {
@@ -46,12 +46,12 @@ namespace Elsa.Services
         protected OutcomeResult Done(params string[] outcomes) => Done(outcomes, default);
         protected OutcomeResult Done(Variable? output) => new OutcomeResult(null, output);
         protected SuspendResult Suspend() => new SuspendResult();
-        protected ScheduleActivitiesResult Schedule(params IActivity[] activities) => new ScheduleActivitiesResult(activities);
-        protected ScheduleActivitiesResult Schedule(IEnumerable<IActivity> activities, Variable input) => new ScheduleActivitiesResult(activities, input);
-        protected ScheduleActivitiesResult Schedule(IEnumerable<IActivity> activities, object input) => new ScheduleActivitiesResult(activities, Variable.From(input));
-        protected ScheduleActivitiesResult Schedule(IActivity activity, object input) => Schedule(new[] { activity }, input);
-        protected ScheduleActivitiesResult Schedule(IActivity activity, Variable input) => Schedule(new[] { activity }, input);
-        protected ScheduleActivitiesResult Schedule(IEnumerable<ScheduledActivity> activities) => new ScheduleActivitiesResult(activities);
+        protected WorkflowInstanceTasksResult Schedule(params IActivity[] activities) => new WorkflowInstanceTasksResult(activities);
+        protected WorkflowInstanceTasksResult Schedule(IEnumerable<IActivity> activities, Variable input) => new WorkflowInstanceTasksResult(activities, input);
+        protected WorkflowInstanceTasksResult Schedule(IEnumerable<IActivity> activities, object input) => new WorkflowInstanceTasksResult(activities, Variable.From(input));
+        protected WorkflowInstanceTasksResult Schedule(IActivity activity, object input) => Schedule(new[] { activity }, input);
+        protected WorkflowInstanceTasksResult Schedule(IActivity activity, Variable input) => Schedule(new[] { activity }, input);
+        protected WorkflowInstanceTasksResult Schedule(IEnumerable<WorkflowInstanceTask> activities) => new WorkflowInstanceTasksResult(activities);
         protected CombinedResult Combine(IEnumerable<IActivityExecutionResult> results) => new CombinedResult(results);
         protected CombinedResult Combine(params IActivityExecutionResult[] results) => new CombinedResult(results);
         protected FaultResult Fault(LocalizedString message) => new FaultResult(message);

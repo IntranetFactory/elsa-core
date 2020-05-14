@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteContext))]
-    [Migration("20200511142404_InitialCreate")]
+    [Migration("20200514101302_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,7 +19,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.1");
 
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ActivityDefinitionEntity", b =>
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionActivityEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,40 +57,10 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 
                     b.HasIndex("WorkflowDefinitionVersionId");
 
-                    b.ToTable("ActivityDefinitions");
+                    b.ToTable("WorkflowDefinitionActivities");
                 });
 
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.BlockingActivityEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ActivityId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ActivityType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Tag")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("TenantId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("WorkflowInstanceId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorkflowInstanceId");
-
-                    b.ToTable("BlockingActivities");
-                });
-
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ConnectionDefinitionEntity", b =>
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionConnectionEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -118,33 +88,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 
                     b.HasIndex("WorkflowDefinitionVersionId");
 
-                    b.ToTable("ConnectionDefinitions");
-                });
-
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ScheduledActivityEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ActivityId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Input")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("TenantId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("WorkflowInstanceId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorkflowInstanceId");
-
-                    b.ToTable("ScheduledActivityEntity");
+                    b.ToTable("WorkflowDefinitionConnections");
                 });
 
             modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionEntity", b =>
@@ -214,6 +158,36 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.ToTable("WorkflowDefinitionVersions");
                 });
 
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceBlockingActivityEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ActivityId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ActivityType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tag")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WorkflowInstanceId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowInstanceId");
+
+                    b.ToTable("WorkflowInstanceBlockingActivities");
+                });
+
             modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -272,7 +246,33 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.ToTable("WorkflowInstances");
                 });
 
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ActivityDefinitionEntity", b =>
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceTaskEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ActivityId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Input")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WorkflowInstanceId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowInstanceId");
+
+                    b.ToTable("WorkflowInstanceTaskEntity");
+                });
+
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionActivityEntity", b =>
                 {
                     b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionVersionEntity", "WorkflowDefinitionVersion")
                         .WithMany("Activities")
@@ -281,29 +281,11 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.BlockingActivityEntity", b =>
-                {
-                    b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceEntity", "WorkflowInstance")
-                        .WithMany("BlockingActivities")
-                        .HasForeignKey("WorkflowInstanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ConnectionDefinitionEntity", b =>
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionConnectionEntity", b =>
                 {
                     b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionVersionEntity", "WorkflowDefinitionVersion")
                         .WithMany("Connections")
                         .HasForeignKey("WorkflowDefinitionVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.ScheduledActivityEntity", b =>
-                {
-                    b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceEntity", "WorkflowInstance")
-                        .WithMany("ScheduledActivities")
-                        .HasForeignKey("WorkflowInstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -313,6 +295,24 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionEntity", "WorkflowDefinition")
                         .WithMany("WorkflowDefinitionVersions")
                         .HasForeignKey("DefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceBlockingActivityEntity", b =>
+                {
+                    b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceEntity", "WorkflowInstance")
+                        .WithMany("WorkflowInstanceBlockingActivities")
+                        .HasForeignKey("WorkflowInstanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceTaskEntity", b =>
+                {
+                    b.HasOne("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowInstanceEntity", "WorkflowInstance")
+                        .WithMany("WorkflowInstanceTasks")
+                        .HasForeignKey("WorkflowInstanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

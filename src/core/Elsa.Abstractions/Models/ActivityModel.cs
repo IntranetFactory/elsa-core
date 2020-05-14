@@ -20,26 +20,26 @@ namespace Elsa.Models
             Message = message;
         }
 
-        public ActivityModel(ActivityDefinition activityDefinition) : this(
-            activityDefinition.Id,
-            activityDefinition.TenantId,
-            activityDefinition.Type,
-            activityDefinition.Left,
-            activityDefinition.Top,
-            activityDefinition.State,
+        public ActivityModel(WorkflowDefinitionActivity workflowDefinitionActivity) : this(
+            workflowDefinitionActivity.Id,
+            workflowDefinitionActivity.TenantId,
+            workflowDefinitionActivity.Type,
+            workflowDefinitionActivity.Left,
+            workflowDefinitionActivity.Top,
+            workflowDefinitionActivity.State,
             false,
             false,
             false)
         {
         }
 
-        public ActivityModel(ActivityDefinition activityDefinition, bool blocking, bool executed, bool faulted, ActivityMessageModel? message = null) : this(
-            activityDefinition.Id,
-            activityDefinition.TenantId,
-            activityDefinition.Type,
-            activityDefinition.Left,
-            activityDefinition.Top,
-            activityDefinition.State,
+        public ActivityModel(WorkflowDefinitionActivity workflowDefinitionActivity, bool blocking, bool executed, bool faulted, ActivityMessageModel? message = null) : this(
+            workflowDefinitionActivity.Id,
+            workflowDefinitionActivity.TenantId,
+            workflowDefinitionActivity.Type,
+            workflowDefinitionActivity.Left,
+            workflowDefinitionActivity.Top,
+            workflowDefinitionActivity.State,
             blocking,
             executed,
             faulted,

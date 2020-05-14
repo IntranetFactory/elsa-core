@@ -14,7 +14,7 @@ namespace Elsa.Activities.Timers
     /// <summary>
     /// Triggers at a specific instant in the future.
     /// </summary>
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Timers",
         Description = "Triggers at a specified moment in time."
     )]

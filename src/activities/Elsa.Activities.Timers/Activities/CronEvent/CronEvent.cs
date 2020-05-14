@@ -13,7 +13,7 @@ using Elsa.Design;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Timers
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Timers",
         Description = "Triggers periodically based on a specified CRON expression.",
         RuntimeDescription = "x => !!x.state.cronExpression ? `<strong>${ x.state.cronExpression.expression }</strong>.` : x.definition.description",

@@ -14,11 +14,11 @@ namespace Elsa.Models
             Outcome = outcome;
         }
 
-        public ConnectionModel(ConnectionDefinition connectionDefinition) : this(
-            connectionDefinition.TenantId,
-            connectionDefinition.SourceActivityId,
-            connectionDefinition.DestinationActivityId,
-            connectionDefinition.Outcome)
+        public ConnectionModel(WorkflowDefinitionConnection workflowDefinitionConnection) : this(
+            workflowDefinitionConnection.TenantId,
+            workflowDefinitionConnection.SourceActivityId,
+            workflowDefinitionConnection.DestinationActivityId,
+            workflowDefinitionConnection.Outcome)
         {
         }
         public int? TenantId { get; set; }

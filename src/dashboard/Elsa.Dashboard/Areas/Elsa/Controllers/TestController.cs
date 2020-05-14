@@ -52,7 +52,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 return NotFound();
             } else
             {
-                var blockingActivityId = workflowInstance.BlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
+                var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
                 await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, actionName);
                 return Ok();
             }

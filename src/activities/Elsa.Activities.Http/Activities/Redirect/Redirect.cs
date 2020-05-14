@@ -12,7 +12,7 @@ using Microsoft.Extensions.Localization;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Http
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "HTTP",
         DisplayName = "Redirect",
         Description = "Write an HTTP redirect response.",

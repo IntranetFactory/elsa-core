@@ -11,7 +11,7 @@ using Elsa.ExpressionTypes;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Control Flow",
         Description = "Iterate between two numbers.",
         Icon = "far fa-circle",

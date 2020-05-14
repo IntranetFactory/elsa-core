@@ -22,7 +22,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         public Variables? Variables { get; set; }
         public Variables? Input { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
-        public ICollection<BlockingActivityEntity> BlockingActivities { get; set; }
-        public ICollection<ScheduledActivityEntity> ScheduledActivities { get; set; }
+        public ICollection<WorkflowInstanceBlockingActivityEntity> WorkflowInstanceBlockingActivities { get; set; }
+        public ICollection<WorkflowInstanceTaskEntity> WorkflowInstanceTasks { get; set; }
     }
 }

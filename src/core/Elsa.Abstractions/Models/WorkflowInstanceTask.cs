@@ -1,12 +1,12 @@
 namespace Elsa.Models
 {
-    public class ScheduledActivity
+    public class WorkflowInstanceTask
     {
-        public ScheduledActivity()
+        public WorkflowInstanceTask()
         {
         }
 
-        public ScheduledActivity(string activityId, int? tenantId, Variable? input = default)
+        public WorkflowInstanceTask(string activityId, int? tenantId, Variable? input = default)
         {
             ActivityId = activityId;
             TenantId = tenantId;

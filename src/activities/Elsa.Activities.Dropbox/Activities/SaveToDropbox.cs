@@ -10,7 +10,7 @@ using Elsa.Services.Models;
 
 namespace Elsa.Activities.Dropbox.Activities
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Dropbox",
         Description = "Saves a given file or byte array to a folder in Dropbox",
         Icon = "fab fa-dropbox")]

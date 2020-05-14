@@ -11,12 +11,12 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
             CreateMap<WorkflowDefinition, WorkflowDefinitionEntity>();
             CreateMap<WorkflowDefinitionEntity, WorkflowDefinition>();
 
-            CreateMap<ScheduledActivity, ScheduledActivityEntity>()
+            CreateMap<WorkflowInstanceTask, WorkflowInstanceTaskEntity>()
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
                 .ForMember(d => d.Input, d => d.MapFrom(s => s.Input));
 
-            CreateMap<ScheduledActivityEntity, ScheduledActivity>(MemberList.Destination)
+            CreateMap<WorkflowInstanceTaskEntity, WorkflowInstanceTask>(MemberList.Destination)
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
                 .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId));
@@ -32,22 +32,22 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
             CreateMap<WorkflowInstance, WorkflowInstanceEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())
                 .ForMember(d => d.InstanceId, d => d.MapFrom(s => s.Id))
-                .ForMember(d => d.ScheduledActivities, d => d.Ignore());
+                .ForMember(d => d.WorkflowInstanceTasks, d => d.Ignore());
 
             CreateMap<WorkflowInstanceEntity, WorkflowInstance>()
                 .ForMember(d => d.Id, d => d.MapFrom(s => s.InstanceId))
-                .ForMember(d => d.ScheduledActivities, d => d.Ignore());
+                .ForMember(d => d.WorkflowInstanceTasks, d => d.Ignore());
 
-            CreateMap<ActivityDefinition, ActivityDefinitionEntity>()
+            CreateMap<WorkflowDefinitionActivity, WorkflowDefinitionActivityEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.Id));
 
-            CreateMap<ActivityDefinitionEntity, ActivityDefinition>()
+            CreateMap<WorkflowDefinitionActivityEntity, WorkflowDefinitionActivity>()
                 .ForCtorParam("id", p => p.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.Id, d => d.MapFrom(s => s.ActivityId));
 
-            CreateMap<BlockingActivity, BlockingActivityEntity>().ReverseMap();
-            CreateMap<ConnectionDefinition, ConnectionDefinitionEntity>().ReverseMap();
+            CreateMap<WorkflowInstanceBlockingActivity, WorkflowInstanceBlockingActivityEntity>().ReverseMap();
+            CreateMap<WorkflowDefinitionConnection, WorkflowDefinitionConnectionEntity>().ReverseMap();
         }
     }
 }

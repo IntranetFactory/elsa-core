@@ -25,7 +25,7 @@ namespace Elsa.Samples.Serialization
             
             var workflowDefinitionVersion = new WorkflowDefinitionVersion
             {
-                Activities = new List<ActivityDefinition> { ActivityDefinition.FromActivity(writeLine) }
+                Activities = new List<WorkflowDefinitionActivity> { WorkflowDefinitionActivity.FromActivity(writeLine) }
             };
 
             var serializer = services.GetRequiredService<IWorkflowSerializer>();

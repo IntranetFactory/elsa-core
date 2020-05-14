@@ -20,9 +20,9 @@ namespace Elsa.Persistence.YesSql.Documents
         public DateTime? AbortedAt { get; set; }
         public Variables Variables { get; set; }
         public Variables Input { get; set; }
-        public HashSet<BlockingActivity> BlockingActivities { get; set; }
+        public HashSet<WorkflowInstanceBlockingActivity> WorkflowInstanceBlockingActivities { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
         public WorkflowFault Fault { get; set; }
-        public Stack<string> ScheduledActivities { get; set; }
+        public Stack<string> WorkflowInstanceTasks { get; set; }
     }
 }

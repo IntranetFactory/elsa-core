@@ -21,7 +21,7 @@ using HttpRequestHeaders = Elsa.Activities.Http.Models.HttpRequestHeaders;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Http
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "HTTP",
         DisplayName = "Send HTTP Request",
         Description = "Send an HTTP request.",

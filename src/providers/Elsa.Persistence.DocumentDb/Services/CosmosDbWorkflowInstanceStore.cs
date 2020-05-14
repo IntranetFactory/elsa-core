@@ -69,7 +69,7 @@ namespace Elsa.Persistence.DocumentDb.Services
                 .OrderByDescending(x => x.CreatedAt);
             return mapper.Map<IEnumerable<WorkflowInstance>>(query);
         }
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
             int? tenantId, 
             string activityType,
             string tag,
@@ -85,14 +85,14 @@ namespace Elsa.Persistence.DocumentDb.Services
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag && y.TenantId == tenantId));
+            query = query.Where(x => x.WorkflowInstanceBlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag && y.TenantId == tenantId));
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var instances = Map(query.ToList());
             return instances.GetBlockingActivities(activityType);
         }
 
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
             int? tenantId,
             string tag,
             string? correlationId = null,
@@ -107,14 +107,14 @@ namespace Elsa.Persistence.DocumentDb.Services
             if (!string.IsNullOrWhiteSpace(correlationId))
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.BlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId));
+            query = query.Where(x => x.WorkflowInstanceBlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId));
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var instances = Map(query.ToList());
             return instances.GetBlockingActivities();
         }
 
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityAsync(
             int? tenantId, 
             string activityType,
             string? correlationId = null,
@@ -129,7 +129,7 @@ namespace Elsa.Persistence.DocumentDb.Services
             if (!string.IsNullOrWhiteSpace(correlationId)) 
                 query = query.Where(x => x.CorrelationId == correlationId);
 
-            query = query.Where(x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.TenantId == tenantId));
+            query = query.Where(x => x.WorkflowInstanceBlockingActivities.Any(y => y.ActivityType == activityType && y.TenantId == tenantId));
             query = query.OrderByDescending(x => x.CreatedAt);
 
             var instances = Map(query.ToList());

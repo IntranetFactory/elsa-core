@@ -2,7 +2,7 @@ using Elsa.Models;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Entities
 {
-    public class ScheduledActivityEntity
+    public class WorkflowInstanceTaskEntity
     {
         public int Id { get; set; }
         public int? TenantId { get; set; }

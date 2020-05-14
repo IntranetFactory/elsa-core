@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Http;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Http
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "HTTP",
         DisplayName = "Receive HTTP Request",
         Description = "Receive an incoming HTTP request.",

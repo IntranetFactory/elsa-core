@@ -104,7 +104,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 instance,
                 definitionVersion,
                 workflow,
-                options.Value.ActivityDefinitions,
+                options.Value.WorkflowDefinitionActivities,
                 returnUrl);
 
             return View(model);
@@ -193,7 +193,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             }
             else
             {
-                var blockingActivityId = workflowInstance.BlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
+                var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
                 await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, decision);
                 return Ok();
             }
@@ -206,12 +206,12 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         private ActivityModel CreateActivityModel(
-            ActivityDefinition activityDefinition,
+            WorkflowDefinitionActivity workflowDefinitionActivity,
             WorkflowInstance workflowInstance)
         {
-            var isBlocking = workflowInstance.BlockingActivities.Any(x => x.ActivityId == activityDefinition.Id);
+            var isBlocking = workflowInstance.WorkflowInstanceBlockingActivities.Any(x => x.ActivityId == workflowDefinitionActivity.Id);
             var logEntry = workflowInstance.ExecutionLog.OrderByDescending(x => x.Timestamp)
-                .FirstOrDefault(x => x.ActivityId == activityDefinition.Id);
+                .FirstOrDefault(x => x.ActivityId == workflowDefinitionActivity.Id);
             var isExecuted = logEntry != null;
             var isFaulted = logEntry?.Faulted ?? false;
             var message = default(ActivityMessageModel);
@@ -225,7 +225,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             else if (isExecuted)
                 message = new ActivityMessageModel("Executed", logEntry.Message);
 
-            return new ActivityModel(activityDefinition, isBlocking, isExecuted, isFaulted, message);
+            return new ActivityModel(workflowDefinitionActivity, isBlocking, isExecuted, isFaulted, message);
         }
     }
 }

@@ -131,26 +131,24 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .WorkflowInstances.Where(x => x.TenantId == tenantId && x.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
-            var activityDefinitionRecords = await dbContext.ActivityDefinitions
+            var workflowDefinitionActivityRecords = await dbContext.WorkflowDefinitionActivities
                 .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionVersion.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
-            var connectionRecords = await dbContext.ConnectionDefinitions
+            var connectionRecords = await dbContext.WorkflowDefinitionConnections
                 .Where(x => x.TenantId == tenantId && x.WorkflowDefinitionVersion.DefinitionId == id)
                 .ToListAsync(cancellationToken);
 
-            var blockingActivityRecords = await dbContext.BlockingActivities
+            var blockingActivityRecords = await dbContext.WorkflowInstanceBlockingActivities
                 .Where(x => x.TenantId == tenantId && x.WorkflowInstance.DefinitionId == id)
                 .ToListAsync(cancellationToken);
-
-            
 
             dbContext.WorkflowInstances.RemoveRange(instanceRecords);
             dbContext.WorkflowDefinitionVersions.RemoveRange(definitionVersionRecords);
             dbContext.WorkflowDefinitions.RemoveRange(definitionRecords);
-            dbContext.ActivityDefinitions.RemoveRange(activityDefinitionRecords);
-            dbContext.ConnectionDefinitions.RemoveRange(connectionRecords);
-            dbContext.BlockingActivities.RemoveRange(blockingActivityRecords);
+            dbContext.WorkflowDefinitionActivities.RemoveRange(workflowDefinitionActivityRecords);
+            dbContext.WorkflowDefinitionConnections.RemoveRange(connectionRecords);
+            dbContext.WorkflowInstanceBlockingActivities.RemoveRange(blockingActivityRecords);
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -159,13 +157,13 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
 
         private void DeleteActivities(WorkflowDefinitionVersionEntity entity)
         {
-            dbContext.ActivityDefinitions.RemoveRange(entity.Activities);
+            dbContext.WorkflowDefinitionActivities.RemoveRange(entity.Activities);
             entity.Activities.Clear();
         }
         
         private void DeleteConnections(WorkflowDefinitionVersionEntity entity)
         {
-            dbContext.ConnectionDefinitions.RemoveRange(entity.Connections);
+            dbContext.WorkflowDefinitionConnections.RemoveRange(entity.Connections);
             entity.Connections.Clear();
         }
 

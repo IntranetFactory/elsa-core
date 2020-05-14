@@ -8,8 +8,8 @@ namespace Elsa.Models
         public WorkflowDefinitionVersion()
         {
             Variables = new Variables();
-            Activities = new List<ActivityDefinition>();
-            Connections = new List<ConnectionDefinition>();
+            Activities = new List<WorkflowDefinitionActivity>();
+            Connections = new List<WorkflowDefinitionConnection>();
         }
 
         public WorkflowDefinitionVersion(string id,
@@ -20,8 +20,8 @@ namespace Elsa.Models
             string description,
             Variables variables,
             bool isSingleton,
-            IEnumerable<ActivityDefinition> activities,
-            IEnumerable<ConnectionDefinition> connections,
+            IEnumerable<WorkflowDefinitionActivity> activities,
+            IEnumerable<WorkflowDefinitionConnection> connections,
             bool isDisabled
             )
         {
@@ -49,7 +49,7 @@ namespace Elsa.Models
         public bool IsDisabled { get; set; }
         public bool IsPublished { get; set; }
         public bool IsLatest { get; set; }
-        public ICollection<ActivityDefinition> Activities { get; set; }
-        public ICollection<ConnectionDefinition> Connections { get; set; }
+        public ICollection<WorkflowDefinitionActivity> Activities { get; set; }
+        public ICollection<WorkflowDefinitionConnection> Connections { get; set; }
     }
 }

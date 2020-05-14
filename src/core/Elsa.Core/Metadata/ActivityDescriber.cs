@@ -23,18 +23,18 @@ namespace Elsa.Metadata
 
         public ActivityDescriptor Describe(Type activityType)
         {
-            var activityDefinitionAttribute = activityType.GetCustomAttribute<ActivityDefinitionAttribute>();
-            var typeName = activityDefinitionAttribute?.Type ?? activityType.Name;
+            var workflowDefinitionActivityAttribute = activityType.GetCustomAttribute<WorkflowDefinitionActivityAttribute>();
+            var typeName = workflowDefinitionActivityAttribute?.Type ?? activityType.Name;
 
             var displayName =
-                activityDefinitionAttribute?.DisplayName ??
+                workflowDefinitionActivityAttribute?.DisplayName ??
                 activityType.Name.Humanize(LetterCasing.Title);
 
-            var description = activityDefinitionAttribute?.Description;
-            var runtimeDescription = activityDefinitionAttribute?.RuntimeDescription;
-            var category = activityDefinitionAttribute?.Category ?? "Miscellaneous";
-            var icon = activityDefinitionAttribute?.Icon;
-            var outcomes = activityDefinitionAttribute?.Outcomes ?? new[] { OutcomeNames.Done };
+            var description = workflowDefinitionActivityAttribute?.Description;
+            var runtimeDescription = workflowDefinitionActivityAttribute?.RuntimeDescription;
+            var category = workflowDefinitionActivityAttribute?.Category ?? "Miscellaneous";
+            var icon = workflowDefinitionActivityAttribute?.Icon;
+            var outcomes = workflowDefinitionActivityAttribute?.Outcomes ?? new[] { OutcomeNames.Done };
             var properties = DescribeProperties(activityType);
 
             return new ActivityDescriptor

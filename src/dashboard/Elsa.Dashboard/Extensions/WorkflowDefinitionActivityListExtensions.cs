@@ -8,16 +8,16 @@ using Scrutor;
 
 namespace Elsa.Dashboard.Extensions
 {
-    public static class ActivityDefinitionListExtensions
+    public static class WorkflowDefinitionActivityListExtensions
     {
         private static IActivityDescriber _activityDescriber { get; set; }
-        public static ActivityDefinitionList Add<T>(this ActivityDefinitionList list) where T : IActivity
+        public static WorkflowDefinitionActivityList Add<T>(this WorkflowDefinitionActivityList list) where T : IActivity
         {
             return list.Add(_activityDescriber.Describe<T>());
         }
 
-        public static ActivityDefinitionList Discover(
-            this ActivityDefinitionList list,
+        public static WorkflowDefinitionActivityList Discover(
+            this WorkflowDefinitionActivityList list,
             Action<ITypeSourceSelector> selector)
         {
             var typeSourceSelector = new TypeSourceSelector();
@@ -39,7 +39,7 @@ namespace Elsa.Dashboard.Extensions
         {
             _activityDescriber = activityDescriber;
 
-            options.ActivityDefinitions
+            options.WorkflowDefinitionActivities
                 // Add all activities from all referenced assemblies.
                 .Discover(
                     selector => selector.FromApplicationDependencies(x => !x.FullName.StartsWith("Microsoft.AspNetCore")) // TODO: Prevents type load exception. Needs more investigation.

@@ -4,16 +4,16 @@ using Elsa.Metadata;
 
 namespace Elsa.Dashboard.Options
 {
-    public class ActivityDefinitionList : IEnumerable<ActivityDescriptor>
+    public class WorkflowDefinitionActivityList : IEnumerable<ActivityDescriptor>
     {
-        public ActivityDefinitionList()
+        public WorkflowDefinitionActivityList()
         {
             Items = new Dictionary<string, ActivityDescriptor>();
         }
 
         private IDictionary<string, ActivityDescriptor> Items { get; }
         
-        public ActivityDefinitionList Add(ActivityDescriptor item)
+        public WorkflowDefinitionActivityList Add(ActivityDescriptor item)
         {
             Items[item.Type] = item;
             return this;

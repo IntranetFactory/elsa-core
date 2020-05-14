@@ -45,7 +45,7 @@ namespace Elsa.Persistence.YesSql.Indexes
 
             context.For<WorkflowInstanceBlockingActivitiesIndex>()
                 .Map(
-                    workflowInstance => workflowInstance.BlockingActivities
+                    workflowInstance => workflowInstance.WorkflowInstanceBlockingActivities
                         .Select(
                             activity => new WorkflowInstanceBlockingActivitiesIndex
                             {

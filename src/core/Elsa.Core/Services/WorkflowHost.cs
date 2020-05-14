@@ -13,7 +13,7 @@ using Elsa.Services.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using ScheduledActivity = Elsa.Services.Models.ScheduledActivity;
+using WorkflowInstanceTask = Elsa.Services.Models.WorkflowInstanceTask;
 
 namespace Elsa.Services
 {
@@ -142,7 +142,7 @@ namespace Elsa.Services
                 return;
 
             workflowExecutionContext.Status = WorkflowStatus.Running;
-            workflowExecutionContext.ScheduleActivity(activity, input);
+            workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, input);
             await RunAsync(workflowExecutionContext, Execute, cancellationToken);
         }
 
@@ -156,9 +156,9 @@ namespace Elsa.Services
             if (!await CanExecuteAsync(workflowExecutionContext, activity, input, cancellationToken))
                 return;
             
-            workflowExecutionContext.BlockingActivities.Remove(activity);
+            workflowExecutionContext.WorkflowInstanceBlockingActivities.Remove(activity);
             workflowExecutionContext.Status = WorkflowStatus.Running;
-            workflowExecutionContext.ScheduleActivity(activity, input);
+            workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, input);
             await RunAsync(workflowExecutionContext, Resume, cancellationToken);
         }
         
@@ -173,11 +173,11 @@ namespace Elsa.Services
             ActivityOperation activityOperation,
             CancellationToken cancellationToken = default)
         {
-            while (workflowExecutionContext.HasScheduledActivities)
+            while (workflowExecutionContext.HasWorkflowInstanceTasks)
             {
-                var scheduledActivity = workflowExecutionContext.PopScheduledActivity();
-                var currentActivity = scheduledActivity.Activity;
-                var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, scheduledActivity.Input);
+                var workflowInstanceTask = workflowExecutionContext.PopScheduledWorkflowInstanceTask();
+                var currentActivity = workflowInstanceTask.Activity;
+                var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
                 var result = await activityOperation(activityExecutionContext, currentActivity, cancellationToken);
 
                 await mediator.Publish(new ActivityExecuting(activityExecutionContext), cancellationToken);
@@ -192,18 +192,18 @@ namespace Elsa.Services
                 workflowExecutionContext.Complete();
         }
 
-        private ScheduledActivity CreateScheduledActivity(Elsa.Models.ScheduledActivity scheduledActivityModel, IDictionary<string, IActivity> activityLookup)
+        private WorkflowInstanceTask CreateScheduledWorkflowInstanceTask(Elsa.Models.WorkflowInstanceTask workflowInstanceTaskModel, IDictionary<string, IActivity> activityLookup)
         {
-            var activity = activityLookup[scheduledActivityModel.ActivityId];
-            return new ScheduledActivity(activity, scheduledActivityModel.Input);
+            var activity = activityLookup[workflowInstanceTaskModel.ActivityId];
+            return new WorkflowInstanceTask(activity, workflowInstanceTaskModel.Input);
         }
 
         private async Task<WorkflowExecutionContext> CreateWorkflowExecutionContext(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, WorkflowInstance workflowInstance)
         {
             var activityLookup = workflowDefinitionActiveVersion.Activities.ToDictionary(x => x.Id);
             var workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(workflowInstance.TenantId, workflowInstance.DefinitionId, VersionOptions.Latest);
-            var scheduledActivities = new Stack<ScheduledActivity>(workflowInstance.ScheduledActivities.Reverse().Select(x => CreateScheduledActivity(x, activityLookup)));
-            var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.ActivityId]));
+            var workflowInstanceTasks = new Stack<WorkflowInstanceTask>(workflowInstance.WorkflowInstanceTasks.Reverse().Select(x => CreateScheduledWorkflowInstanceTask(x, activityLookup)));
+            var workflowInstanceBlockingActivities = new HashSet<IActivity>(workflowInstance.WorkflowInstanceBlockingActivities.Select(x => activityLookup[x.ActivityId]));
             var variables = workflowInstance.Variables;
             var status = workflowInstance.Status;
 
@@ -228,8 +228,8 @@ namespace Elsa.Services
                 workflowDefinitionActiveVersion.Version,
                 workflowDefinitionActiveVersion.Activities,
                 workflowDefinitionActiveVersion.Connections,
-                scheduledActivities,
-                blockingActivities,
+                workflowInstanceTasks,
+                workflowInstanceBlockingActivities,
                 workflowInstance.CorrelationId,
                 variables,
                 status);
@@ -242,8 +242,8 @@ namespace Elsa.Services
             int version,
             IEnumerable<IActivity> activities,
             IEnumerable<Connection> connections,
-            IEnumerable<ScheduledActivity>? scheduledActivities = default,
-            IEnumerable<IActivity>? blockingActivities = default,
+            IEnumerable<WorkflowInstanceTask>? workflowInstanceTasks = default,
+            IEnumerable<IActivity>? workflowInstanceBlockingActivities = default,
             string? correlationId = default,
             Variables? variables = default,
             WorkflowStatus status = WorkflowStatus.Running)
@@ -257,8 +257,8 @@ namespace Elsa.Services
                 version,
                 activities,
                 connections,
-                scheduledActivities,
-                blockingActivities,
+                workflowInstanceTasks,
+                workflowInstanceBlockingActivities,
                 correlationId,
                 variables,
                 status);

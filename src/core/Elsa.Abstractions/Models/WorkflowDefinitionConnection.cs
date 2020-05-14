@@ -1,12 +1,12 @@
 namespace Elsa.Models
 {
-    public class ConnectionDefinition
+    public class WorkflowDefinitionConnection
     {
-        public ConnectionDefinition()
+        public WorkflowDefinitionConnection()
         {
         }
 
-        public ConnectionDefinition(int? tenantId, string sourceActivityId, string destinationActivityId, string outcome)
+        public WorkflowDefinitionConnection(int? tenantId, string sourceActivityId, string destinationActivityId, string outcome)
         {
             TenantId = tenantId;
             SourceActivityId = sourceActivityId;

@@ -12,7 +12,7 @@ namespace Elsa.Activities.Signaling
     /// <summary>
     /// Triggers the specified signal.
     /// </summary>
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Workflows",
         Description = "Trigger the specified signal.",
         Icon = "fas fa-broadcast-tower"

@@ -57,7 +57,7 @@ namespace Elsa.Persistence.Memory
             var workflows = workflowInstances.Values.Where(x => x.TenantId == tenantId).AsEnumerable();
             return Task.FromResult(workflows);
         }
-        public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
             int? tenantId, 
             string activityType,
             string tag,
@@ -72,13 +72,13 @@ namespace Elsa.Persistence.Memory
                 query = query.Where(x => x.CorrelationId == correlationId);
 
             query = query.Where(
-                x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag && y.TenantId == tenantId)
+                x => x.WorkflowInstanceBlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag && y.TenantId == tenantId)
             );
 
             return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
         }
 
-        public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
             int? tenantId,
             string tag,
             string? correlationId = null,
@@ -92,13 +92,13 @@ namespace Elsa.Persistence.Memory
                 query = query.Where(x => x.CorrelationId == correlationId);
 
             query = query.Where(
-                x => x.BlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId)
+                x => x.WorkflowInstanceBlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId)
             );
 
             return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
         }
 
-        public Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
+        public Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityAsync(
             int? tenantId, 
             string activityType,
             string? correlationId = default, 
@@ -112,7 +112,7 @@ namespace Elsa.Persistence.Memory
                 query = query.Where(x => x.CorrelationId == correlationId);
 
             query = query.Where(
-                x => x.BlockingActivities.Any(y => y.ActivityType == activityType && y.TenantId == tenantId)
+                x => x.WorkflowInstanceBlockingActivities.Any(y => y.ActivityType == activityType && y.TenantId == tenantId)
             );
 
             return Task.FromResult(query.AsEnumerable().GetBlockingActivities());

@@ -82,7 +82,7 @@ namespace Elsa.Persistence.YesSql.Services
                 .ListAsync();
             return mapper.Map<IEnumerable<WorkflowInstance>>(documents);
         }
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
             int? tenantId,
             string activityType, 
             string tag, 
@@ -105,7 +105,7 @@ namespace Elsa.Persistence.YesSql.Services
             return instances.GetBlockingActivities(activityType);
         }
 
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityTagAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
             int? tenantId,
             string tag,
             string correlationId = null,
@@ -127,7 +127,7 @@ namespace Elsa.Persistence.YesSql.Services
             return instances.GetBlockingActivities();
         }
 
-        public async Task<IEnumerable<(WorkflowInstance, BlockingActivity)>> ListByBlockingActivityAsync(
+        public async Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityAsync(
             int? tenantId, 
             string activityType,
             string correlationId = default,

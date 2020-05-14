@@ -12,7 +12,7 @@ using Elsa.Design;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Timers
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Timers",
         Description = "Triggers at a specified interval."
     )]

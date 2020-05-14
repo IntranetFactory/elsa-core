@@ -77,7 +77,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateTable(
-                name: "BlockingActivities",
+                name: "WorkflowInstanceBlockingActivities",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -90,9 +90,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BlockingActivities", x => x.Id);
+                    table.PrimaryKey("PK_WorkflowInstanceBlockingActivities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BlockingActivities_WorkflowInstances_WorkflowInstanceId",
+                        name: "FK_WorkflowInstanceBlockingActivities_WorkflowInstances_WorkflowInstanceId",
                         column: x => x.WorkflowInstanceId,
                         principalTable: "WorkflowInstances",
                         principalColumn: "Id",
@@ -100,7 +100,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateTable(
-                name: "ScheduledActivityEntity",
+                name: "WorkflowInstanceTaskEntity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -112,9 +112,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ScheduledActivityEntity", x => x.Id);
+                    table.PrimaryKey("PK_WorkflowInstanceTaskEntity", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ScheduledActivityEntity_WorkflowInstances_WorkflowInstanceId",
+                        name: "FK_WorkflowInstanceTaskEntity_WorkflowInstances_WorkflowInstanceId",
                         column: x => x.WorkflowInstanceId,
                         principalTable: "WorkflowInstances",
                         principalColumn: "Id",
@@ -122,7 +122,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActivityDefinitions",
+                name: "WorkflowDefinitionActivities",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -138,9 +138,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActivityDefinitions", x => x.Id);
+                    table.PrimaryKey("PK_WorkflowDefinitionActivities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ActivityDefinitions_WorkflowDefinitionVersions_WorkflowDefinitionVersionId",
+                        name: "FK_WorkflowDefinitionActivities_WorkflowDefinitionVersions_WorkflowDefinitionVersionId",
                         column: x => x.WorkflowDefinitionVersionId,
                         principalTable: "WorkflowDefinitionVersions",
                         principalColumn: "Id",
@@ -148,7 +148,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateTable(
-                name: "ConnectionDefinitions",
+                name: "WorkflowDefinitionConnections",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -161,9 +161,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ConnectionDefinitions", x => x.Id);
+                    table.PrimaryKey("PK_WorkflowDefinitionConnections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ConnectionDefinitions_WorkflowDefinitionVersions_WorkflowDefinitionVersionId",
+                        name: "FK_WorkflowDefinitionConnections_WorkflowDefinitionVersions_WorkflowDefinitionVersionId",
                         column: x => x.WorkflowDefinitionVersionId,
                         principalTable: "WorkflowDefinitionVersions",
                         principalColumn: "Id",
@@ -171,44 +171,44 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActivityDefinitions_WorkflowDefinitionVersionId",
-                table: "ActivityDefinitions",
+                name: "IX_WorkflowDefinitionActivities_WorkflowDefinitionVersionId",
+                table: "WorkflowDefinitionActivities",
                 column: "WorkflowDefinitionVersionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BlockingActivities_WorkflowInstanceId",
-                table: "BlockingActivities",
-                column: "WorkflowInstanceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ConnectionDefinitions_WorkflowDefinitionVersionId",
-                table: "ConnectionDefinitions",
+                name: "IX_WorkflowDefinitionConnections_WorkflowDefinitionVersionId",
+                table: "WorkflowDefinitionConnections",
                 column: "WorkflowDefinitionVersionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ScheduledActivityEntity_WorkflowInstanceId",
-                table: "ScheduledActivityEntity",
-                column: "WorkflowInstanceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkflowDefinitionVersions_DefinitionId",
                 table: "WorkflowDefinitionVersions",
                 column: "DefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkflowInstanceBlockingActivities_WorkflowInstanceId",
+                table: "WorkflowInstanceBlockingActivities",
+                column: "WorkflowInstanceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkflowInstanceTaskEntity_WorkflowInstanceId",
+                table: "WorkflowInstanceTaskEntity",
+                column: "WorkflowInstanceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ActivityDefinitions");
+                name: "WorkflowDefinitionActivities");
 
             migrationBuilder.DropTable(
-                name: "BlockingActivities");
+                name: "WorkflowDefinitionConnections");
 
             migrationBuilder.DropTable(
-                name: "ConnectionDefinitions");
+                name: "WorkflowInstanceBlockingActivities");
 
             migrationBuilder.DropTable(
-                name: "ScheduledActivityEntity");
+                name: "WorkflowInstanceTaskEntity");
 
             migrationBuilder.DropTable(
                 name: "WorkflowDefinitionVersions");

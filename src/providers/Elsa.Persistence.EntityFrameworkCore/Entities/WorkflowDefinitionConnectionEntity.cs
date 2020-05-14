@@ -1,6 +1,6 @@
 namespace Elsa.Persistence.EntityFrameworkCore.Entities
 {
-    public class ConnectionDefinitionEntity
+    public class WorkflowDefinitionConnectionEntity
     {
         public int Id { get; set; }
         public int? TenantId { get; set; }

@@ -2,13 +2,13 @@
 
 namespace Elsa.Services.Models
 {
-    public class ScheduledActivity
+    public class WorkflowInstanceTask
     {
-        public ScheduledActivity(IActivity activity, object? input = default) : this(activity, Variable.From(input))
+        public WorkflowInstanceTask(IActivity activity, object? input = default) : this(activity, Variable.From(input))
         {
         }
         
-        public ScheduledActivity(IActivity activity, Variable? input = default)
+        public WorkflowInstanceTask(IActivity activity, Variable? input = default)
         {
             Activity = activity;
             Input = input;

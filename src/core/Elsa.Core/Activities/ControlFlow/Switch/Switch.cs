@@ -12,7 +12,7 @@ using Elsa.Services.Models;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Control Flow",
         Description = "Switch execution based on a given expression.",
         Icon = "far fa-list-alt",

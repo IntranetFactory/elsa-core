@@ -56,7 +56,7 @@ namespace Elsa.Persistence.YesSql.Indexes
                 );
         }
 
-        private static IEnumerable<ActivityDefinition> GetStartActivities(WorkflowDefinitionVersionDocument workflow)
+        private static IEnumerable<WorkflowDefinitionActivity> GetStartActivities(WorkflowDefinitionVersionDocument workflow)
         {
             var destinationActivityIds = workflow.Connections.Select(x => x.DestinationActivityId).Distinct().ToLookup(x => x);
 

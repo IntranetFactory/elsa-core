@@ -13,7 +13,7 @@ namespace Elsa.Activities.Console
     /// <summary>
     /// Reads input from the console.
     /// </summary>
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Console",
         Description = "Read text from standard in.",
         Icon = "fas fa-terminal",

@@ -11,7 +11,7 @@ using Elsa.ExpressionTypes;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         DisplayName = "If/Else",
         Category = "Control Flow",
         Description = "Evaluate a Boolean expression and continue execution depending on the result.",

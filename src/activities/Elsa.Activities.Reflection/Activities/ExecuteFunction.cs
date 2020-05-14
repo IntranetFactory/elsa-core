@@ -16,7 +16,7 @@ namespace Elsa.Activities.Reflection.Activities
     /// <summary>
     /// Execute a method by reflection.
     /// </summary>
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Reflection",
         Description = "Execute a method by reflection.",
         RuntimeDescription = "a => !!a.state.variableName ? `Execute a Method by reflection and store the result into <strong>${ a.state.variableName }</strong>.` : 'Execute a Method by reflection.'",

@@ -18,7 +18,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         public bool IsPublished { get; set; }
         public bool IsLatest { get; set; }
         public WorkflowDefinitionEntity WorkflowDefinition { get; set; }
-        public ICollection<ActivityDefinitionEntity> Activities { get; set; }
-        public ICollection<ConnectionDefinitionEntity> Connections { get; set; }
+        public ICollection<WorkflowDefinitionActivityEntity> Activities { get; set; }
+        public ICollection<WorkflowDefinitionConnectionEntity> Connections { get; set; }
     }
 }

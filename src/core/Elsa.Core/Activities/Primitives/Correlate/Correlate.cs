@@ -12,7 +12,7 @@ namespace Elsa.Activities.Primitives
     /// <summary>
     /// Sets the CorrelationId of the workflow to a given value.
     /// </summary>
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Workflows",
         Description = "Set the CorrelationId of the workflow to a given value.",
         Icon = "fas fa-link"

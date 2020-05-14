@@ -39,9 +39,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
         public DbSet<WorkflowDefinitionEntity> WorkflowDefinitions { get; set; }
         public DbSet<WorkflowDefinitionVersionEntity> WorkflowDefinitionVersions { get; set; }
         public DbSet<WorkflowInstanceEntity> WorkflowInstances { get; set; }
-        public DbSet<ActivityDefinitionEntity> ActivityDefinitions { get; set; }
-        public DbSet<ConnectionDefinitionEntity> ConnectionDefinitions { get; set; }
-        public DbSet<BlockingActivityEntity> BlockingActivities { get; set; }
+        public DbSet<WorkflowDefinitionActivityEntity> WorkflowDefinitionActivities { get; set; }
+        public DbSet<WorkflowDefinitionConnectionEntity> WorkflowDefinitionConnections { get; set; }
+        public DbSet<WorkflowInstanceBlockingActivityEntity> WorkflowInstanceBlockingActivities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,10 +50,10 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             ConfigureWorkflowDefinition(modelBuilder);
             ConfigureWorkflowDefinitionVersion(modelBuilder);
             ConfigureWorkflowInstance(modelBuilder);
-            ConfigureActivityDefinition(modelBuilder);
+            ConfigureWorkflowDefinitionActivity(modelBuilder);
             ConfigureBlockingActivity(modelBuilder);
-            ConfigureScheduledActivity(modelBuilder);
-            ConfigureConnectionDefinition(modelBuilder);
+            ConfigureWorkflowInstanceTask(modelBuilder);
+            ConfigureWorkflowDefinitionConnection(modelBuilder);
         }
 
         private void ConfigureWorkflowDefinition(ModelBuilder modelBuilder)
@@ -81,10 +81,10 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
                 modelBuilder.HasDefaultSchema(DbContextCustomSchema.Schema);
 
                 // Apply the custom mapping to support the non-default schema to the types in used in this context.
-                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<ActivityDefinitionEntity>(DbContextCustomSchema));
-                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<BlockingActivityEntity>(DbContextCustomSchema));
-                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<ScheduledActivityEntity>(DbContextCustomSchema));
-                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<ConnectionDefinitionEntity>(DbContextCustomSchema));
+                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowDefinitionActivityEntity>(DbContextCustomSchema));
+                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowInstanceBlockingActivityEntity>(DbContextCustomSchema));
+                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowInstanceTaskEntity>(DbContextCustomSchema));
+                modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowDefinitionConnectionEntity>(DbContextCustomSchema));
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowDefinitionEntity>(DbContextCustomSchema));
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowDefinitionVersionEntity>(DbContextCustomSchema));
                 modelBuilder.ApplyConfiguration(new SchemaEntityTypeConfiguration<WorkflowInstanceEntity>(DbContextCustomSchema));
@@ -127,17 +127,17 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
                 );
             
             entity
-                .HasMany(x => x.BlockingActivities)
+                .HasMany(x => x.WorkflowInstanceBlockingActivities)
                 .WithOne(x => x.WorkflowInstance);
             
             entity
-                .HasMany(x => x.ScheduledActivities)
+                .HasMany(x => x.WorkflowInstanceTasks)
                 .WithOne(x => x.WorkflowInstance);
         }
 
-        private void ConfigureActivityDefinition(ModelBuilder modelBuilder)
+        private void ConfigureWorkflowDefinitionActivity(ModelBuilder modelBuilder)
         {
-            var entity = modelBuilder.Entity<ActivityDefinitionEntity>();
+            var entity = modelBuilder.Entity<WorkflowDefinitionActivityEntity>();
 
             entity.Property(x => x.Id).UseIdentityColumn();
 
@@ -151,23 +151,23 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
                 .HasConversion(x => Serialize(x), x => Deserialize<Variable>(x));
         }
         
-        private void ConfigureConnectionDefinition(ModelBuilder modelBuilder)
+        private void ConfigureWorkflowDefinitionConnection(ModelBuilder modelBuilder)
         {
-            var entity = modelBuilder.Entity<ConnectionDefinitionEntity>();
+            var entity = modelBuilder.Entity<WorkflowDefinitionConnectionEntity>();
 
             entity.Property(x => x.Id).UseIdentityColumn();
         }
         
         private void ConfigureBlockingActivity(ModelBuilder modelBuilder)
         {
-            var entity = modelBuilder.Entity<BlockingActivityEntity>();
+            var entity = modelBuilder.Entity<WorkflowInstanceBlockingActivityEntity>();
 
             entity.HasKey(x => x.Id);
         }
         
-        private void ConfigureScheduledActivity(ModelBuilder modelBuilder)
+        private void ConfigureWorkflowInstanceTask(ModelBuilder modelBuilder)
         {
-            var entity = modelBuilder.Entity<ScheduledActivityEntity>();
+            var entity = modelBuilder.Entity<WorkflowInstanceTaskEntity>();
 
             entity.HasKey(x => x.Id);
 

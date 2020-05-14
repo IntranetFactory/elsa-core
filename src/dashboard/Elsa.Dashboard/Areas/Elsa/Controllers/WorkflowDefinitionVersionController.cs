@@ -86,7 +86,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 Name = workflowDefinitionVersion.Name,
                 TenantId = tenantId,
                 Json = serializer.Serialize(workflowDefinitionVersion, JsonTokenFormatter.FormatName),
-                ActivityDefinitions = options.Value.ActivityDefinitions.ToArray(),
+                ActivityDefinitions = options.Value.WorkflowDefinitionActivities.ToArray(),
                 IsSingleton = workflowDefinitionVersion.IsSingleton,
                 IsDisabled = workflowDefinitionVersion.IsDisabled,
                 Description = workflowDefinitionVersion.Description
@@ -127,7 +127,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 Description = workflowDefinitionVersion.Description,
                 IsSingleton = workflowDefinitionVersion.IsSingleton,
                 IsDisabled = workflowDefinitionVersion.IsDisabled,
-                ActivityDefinitions = options.Value.ActivityDefinitions.ToArray(),
+                ActivityDefinitions = options.Value.WorkflowDefinitionActivities.ToArray(),
                 WorkflowModel = workflowModel
             };
 
@@ -299,7 +299,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             var hiddenActivityNames = new List<string>() { "ReadLine", "WriteLine", "Redirect", "WriteHttpResponse", "Inline" };
             List<ActivityDescriptor> activityDefinitions = new List<ActivityDescriptor>();
 
-            foreach (var activity in options.Value.ActivityDefinitions)
+            foreach (var activity in options.Value.WorkflowDefinitionActivities)
             {
                 if (!hiddenActivityNames.Contains(activity.Type))
                     activityDefinitions.Add(activity);
@@ -338,7 +338,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
             foreach (var activity in activities)
             {
-                workflowDefinitionVersion.Activities.Add(new ActivityDefinition(activity.Id, tenantId, activity.Type, activity.State, activity.Left, activity.Top));
+                workflowDefinitionVersion.Activities.Add(new WorkflowDefinitionActivity(activity.Id, tenantId, activity.Type, activity.State, activity.Left, activity.Top));
             }
 
             foreach (var activity in workflowDefinitionVersion.Activities)
@@ -350,7 +350,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
             foreach (var connection in connections)
             {
-                workflowDefinitionVersion.Connections.Add(new ConnectionDefinition(tenantId, connection.SourceActivityId, connection.DestinationActivityId, connection.Outcome));
+                workflowDefinitionVersion.Connections.Add(new WorkflowDefinitionConnection(tenantId, connection.SourceActivityId, connection.DestinationActivityId, connection.Outcome));
             }
 
             foreach (var connection in workflowDefinitionVersion.Connections)

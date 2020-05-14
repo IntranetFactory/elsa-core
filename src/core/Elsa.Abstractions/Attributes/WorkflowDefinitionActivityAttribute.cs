@@ -3,7 +3,7 @@ using System;
 namespace Elsa.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class ActivityDefinitionAttribute : Attribute
+    public class WorkflowDefinitionActivityAttribute : Attribute
     {
         public string? Type { get; set; }
         public string? DisplayName { get; set; }

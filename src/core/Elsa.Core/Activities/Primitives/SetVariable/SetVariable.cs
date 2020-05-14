@@ -9,7 +9,7 @@ using Elsa.Services.Models;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Primitives
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         DisplayName = "Set Variable",
         Description = "Set variable on the workflow.",
         Category = "Primitives",

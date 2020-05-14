@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ using MediatR;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Control Flow",
         Description = "Merge workflow execution back into a single branch.",
         Icon = "fas fa-code-branch",
@@ -73,10 +73,10 @@ namespace Elsa.Activities.ControlFlow
                 // Remove any inbound blocking activities.
                 var ancestorActivityIds = workflowExecutionContext.GetInboundActivityPath(this).ToList();
                 var blockingActivities =
-                    workflowExecutionContext.BlockingActivities.Where(x => ancestorActivityIds.Contains(x.Id)).ToList();
+                    workflowExecutionContext.WorkflowInstanceBlockingActivities.Where(x => ancestorActivityIds.Contains(x.Id)).ToList();
             
                 foreach (var blockingActivity in blockingActivities) 
-                    workflowExecutionContext.BlockingActivities.Remove(blockingActivity);
+                    workflowExecutionContext.WorkflowInstanceBlockingActivities.Remove(blockingActivity);
             }
             
             if (!done)

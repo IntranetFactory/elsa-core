@@ -1,6 +1,6 @@
 namespace Elsa.Persistence.EntityFrameworkCore.Entities
 {
-    public class BlockingActivityEntity
+    public class WorkflowInstanceBlockingActivityEntity
     {
         public int Id { get; set; }
         public int? TenantId { get; set; }

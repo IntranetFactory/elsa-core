@@ -9,7 +9,7 @@ using Elsa.Services.Models;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Signaling
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Workflows",
         Description = "Trigger all workflows that start with or are blocked on the specified activity type.",
         Icon = "fas fa-sitemap"

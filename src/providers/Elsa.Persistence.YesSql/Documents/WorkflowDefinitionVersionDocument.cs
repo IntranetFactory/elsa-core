@@ -12,8 +12,8 @@ namespace Elsa.Persistence.YesSql.Documents
         public string Name { get; set; }
         public string Description { get; set; }
         public WorkflowDefinition WorkflowDefinition { get; set; }
-        public ICollection<ActivityDefinition> Activities { get; set; }
-        public IList<ConnectionDefinition> Connections { get; set; }
+        public ICollection<WorkflowDefinitionActivity> Activities { get; set; }
+        public IList<WorkflowDefinitionConnection> Connections { get; set; }
         public Variables Variables { get; set; }
         public bool IsSingleton { get; set; }
         public bool IsDisabled { get; set; }

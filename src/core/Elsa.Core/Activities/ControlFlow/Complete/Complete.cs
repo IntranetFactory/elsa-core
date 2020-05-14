@@ -10,7 +10,7 @@ using Elsa.Services.Models;
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
 {
-    [ActivityDefinition(
+    [WorkflowDefinitionActivity(
         Category = "Workflows",
         Description = "Removes any blocking activities and sets the status of the workflow to Completed.",
         Icon = "fas fa-flag-checkered"
@@ -28,7 +28,7 @@ namespace Elsa.Activities.ControlFlow
         {
             var output = await context.EvaluateAsync(OutputValue, cancellationToken) ?? new Variable();
             
-            context.WorkflowExecutionContext.BlockingActivities.Clear();
+            context.WorkflowExecutionContext.WorkflowInstanceBlockingActivities.Clear();
             context.WorkflowExecutionContext.Complete();
             
             return Done(Variable.From(output));
