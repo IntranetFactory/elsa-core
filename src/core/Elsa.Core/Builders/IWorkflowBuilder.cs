@@ -11,8 +11,6 @@ namespace Elsa.Builders
         string Name { get; }
         string Description { get; }
         int Version { get; }
-        WorkflowPersistenceBehavior PersistenceBehavior { get; }
-        bool DeleteCompletedInstances { get; }
         IServiceProvider ServiceProvider { get; }
         IWorkflowBuilder WithId(string value);
         IWorkflowBuilder WithName(string value);

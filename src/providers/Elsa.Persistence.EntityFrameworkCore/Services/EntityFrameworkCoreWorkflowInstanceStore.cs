@@ -34,6 +34,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             if (existingEntity == null)
             {
                 var entity = Map(instance);
+                entity.ScheduledActivities = Map(instance.ScheduledActivities);
 
                 await dbContext.WorkflowInstances.AddAsync(entity, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);
@@ -45,6 +46,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 existingEntity.BlockingActivities.Clear();
 
                 var entity = mapper.Map(instance, existingEntity);
+                entity.ScheduledActivities = Map(instance.ScheduledActivities);
 
                 dbContext.WorkflowInstances.Update(entity);
                 await dbContext.SaveChangesAsync(cancellationToken);
@@ -231,5 +233,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         private WorkflowInstanceEntity Map(WorkflowInstance source) => mapper.Map<WorkflowInstanceEntity>(source);
         private WorkflowInstance Map(WorkflowInstanceEntity source) => mapper.Map<WorkflowInstance>(source);
         private IEnumerable<WorkflowInstance> Map(IEnumerable<WorkflowInstanceEntity> source) => mapper.Map<IEnumerable<WorkflowInstance>>(source);
+        private ICollection<ScheduledActivityEntity> Map(Stack<ScheduledActivity> source) => mapper.Map<ICollection<ScheduledActivityEntity>>(source);
+
     }
 }

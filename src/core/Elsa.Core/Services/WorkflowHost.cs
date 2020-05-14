@@ -206,7 +206,6 @@ namespace Elsa.Services
             var blockingActivities = new HashSet<IActivity>(workflowInstance.BlockingActivities.Select(x => activityLookup[x.ActivityId]));
             var variables = workflowInstance.Variables;
             var status = workflowInstance.Status;
-            var persistenceBehavior = workflowDefinitionActiveVersion.PersistenceBehavior;
 
             foreach (var activity in workflowDefinitionActiveVersion.Activities)
             {
@@ -233,8 +232,7 @@ namespace Elsa.Services
                 blockingActivities,
                 workflowInstance.CorrelationId,
                 variables,
-                status,
-                persistenceBehavior);
+                status);
         }
 
         private WorkflowExecutionContext CreateWorkflowExecutionContext(
@@ -248,8 +246,7 @@ namespace Elsa.Services
             IEnumerable<IActivity>? blockingActivities = default,
             string? correlationId = default,
             Variables? variables = default,
-            WorkflowStatus status = WorkflowStatus.Running,
-            WorkflowPersistenceBehavior persistenceBehavior = WorkflowPersistenceBehavior.WorkflowExecuted)
+            WorkflowStatus status = WorkflowStatus.Running)
             => new WorkflowExecutionContext(
                 expressionEvaluator,
                 clock,
@@ -264,7 +261,6 @@ namespace Elsa.Services
                 blockingActivities,
                 correlationId,
                 variables,
-                status,
-                persistenceBehavior);
+                status);
     }
 }

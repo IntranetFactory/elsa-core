@@ -12,14 +12,14 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
             CreateMap<WorkflowDefinitionEntity, WorkflowDefinition>();
 
             CreateMap<ScheduledActivity, ScheduledActivityEntity>()
-                .ForMember(d => d.Id, d => d.Ignore())
-                .ForMember(d => d.WorkflowInstance, d => d.Ignore())
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
+                .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
                 .ForMember(d => d.Input, d => d.MapFrom(s => s.Input));
 
-            CreateMap<ScheduledActivityEntity, ScheduledActivity>()
+            CreateMap<ScheduledActivityEntity, ScheduledActivity>(MemberList.Destination)
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
-                .ForMember(d => d.Input, d => d.MapFrom(s => s.Input));
+                .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
+                .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId));
 
             CreateMap<WorkflowDefinitionVersion, WorkflowDefinitionVersionEntity>()
                 .ForMember(d => d.VersionId, d => d.MapFrom(s => s.Id))
@@ -36,7 +36,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
 
             CreateMap<WorkflowInstanceEntity, WorkflowInstance>()
                 .ForMember(d => d.Id, d => d.MapFrom(s => s.InstanceId))
-                .ForMember(d => d.ScheduledActivities, d => d.MapFrom(s => s.ScheduledActivities));
+                .ForMember(d => d.ScheduledActivities, d => d.Ignore());
 
             CreateMap<ActivityDefinition, ActivityDefinitionEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())
