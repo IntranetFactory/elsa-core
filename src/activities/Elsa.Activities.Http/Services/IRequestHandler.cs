@@ -1,9 +1,11 @@
-using System.Threading.Tasks;
+// Commented out until we decide if the logic should be merged with UserTask
 
-namespace Elsa.Activities.Http.Services
-{
-    public interface IRequestHandler
-    {
-        Task<IRequestHandlerResult> HandleRequestAsync();
-    }
-}
+//using System.Threading.Tasks;
+
+//namespace Elsa.Activities.Http.Services
+//{
+//    public interface IRequestHandler
+//    {
+//        Task<IRequestHandlerResult> HandleRequestAsync();
+//    }
+//}

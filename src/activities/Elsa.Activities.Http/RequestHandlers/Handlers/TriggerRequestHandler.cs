@@ -1,4 +1,5 @@
-// TO DO: this is commented out until removed. It creates a compilation error from ListByBlockingActivityAsync
+// Commented out until we decide if the logic should be merged with UserTask
+
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;

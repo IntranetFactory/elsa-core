@@ -1,41 +1,43 @@
-using Microsoft.AspNetCore.DataProtection;
-using Newtonsoft.Json;
+// Commented out until we decide if the logic should be merged with UserTask
 
-namespace Elsa.Activities.Http.Services
-{
-    public class TokenService : ITokenService
-    {
-        private readonly IDataProtector dataProtector;
+//using Microsoft.AspNetCore.DataProtection;
+//using Newtonsoft.Json;
 
-        public TokenService(IDataProtectionProvider dataProtectionProvider)
-        {
-            dataProtector = dataProtectionProvider.CreateProtector("HTTP Workflow Tokens");
-        }
+//namespace Elsa.Activities.Http.Services
+//{
+//    public class TokenService : ITokenService
+//    {
+//        private readonly IDataProtector dataProtector;
 
-        public string CreateToken<T>(T payload)
-        {
-            var json = JsonConvert.SerializeObject(payload);
+//        public TokenService(IDataProtectionProvider dataProtectionProvider)
+//        {
+//            dataProtector = dataProtectionProvider.CreateProtector("HTTP Workflow Tokens");
+//        }
 
-            return dataProtector.Protect(json);
-        }
+//        public string CreateToken<T>(T payload)
+//        {
+//            var json = JsonConvert.SerializeObject(payload);
 
-        public bool TryDecryptToken<T>(string token, out T payload)
-        {
-            payload = default;
+//            return dataProtector.Protect(json);
+//        }
 
-            try
-            {
-                var json = dataProtector.Unprotect(token);
+//        public bool TryDecryptToken<T>(string token, out T payload)
+//        {
+//            payload = default;
 
-                payload = JsonConvert.DeserializeObject<T>(json);
-                return true;
-            }
-            catch
-            {
-                // ignored.
-            }
+//            try
+//            {
+//                var json = dataProtector.Unprotect(token);
 
-            return false;
-        }
-    }
-}
+//                payload = JsonConvert.DeserializeObject<T>(json);
+//                return true;
+//            }
+//            catch
+//            {
+//                // ignored.
+//            }
+
+//            return false;
+//        }
+//    }
+//}

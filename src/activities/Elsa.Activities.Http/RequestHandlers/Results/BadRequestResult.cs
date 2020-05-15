@@ -1,30 +1,32 @@
-using System.Net;
-using System.Threading.Tasks;
-using Elsa.Activities.Http.Services;
-using Microsoft.AspNetCore.Http;
+// Commented out until we decide if the logic should be merged with UserTask
 
-namespace Elsa.Activities.Http.RequestHandlers.Results
-{
-    public class BadRequestResult : IRequestHandlerResult
-    {
-        public BadRequestResult()
-        {
-        }
+//using System.Net;
+//using System.Threading.Tasks;
+//using Elsa.Activities.Http.Services;
+//using Microsoft.AspNetCore.Http;
 
-        public BadRequestResult(string message)
-        {
-            Message = message;
-        }
-        
-        public string Message { get; }
+//namespace Elsa.Activities.Http.RequestHandlers.Results
+//{
+//    public class BadRequestResult : IRequestHandlerResult
+//    {
+//        public BadRequestResult()
+//        {
+//        }
 
-        
-        public async Task ExecuteResultAsync(HttpContext httpContext, RequestDelegate next)
-        {
-            httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            
-            if(!string.IsNullOrWhiteSpace(Message))
-                await httpContext.Response.WriteAsync(Message, httpContext.RequestAborted);
-        }
-    }
-}
+//        public BadRequestResult(string message)
+//        {
+//            Message = message;
+//        }
+
+//        public string Message { get; }
+
+
+//        public async Task ExecuteResultAsync(HttpContext httpContext, RequestDelegate next)
+//        {
+//            httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+//            if(!string.IsNullOrWhiteSpace(Message))
+//                await httpContext.Response.WriteAsync(Message, httpContext.RequestAborted);
+//        }
+//    }
+//}

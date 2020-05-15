@@ -3,7 +3,7 @@ using Elsa.Activities.Http;
 using Elsa.Activities.Http.Models;
 using Elsa.Activities.Http.Options;
 using Elsa.Activities.Http.Parsers;
-using Elsa.Activities.Http.RequestHandlers.Handlers;
+//using Elsa.Activities.Http.RequestHandlers.Handlers;
 using Elsa.Activities.Http.Services;
 using Elsa.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -28,33 +28,34 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpClient(nameof(SendHttpRequest));
 
+            // Commented out until we decide if it should be used with UserTask
             services
-                .AddSingleton<ITokenService, TokenService>()
-                .AddSingleton<IHttpRequestBodyParser, DefaultHttpRequestBodyParser>()
-                .AddSingleton<IHttpRequestBodyParser, JsonHttpRequestBodyParser>()
-                .AddSingleton<IHttpRequestBodyParser, FormHttpRequestBodyParser>()
+                //.AddSingleton<ITokenService, TokenService>()
+                //.AddSingleton<IHttpRequestBodyParser, DefaultHttpRequestBodyParser>()
+                //.AddSingleton<IHttpRequestBodyParser, JsonHttpRequestBodyParser>()
+                //.AddSingleton<IHttpRequestBodyParser, FormHttpRequestBodyParser>()
                 .AddSingleton<IHttpResponseBodyParser, DefaultHttpResponseBodyParser>()
                 .AddSingleton<IHttpResponseBodyParser, JsonHttpResponseBodyParser>()
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-                .AddSingleton<IAbsoluteUrlProvider, DefaultAbsoluteUrlProvider>()
+                //.AddSingleton<IAbsoluteUrlProvider, DefaultAbsoluteUrlProvider>()
                 .AddTypeAlias<HttpResponseHeaders>()
                 .AddHttpContextAccessor()
                 .AddNotificationHandlers(typeof(ServiceCollectionExtensions))
                 .AddDataProtection();
 
-            // TO DO: check if TriggerRequestHandler should be removed
-            return services
+            // Commented out until we decide if it should be used with UserTask
+            return services;
                 //.AddRequestHandler<TriggerRequestHandler>()
-                .AddRequestHandler<SignalRequestHandler>();
+                //.AddRequestHandler<SignalRequestHandler>();
         }
-        
+
+        // Commented out until we decide if it should be used with UserTask
         public static IServiceCollection AddHttpActivities(this IServiceCollection services) =>
             services
-                .AddActivity<ReceiveHttpRequest>()
-                .AddActivity<WriteHttpResponse>()
-                .AddActivity<SendHttpRequest>()
-                .AddActivity<Redirect>();
+                //.AddActivity<ReceiveHttpRequest>()
+                .AddActivity<SendHttpRequest>();
 
-        public static IServiceCollection AddRequestHandler<THandler>(this IServiceCollection services) where THandler : class, IRequestHandler => services.AddScoped<THandler>();
+        // Commented out until we decide if it should be used with UserTask
+        //public static IServiceCollection AddRequestHandler<THandler>(this IServiceCollection services) where THandler : class, IRequestHandler => services.AddScoped<THandler>();
     }
 }

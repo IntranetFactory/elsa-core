@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
+// Commented out until we decide if the logic should be merged with UserTask
 
-namespace Elsa.Activities.Http.Models
-{
-    public class HttpRequestModel
-    {
-        public Uri Path { get; set; }
-        public string Method { get; set; }
-        public IDictionary<string, StringValuesModel> QueryString { get; set; }
-        public IDictionary<string, StringValuesModel> Headers { get; set; }
-        public object Body { get; set; }
-    }
-}
+//using System;
+//using System.Collections.Generic;
+
+//namespace Elsa.Activities.Http.Models
+//{
+//    public class HttpRequestModel
+//    {
+//        public Uri Path { get; set; }
+//        public string Method { get; set; }
+//        public IDictionary<string, StringValuesModel> QueryString { get; set; }
+//        public IDictionary<string, StringValuesModel> Headers { get; set; }
+//        public object Body { get; set; }
+//    }
+//}

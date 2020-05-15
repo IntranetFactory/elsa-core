@@ -1,87 +1,89 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Elsa.Activities.Http.Models;
-using Elsa.Activities.Http.RequestHandlers.Results;
-using Elsa.Activities.Http.Services;
-using Elsa.Models;
-using Elsa.Persistence;
-using Elsa.Services;
-using Microsoft.AspNetCore.Http;
+// Commented out until we decide if the logic should be merged with UserTask
 
-namespace Elsa.Activities.Http.RequestHandlers.Handlers
-{
-    public class SignalRequestHandler : IRequestHandler
-    {
-        private readonly HttpContext httpContext;
-        private readonly ITokenService tokenService;
-        private readonly IWorkflowHost workflowHost;
-        private readonly IWorkflowRegistry workflowRegistry;
-        private readonly IWorkflowInstanceStore workflowInstanceStore;
-        private readonly CancellationToken cancellationToken;
+//using System;
+//using System.Threading;
+//using System.Threading.Tasks;
+//using Elsa.Activities.Http.Models;
+//using Elsa.Activities.Http.RequestHandlers.Results;
+//using Elsa.Activities.Http.Services;
+//using Elsa.Models;
+//using Elsa.Persistence;
+//using Elsa.Services;
+//using Microsoft.AspNetCore.Http;
 
-        public SignalRequestHandler(
-            IHttpContextAccessor httpContextAccessor,
-            ITokenService tokenService,
-            IWorkflowHost workflowHost,
-            IWorkflowRegistry workflowRegistry,
-            IWorkflowInstanceStore workflowInstanceStore)
-        {
-            httpContext = httpContextAccessor.HttpContext;
-            this.tokenService = tokenService;
-            this.workflowHost = workflowHost;
-            this.workflowRegistry = workflowRegistry;
-            this.workflowInstanceStore = workflowInstanceStore;
-            cancellationToken = httpContext.RequestAborted;
-        }
+//namespace Elsa.Activities.Http.RequestHandlers.Handlers
+//{
+//    public class SignalRequestHandler : IRequestHandler
+//    {
+//        private readonly HttpContext httpContext;
+//        private readonly ITokenService tokenService;
+//        private readonly IWorkflowHost workflowHost;
+//        private readonly IWorkflowRegistry workflowRegistry;
+//        private readonly IWorkflowInstanceStore workflowInstanceStore;
+//        private readonly CancellationToken cancellationToken;
 
-        public async Task<IRequestHandlerResult> HandleRequestAsync()
-        {
-            var signal = DecryptToken();
+//        public SignalRequestHandler(
+//            IHttpContextAccessor httpContextAccessor,
+//            ITokenService tokenService,
+//            IWorkflowHost workflowHost,
+//            IWorkflowRegistry workflowRegistry,
+//            IWorkflowInstanceStore workflowInstanceStore)
+//        {
+//            httpContext = httpContextAccessor.HttpContext;
+//            this.tokenService = tokenService;
+//            this.workflowHost = workflowHost;
+//            this.workflowRegistry = workflowRegistry;
+//            this.workflowInstanceStore = workflowInstanceStore;
+//            cancellationToken = httpContext.RequestAborted;
+//        }
 
-            if (signal == null)
-                return new NotFoundResult();
+//        public async Task<IRequestHandlerResult> HandleRequestAsync()
+//        {
+//            var signal = DecryptToken();
 
-            var workflowInstance = await GetWorkflowInstanceAsync(signal);
+//            if (signal == null)
+//                return new NotFoundResult();
 
-            if (workflowInstance == null)
-                return new NotFoundResult();
+//            var workflowInstance = await GetWorkflowInstanceAsync(signal);
 
-            if (!CheckIfExecuting(workflowInstance))
-                return new BadRequestResult($"Cannot signal a workflow with status other than {WorkflowStatus.Running}. Actual workflow status: {workflowInstance.Status}.");
+//            if (workflowInstance == null)
+//                return new NotFoundResult();
 
-            await ResumeWorkflowAsync(workflowInstance, signal);
+//            if (!CheckIfExecuting(workflowInstance))
+//                return new BadRequestResult($"Cannot signal a workflow with status other than {WorkflowStatus.Running}. Actual workflow status: {workflowInstance.Status}.");
 
-            return new EmptyResult();
-        }
+//            await ResumeWorkflowAsync(workflowInstance, signal);
 
-        private Signal DecryptToken()
-        {
-            var token = httpContext.Request.Query["token"];
+//            return new EmptyResult();
+//        }
 
-            return tokenService.TryDecryptToken(token, out Signal signal) ? signal : default;
-        }
+//        private Signal DecryptToken()
+//        {
+//            var token = httpContext.Request.Query["token"];
 
-        private async Task<WorkflowInstance> GetWorkflowInstanceAsync(Signal signal) => 
-            await workflowInstanceStore.GetByIdAsync(signal.TenantId, signal.WorkflowInstanceId, cancellationToken);
+//            return tokenService.TryDecryptToken(token, out Signal signal) ? signal : default;
+//        }
 
-        private bool CheckIfExecuting(WorkflowInstance workflowInstance) => 
-            workflowInstance.Status == WorkflowStatus.Running;
+//        private async Task<WorkflowInstance> GetWorkflowInstanceAsync(Signal signal) => 
+//            await workflowInstanceStore.GetByIdAsync(signal.TenantId, signal.WorkflowInstanceId, cancellationToken);
 
-        private async Task ResumeWorkflowAsync(WorkflowInstance workflowInstanceModel, Signal signal)
-        {
-            var input = Variable.From(signal.Name);
+//        private bool CheckIfExecuting(WorkflowInstance workflowInstance) => 
+//            workflowInstance.Status == WorkflowStatus.Running;
 
-            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(
-                workflowInstanceModel.TenantId,
-                workflowInstanceModel.DefinitionId,
-                VersionOptions.SpecificVersion(workflowInstanceModel.Version),
-                cancellationToken);
+//        private async Task ResumeWorkflowAsync(WorkflowInstance workflowInstanceModel, Signal signal)
+//        {
+//            var input = Variable.From(signal.Name);
 
-            //var processInstance = processFactory.CreateProcessInstance(workflowDefinition, input, processInstanceModel);
-            //var blockingSignalActivities = processInstance.BlockingActivities.ToList();
-            //await workflowRunner.ResumeAsync(processInstance, blockingSignalActivities, cancellationToken);
-            throw new NotImplementedException();
-        }
-    }
-}
+//            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(
+//                workflowInstanceModel.TenantId,
+//                workflowInstanceModel.DefinitionId,
+//                VersionOptions.SpecificVersion(workflowInstanceModel.Version),
+//                cancellationToken);
+
+//            //var processInstance = processFactory.CreateProcessInstance(workflowDefinition, input, processInstanceModel);
+//            //var blockingSignalActivities = processInstance.BlockingActivities.ToList();
+//            //await workflowRunner.ResumeAsync(processInstance, blockingSignalActivities, cancellationToken);
+//            throw new NotImplementedException();
+//        }
+//    }
+//}

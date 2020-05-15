@@ -1,15 +1,17 @@
-namespace Elsa.Activities.Http.Services
-{
-    public interface ITokenService
-    {
-        /// <summary>
-        /// Creates a SAS (Shared Access Signature) token containing the specified data.
-        /// </summary>
-        string CreateToken<T>(T payload);
+// Commented out until we decide if the logic should be merged with UserTask
 
-        /// <summary>
-        /// Decrypts the specified SAS token.
-        /// </summary>
-        bool TryDecryptToken<T>(string token, out T payload);
-    }
-}
+//namespace Elsa.Activities.Http.Services
+//{
+//    public interface ITokenService
+//    {
+//        /// <summary>
+//        /// Creates a SAS (Shared Access Signature) token containing the specified data.
+//        /// </summary>
+//        string CreateToken<T>(T payload);
+
+//        /// <summary>
+//        /// Decrypts the specified SAS token.
+//        /// </summary>
+//        bool TryDecryptToken<T>(string token, out T payload);
+//    }
+//}

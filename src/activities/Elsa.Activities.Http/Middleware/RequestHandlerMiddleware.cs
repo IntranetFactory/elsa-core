@@ -1,24 +1,26 @@
-using System.Threading.Tasks;
-using Elsa.Activities.Http.Services;
-using Microsoft.AspNetCore.Http;
+// Commented out until we decide if the logic should be merged with UserTask
 
-namespace Elsa.Activities.Http.Middleware
-{
-    public class RequestHandlerMiddleware<THandler> where THandler : IRequestHandler
-    {
-        private readonly RequestDelegate next;
+//using System.Threading.Tasks;
+//using Elsa.Activities.Http.Services;
+//using Microsoft.AspNetCore.Http;
 
-        public RequestHandlerMiddleware(RequestDelegate next)
-        {
-            this.next = next;
-        }
+//namespace Elsa.Activities.Http.Middleware
+//{
+//    public class RequestHandlerMiddleware<THandler> where THandler : IRequestHandler
+//    {
+//        private readonly RequestDelegate next;
 
-        public async Task InvokeAsync(HttpContext httpContext, THandler handler)
-        {
-            var result = await handler.HandleRequestAsync();
+//        public RequestHandlerMiddleware(RequestDelegate next)
+//        {
+//            this.next = next;
+//        }
 
-            if (result != null && !httpContext.Response.HasStarted)
-                await result.ExecuteResultAsync(httpContext, next);
-        }
-    }
-}
+//        public async Task InvokeAsync(HttpContext httpContext, THandler handler)
+//        {
+//            var result = await handler.HandleRequestAsync();
+
+//            if (result != null && !httpContext.Response.HasStarted)
+//                await result.ExecuteResultAsync(httpContext, next);
+//        }
+//    }
+//}

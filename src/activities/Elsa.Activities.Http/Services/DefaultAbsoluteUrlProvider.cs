@@ -1,33 +1,35 @@
-using System;
-using Elsa.Activities.Http.Extensions;
-using Elsa.Activities.Http.Options;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+// Commented out until we decide if it should be used with UserTask
 
-namespace Elsa.Activities.Http.Services
-{
-    public class DefaultAbsoluteUrlProvider : IAbsoluteUrlProvider
-    {
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IOptions<HttpActivityOptions> options;
+//using System;
+//using Elsa.Activities.Http.Extensions;
+//using Elsa.Activities.Http.Options;
+//using Microsoft.AspNetCore.Http;
+//using Microsoft.Extensions.Options;
 
-        public DefaultAbsoluteUrlProvider(
-            IHttpContextAccessor httpContextAccessor,
-            IOptions<HttpActivityOptions> options)
-        {
-            this.httpContextAccessor = httpContextAccessor;
-            this.options = options;
-        }
+//namespace Elsa.Activities.Http.Services
+//{
+//    public class DefaultAbsoluteUrlProvider : IAbsoluteUrlProvider
+//    {
+//        private readonly IHttpContextAccessor httpContextAccessor;
+//        private readonly IOptions<HttpActivityOptions> options;
 
-        public Uri ToAbsoluteUrl(string relativePath)
-        {
-            var httpContext = httpContextAccessor.HttpContext;
+//        public DefaultAbsoluteUrlProvider(
+//            IHttpContextAccessor httpContextAccessor,
+//            IOptions<HttpActivityOptions> options)
+//        {
+//            this.httpContextAccessor = httpContextAccessor;
+//            this.options = options;
+//        }
 
-            if (httpContext != null)
-                return httpContext.Request.ToAbsoluteUrl(relativePath);
+//        public Uri ToAbsoluteUrl(string relativePath)
+//        {
+//            var httpContext = httpContextAccessor.HttpContext;
 
-            var baseUrl = options.Value.BaseUrl;
-            return baseUrl != null ? new Uri(baseUrl, relativePath) : new Uri(relativePath, UriKind.Relative);
-        }
-    }
-}
+//            if (httpContext != null)
+//                return httpContext.Request.ToAbsoluteUrl(relativePath);
+
+//            var baseUrl = options.Value.BaseUrl;
+//            return baseUrl != null ? new Uri(baseUrl, relativePath) : new Uri(relativePath, UriKind.Relative);
+//        }
+//    }
+//}

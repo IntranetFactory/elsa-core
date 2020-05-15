@@ -48,10 +48,10 @@ namespace Elsa.Dashboard.Web
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
-
             app
                 .UseStaticFiles()
-                .UseHttpActivities()
+                // Commented out until we decide if it should be used with UserTask
+                //.UseHttpActivities()
                 .UseRouting()
                 .UseEndpoints(endpoints => endpoints.MapControllers())
                 .UseWelcomePage();

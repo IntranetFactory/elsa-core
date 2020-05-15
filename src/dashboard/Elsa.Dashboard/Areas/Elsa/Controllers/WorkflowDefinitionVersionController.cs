@@ -296,7 +296,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         // this is used to create workflowData and serialize it so that it can be used in standalone designer
         private string CreateWorkflowDesignerJson(WorkflowDefinitionVersion workflowDefinitionVersion)
         {
-            var hiddenActivityNames = new List<string>() { "ReadLine", "WriteLine", "Redirect", "WriteHttpResponse", "Inline" };
+            var hiddenActivityNames = new List<string>() { "ReadLine", "WriteLine", "Redirect", "ReceiveHttpRequest", "Inline" };
             List<ActivityDescriptor> activityDefinitions = new List<ActivityDescriptor>();
 
             foreach (var activity in options.Value.WorkflowDefinitionActivities)

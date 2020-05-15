@@ -1,18 +1,20 @@
-using Elsa.Builders;
-using Microsoft.AspNetCore.Http;
+// Commented out until we decide if the logic should be merged with UserTask
 
-// ReSharper disable once CheckNamespace
-namespace Elsa.Activities.Http
-{
-    public static class ReceiveHttpRequestBuilderExtensions
-    {
-        public static ActivityBuilder ReceiveHttpRequest(
-            this IBuilder builder,
-            PathString path,
-            string method = default,
-            bool? readContent = default) => builder.Then<ReceiveHttpRequest>(x => x
-            .WithPath(path)
-            .WithMethod(method ?? HttpMethods.Get)
-            .WithReadContent(readContent ?? false));
-    }
-}
+//using Elsa.Builders;
+//using Microsoft.AspNetCore.Http;
+
+//// ReSharper disable once CheckNamespace
+//namespace Elsa.Activities.Http
+//{
+//    public static class ReceiveHttpRequestBuilderExtensions
+//    {
+//        public static ActivityBuilder ReceiveHttpRequest(
+//            this IBuilder builder,
+//            PathString path,
+//            string method = default,
+//            bool? readContent = default) => builder.Then<ReceiveHttpRequest>(x => x
+//            .WithPath(path)
+//            .WithMethod(method ?? HttpMethods.Get)
+//            .WithReadContent(readContent ?? false));
+//    }
+//}

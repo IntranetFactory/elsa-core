@@ -1,11 +1,13 @@
-using System.Threading.Tasks;
-using Elsa.Activities.Http.Services;
-using Microsoft.AspNetCore.Http;
+// Commented out until we decide if the logic should be merged with UserTask
 
-namespace Elsa.Activities.Http.RequestHandlers.Results
-{
-    public class EmptyResult : IRequestHandlerResult
-    {
-        public Task ExecuteResultAsync(HttpContext httpContext, RequestDelegate next) => Task.CompletedTask;
-    }
-}
+//using System.Threading.Tasks;
+//using Elsa.Activities.Http.Services;
+//using Microsoft.AspNetCore.Http;
+
+//namespace Elsa.Activities.Http.RequestHandlers.Results
+//{
+//    public class EmptyResult : IRequestHandlerResult
+//    {
+//        public Task ExecuteResultAsync(HttpContext httpContext, RequestDelegate next) => Task.CompletedTask;
+//    }
+//}
