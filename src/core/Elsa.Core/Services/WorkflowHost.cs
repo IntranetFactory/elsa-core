@@ -173,14 +173,26 @@ namespace Elsa.Services
             ActivityOperation activityOperation,
             CancellationToken cancellationToken = default)
         {
-            while (workflowExecutionContext.HasWorkflowInstanceTasks)
+            while (workflowExecutionContext.HasWorkflowInstanceTasks())
             {
-                var workflowInstanceTask = workflowExecutionContext.PopScheduledWorkflowInstanceTask();
+                var workflowInstanceTask = workflowExecutionContext.PeekScheduledWorkflowInstanceTask();
+                workflowExecutionContext.SetWorkflowInstanceTaskStatusToRunning();
+
                 var currentActivity = workflowInstanceTask.Activity;
                 var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
                 var result = await activityOperation(activityExecutionContext, currentActivity, cancellationToken);
 
                 await mediator.Publish(new ActivityExecuting(activityExecutionContext), cancellationToken);
+
+                if (result.GetType().Name == "FaultResult")
+                {
+                    workflowExecutionContext.SetWorkflowInstanceTaskStatusToFailed();
+                }
+                else
+                {
+                    workflowExecutionContext.PopScheduledWorkflowInstanceTask();
+                }
+
                 await result.ExecuteAsync(activityExecutionContext, cancellationToken);
                 await mediator.Publish(new ActivityExecuted(activityExecutionContext), cancellationToken);
 

@@ -1,4 +1,4 @@
-﻿using Elsa.Models;
+using Elsa.Models;
 
 namespace Elsa.Services.Models
 {
@@ -16,5 +16,6 @@ namespace Elsa.Services.Models
         
         public IActivity? Activity { get; }
         public Variable? Input { get; }
+        public WorkflowInstanceTaskStatus? Status { get; set; }
     }
 }

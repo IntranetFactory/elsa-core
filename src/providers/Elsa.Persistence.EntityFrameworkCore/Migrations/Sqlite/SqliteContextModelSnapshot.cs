@@ -257,6 +257,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.Property<string>("Input")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("Status")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("TenantId")
                         .HasColumnType("INTEGER");
 

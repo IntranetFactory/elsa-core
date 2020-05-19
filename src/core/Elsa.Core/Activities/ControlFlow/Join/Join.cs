@@ -18,114 +18,59 @@ namespace Elsa.Activities.ControlFlow
         Category = "Control Flow",
         Description = "Merge workflow execution back into a single branch.",
         Icon = "fas fa-code-branch",
-        RuntimeDescription = "x => !!x.state.joinMode ? `Merge workflow execution back into a single branch using mode <strong>${ x.state.joinMode }</strong>` : x.definition.description",
+        RuntimeDescription = "x => !!x.state.joinMode.value ? `Merge workflow execution back into a single branch using mode <strong>${ x.state.joinMode }</strong>` : x.definition.description",
         Outcomes = new[] { OutcomeNames.Done }
     )]
-    public class Join : Activity, INotificationHandler<ActivityExecuted>
+    public class Join : Activity
     {
         public Join()
         {
-            InboundTransitions = new List<string>().AsReadOnly();
-        }
-
-        public enum JoinMode
-        {
-            WaitAll,
-            WaitAny
-        }
-
-        [ActivityProperty(
-            Type = ActivityPropertyTypes.Select,
-            Hint = "Either 'WaitAll' or 'WaitAny'")
-        ]
-        [SelectOptions("WaitAll", "WaitAny")]
-        public JoinMode Mode
-        {
-            get => GetState(() => JoinMode.WaitAll);
-            set => SetState(value);
-        }
-
-        public IReadOnlyCollection<string> InboundTransitions
-        {
-            get => GetState<IReadOnlyCollection<string>>();
-            set => SetState(value);
         }
 
         protected override IActivityExecutionResult OnExecute(ActivityExecutionContext context)
         {
             var workflowExecutionContext = context.WorkflowExecutionContext;
-            var recordedInboundTransitions = InboundTransitions ?? new List<string>();
-            var inboundConnections = workflowExecutionContext.GetInboundConnections(this);
-            var done = false;
-            
-            switch (Mode)
+            var inboundConnectionActivityIds = workflowExecutionContext.GetInboundConnections(this).Select(x => x.Source.Activity.Id).ToList();
+            var allDone = true;
+
+            foreach(string id in inboundConnectionActivityIds)
             {
-                case JoinMode.WaitAll:
-                    done = inboundConnections.All(x => recordedInboundTransitions.Contains(GetTransitionKey(x)));
-                    break;
-                case JoinMode.WaitAny:
-                    done = inboundConnections.Any(x => recordedInboundTransitions.Contains(GetTransitionKey(x)));
-                    break;
+                if(workflowExecutionContext.WorkflowInstanceTasks.Where(x => x.Activity.Id == id).Any())
+                {
+                    allDone = false;
+                }
             }
-            
-            if (done)
+
+            if(allDone)
             {
                 // Remove any inbound blocking activities.
                 var ancestorActivityIds = workflowExecutionContext.GetInboundActivityPath(this).ToList();
-                var blockingActivities =
-                    workflowExecutionContext.WorkflowInstanceBlockingActivities.Where(x => ancestorActivityIds.Contains(x.Id)).ToList();
-            
-                foreach (var blockingActivity in blockingActivities) 
+
+                List<IActivity> blockingActivities = new List<IActivity>();
+
+                foreach (var blockingActivity in workflowExecutionContext.WorkflowInstanceBlockingActivities)
+                {
+                    if (ancestorActivityIds.Contains(blockingActivity.Id))
+                    {
+                        blockingActivities.Add(blockingActivity);
+                    }
+                    else
+                    {
+                        var thisActivity = workflowExecutionContext.WorkflowInstanceBlockingActivities.Where(x => x.Id == this.Id).FirstOrDefault();
+
+                        if (thisActivity != null)
+                            blockingActivities.Add(thisActivity);
+                    }
+                }
+
+                foreach (var blockingActivity in blockingActivities)
                     workflowExecutionContext.WorkflowInstanceBlockingActivities.Remove(blockingActivity);
             }
-            
-            if (!done)
+
+            if (!allDone)
                 return Noop();
             
-            // Clear the recorded inbound transitions. This is necessary in case we're in a looping construct. 
-            InboundTransitions = new List<string>();
             return Done();
-        }
-
-        private void RecordInboundTransitions(WorkflowExecutionContext workflowExecutionContext, IActivity activity)
-        {
-            // Get outbound connections of the executing activity.
-            var outboundConnections = workflowExecutionContext.GetOutboundConnections(activity);
-            
-            // Get any connection that is pointing to this activity.
-            var inboundTransitionsQuery =
-                from connection in outboundConnections
-                let targetActivity = connection.Target.Activity
-                where targetActivity.Type == nameof(Join)
-                select connection;
-            
-            var inboundConnections = inboundTransitionsQuery.ToList();
-            
-            // For each inbound connection, record the transition.
-            foreach (var inboundConnection in inboundConnections)
-            {
-                var joinActivity = (Join)inboundConnection.Target.Activity;
-                var inboundTransitions = joinActivity.InboundTransitions ?? new List<string>();
-                joinActivity.InboundTransitions = inboundTransitions
-                    .Union(new[] { GetTransitionKey(inboundConnection) })
-                    .Distinct()
-                    .ToList();
-            }
-        }
-
-        private string GetTransitionKey(Connection connection)
-        {
-            var sourceActivityId = connection.Source.Activity.Id;
-            var sourceOutcomeName = connection.Source.Outcome;
-        
-            return $"@{sourceActivityId}_{sourceOutcomeName}";
-        }
-
-        public Task Handle(ActivityExecuted notification, CancellationToken cancellationToken)
-        {
-            RecordInboundTransitions(notification.WorkflowExecutionContext, notification.Activity);
-        
-            return Task.CompletedTask;
         }
     }
 }

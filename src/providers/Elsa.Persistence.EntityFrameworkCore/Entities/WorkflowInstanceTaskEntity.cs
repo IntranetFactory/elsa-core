@@ -9,5 +9,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         public WorkflowInstanceEntity WorkflowInstance { get; set; }
         public string ActivityId { get; set; }
         public Variable? Input { get; set; }
+        public WorkflowInstanceTaskStatus? Status { get; set; }
     }
 }

@@ -14,12 +14,14 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
             CreateMap<WorkflowInstanceTask, WorkflowInstanceTaskEntity>()
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
-                .ForMember(d => d.Input, d => d.MapFrom(s => s.Input));
+                .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
+                .ForMember(d => d.Status, d => d.MapFrom(s => s.Status));
 
             CreateMap<WorkflowInstanceTaskEntity, WorkflowInstanceTask>(MemberList.Destination)
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
-                .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId));
+                .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
+                .ForMember(d => d.Status, d => d.MapFrom(s => s.Status));
 
             CreateMap<WorkflowDefinitionVersion, WorkflowDefinitionVersionEntity>()
                 .ForMember(d => d.VersionId, d => d.MapFrom(s => s.Id))
