@@ -12,6 +12,7 @@ namespace Elsa.Messaging.Domain.Handlers
         INotificationHandler<WorkflowExecuted>,
         INotificationHandler<WorkflowSuspended>,
         INotificationHandler<ActivityExecuted>,
+        INotificationHandler<ActivityScheduled>,
         INotificationHandler<WorkflowCompleted>
     {
         private readonly IWorkflowInstanceStore workflowInstanceStore;
@@ -34,6 +35,11 @@ namespace Elsa.Messaging.Domain.Handlers
         }
 
         public async Task Handle(ActivityExecuted notification, CancellationToken cancellationToken)
+        {
+            await SaveWorkflowAsync(notification.WorkflowExecutionContext, cancellationToken);
+        }
+
+        public async Task Handle(ActivityScheduled notification, CancellationToken cancellationToken)
         {
             await SaveWorkflowAsync(notification.WorkflowExecutionContext, cancellationToken);
         }

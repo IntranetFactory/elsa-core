@@ -177,7 +177,27 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 return NotFound();
 
             await workflowHost.RunWorkflowDefinitionAsync(tenantId, definitionId, activityId);
-            
+            return Ok();
+        }
+
+        [HttpPost("RunScheduledWorkflowInstance")]
+        public async Task<IActionResult> RunScheduledWorkflowInstance(string instanceId, CancellationToken cancellationToken)
+        {
+            int? tenantId = GetTenant();
+            await workflowHost.RunScheduledWorkflowInstanceAsync(tenantId, instanceId);
+            return Ok();
+        }
+
+        [HttpPost("ScheduleWorkflowInstance")]
+        public async Task<IActionResult> ScheduleWorkflowInstance(string definitionId, string? activityId, CancellationToken cancellationToken)
+        {
+            int? tenantId = GetTenant();
+            var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, definitionId, VersionOptions.Latest, cancellationToken);
+
+            if (definitionVersion == null)
+                return NotFound();
+
+            await workflowHost.ScheduleWorkflowInstanceAndPersistAsync(tenantId, definitionId, activityId);
             return Ok();
         }
 

@@ -70,6 +70,21 @@
                                     <td>@latest.WorkflowDefinitionVersion.Description</td>
                                     <td>
                                         <ul class="list-unstyled">
+                                            @if (latest.ScheduledCount > 0)
+                                            {
+                                                <li>
+                                                    <span class="badge badge-dot mr-4">
+                                                        <i class="bg-info"></i>
+                                                        <a asp-action="Index"
+                                                           asp-controller="WorkflowInstance"
+                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
+                                                           asp-route-status="Scheduled">
+                                                            @($"{latest.ScheduledCount} Scheduled")
+                                                        </a>
+                                                    </span>
+                                                </li>
+                                            }
                                             @if (latest.IdleCount > 0)
                                             {
                                                 <li>
@@ -115,7 +130,7 @@
                                                     </span>
                                                 </li>
                                             }
-                                            @if (latest.SuspendedCount > 0) 
+                                            @if (latest.SuspendedCount > 0)
                                             {
                                                 <li>
                                                     <span class="badge badge-dot mr-4">
@@ -130,7 +145,7 @@
                                                     </span>
                                                 </li>
                                             }
-                                            @if (latest.FaultedCount > 0) 
+                                            @if (latest.FaultedCount > 0)
                                             {
                                                 <li>
                                                     <span class="badge badge-dot mr-4">
@@ -145,7 +160,7 @@
                                                     </span>
                                                 </li>
                                             }
-                                            @if (latest.CancelledCount > 0) 
+                                            @if (latest.CancelledCount > 0)
                                             {
                                                 <li>
                                                     <span class="badge badge-dot mr-4">

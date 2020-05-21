@@ -61,12 +61,25 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var document = await dbContext
                 .WorkflowInstances
+                .Include(x => x.WorkflowInstanceTasks)
                 .Include(x => x.WorkflowInstanceBlockingActivities)
                 .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.InstanceId == id, cancellationToken);
 
-            return Map(document);
+            var instance = Map(document);
+
+            if(instance != null)
+            {
+                foreach (var workflowInstanceTaskEntity in document.WorkflowInstanceTasks)
+                {
+                    var workflowInstanceTask = Map(workflowInstanceTaskEntity);
+                    instance.WorkflowInstanceTasks.Push(workflowInstanceTask);
+                }
+            }
+
+            return instance;
         }
 
+        // TO DO: include WorkflowInstanceTasks for methods below if necessary
         public async Task<WorkflowInstance> GetByCorrelationIdAsync(
             int? tenantId,
             string correlationId,
@@ -232,6 +245,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
 
         private WorkflowInstanceEntity Map(WorkflowInstance source) => mapper.Map<WorkflowInstanceEntity>(source);
         private WorkflowInstance Map(WorkflowInstanceEntity source) => mapper.Map<WorkflowInstance>(source);
+        private WorkflowInstanceTask Map(WorkflowInstanceTaskEntity source) => mapper.Map<WorkflowInstanceTask>(source);
         private IEnumerable<WorkflowInstance> Map(IEnumerable<WorkflowInstanceEntity> source) => mapper.Map<IEnumerable<WorkflowInstance>>(source);
         private ICollection<WorkflowInstanceTaskEntity> Map(Stack<WorkflowInstanceTask> source) => mapper.Map<ICollection<WorkflowInstanceTaskEntity>>(source);
 

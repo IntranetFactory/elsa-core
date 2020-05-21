@@ -378,6 +378,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return new WorkflowDefinitionVersionListItemModel
             {
                 WorkflowDefinitionVersion = workflowDefinitionVersion,
+                ScheduledCount = instances.Count(x => x.Status == WorkflowStatus.Scheduled),
                 IdleCount = instances.Count(x => x.Status == WorkflowStatus.Idle),
                 RunningCount = instances.Count(x => x.Status == WorkflowStatus.Running),
                 CompletedCount = instances.Count(x => x.Status == WorkflowStatus.Completed),

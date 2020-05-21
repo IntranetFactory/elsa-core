@@ -82,6 +82,37 @@ namespace Elsa.Services
 
             return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
+        public async Task<WorkflowExecutionContext> RunScheduledWorkflowInstanceAsync(int? tenantId, string instanceId)
+        {
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
+            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowInstance.DefinitionId, VersionOptions.Published);
+            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, workflowInstance.WorkflowInstanceTasks.Pop().ActivityId);
+        }
+
+        public async Task<WorkflowExecutionContext> ScheduleWorkflowInstanceAndPersistAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
+        {
+            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
+            var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
+            var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
+            var activity = activityId != null ? workflowDefinitionActiveVersion.GetActivity(activityId) : default;
+
+            if (activity == null)
+                activity = workflowExecutionContext.GetStartActivities().First();
+
+            if (await CanExecuteAsync(workflowExecutionContext, activity, input, cancellationToken))
+            {
+                workflowExecutionContext.Status = WorkflowStatus.Scheduled;
+                workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, input);
+
+                var workflowInstanceTask = workflowExecutionContext.PeekScheduledWorkflowInstanceTask();
+                var currentActivity = workflowInstanceTask.Activity;
+                var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
+
+                await mediator.Publish(new ActivityScheduled(activityExecutionContext), cancellationToken);
+            }
+
+            return workflowExecutionContext;
+        }
 
         public async Task<WorkflowExecutionContext> RunWorkflowAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string? activityId = default, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
         {
@@ -103,6 +134,9 @@ namespace Elsa.Services
                     await RunWorkflowAsync(workflowExecutionContext, cancellationToken);
                     break;
                 case WorkflowStatus.Suspended:
+                    await ResumeWorkflowAsync(workflowExecutionContext, activity, input, cancellationToken);
+                    break;
+                case WorkflowStatus.Scheduled:
                     await ResumeWorkflowAsync(workflowExecutionContext, activity, input, cancellationToken);
                     break;
             }
@@ -173,6 +207,7 @@ namespace Elsa.Services
             ActivityOperation activityOperation,
             CancellationToken cancellationToken = default)
         {
+
             while (workflowExecutionContext.HasWorkflowInstanceTasks())
             {
                 var workflowInstanceTask = workflowExecutionContext.PeekScheduledWorkflowInstanceTask();
@@ -194,6 +229,7 @@ namespace Elsa.Services
                 }
 
                 await result.ExecuteAsync(activityExecutionContext, cancellationToken);
+
                 await mediator.Publish(new ActivityExecuted(activityExecutionContext), cancellationToken);
 
                 activityOperation = Execute;
