@@ -197,7 +197,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             if (definitionVersion == null)
                 return NotFound();
 
-            await workflowHost.WorkflowInstanceCreateAsync(tenantId, definitionId, activityId);
+            await workflowHost.ScheduleWorkflowInstanceAndPersistAsync(tenantId, definitionId, activityId);
             return Ok();
         }
 

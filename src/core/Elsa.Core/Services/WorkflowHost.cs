@@ -82,14 +82,14 @@ namespace Elsa.Services
 
             return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
-        public async Task<WorkflowExecutionContext> RunScheduledWorkflowInstanceAsync(int? tenantId, string workflowInstanceId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> RunScheduledWorkflowInstanceAsync(int? tenantId, string instanceId)
         {
-            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, workflowInstanceId);
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
             var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowInstance.DefinitionId, VersionOptions.Published);
             return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, workflowInstance.WorkflowInstanceTasks.Pop().ActivityId);
         }
 
-        public async Task<WorkflowExecutionContext> WorkflowInstanceCreateAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> ScheduleWorkflowInstanceAndPersistAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
         {
             var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
             var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);

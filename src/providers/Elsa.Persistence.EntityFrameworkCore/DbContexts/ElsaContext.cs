@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
-using SimpleJson;
 
 namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
 {
@@ -69,6 +68,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
 
             entity.Property(x => x.Id).UseIdentityColumn();
             entity.Property(x => x.DefinitionId);
+            entity.Property(x => x.Variables).HasConversion(x => Serialize(x), x => Deserialize<Variables>(x));
             entity.HasMany(x => x.Activities).WithOne(x => x.WorkflowDefinitionVersion);
             entity.HasMany(x => x.Connections).WithOne(x => x.WorkflowDefinitionVersion);
             entity.HasOne(x => x.WorkflowDefinition).WithMany(x => x.WorkflowDefinitionVersions).HasForeignKey(x => x.DefinitionId);
@@ -97,7 +97,14 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
 
             entity.Property(x => x.Id).UseIdentityColumn();
             entity.Property(x => x.Status).HasConversion<string>();
-
+            
+            entity
+                .Property(x => x.Variables)
+                .HasConversion(
+                    x => Serialize(x),
+                    x => Deserialize<Variables>(x)
+                );
+            
             entity
                 .Property(x => x.ExecutionLog)
                 .HasConversion(
@@ -111,7 +118,14 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
                     x => Serialize(x),
                     x => Deserialize<WorkflowFault>(x)
                 );
-
+            
+            entity
+                .Property(x => x.Input)
+                .HasConversion(
+                    x => Serialize(x),
+                    x => Deserialize<Variables>(x)
+                );
+            
             entity
                 .HasMany(x => x.WorkflowInstanceBlockingActivities)
                 .WithOne(x => x.WorkflowInstance);
@@ -127,6 +141,11 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
 
             entity.Property(x => x.Id).UseIdentityColumn();
 
+            entity
+                .Property(x => x.State)
+                .HasConversion(x => Serialize(x), x => Deserialize<Variables>(x));
+
+            // from activity instance table
             entity
                 .Property(x => x.Output)
                 .HasConversion(x => Serialize(x), x => Deserialize<Variable>(x));

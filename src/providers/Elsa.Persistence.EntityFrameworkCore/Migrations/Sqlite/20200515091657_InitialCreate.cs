@@ -38,8 +38,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     AbortedAt = table.Column<DateTime>(nullable: true),
                     Status = table.Column<string>(nullable: true),
                     Fault = table.Column<string>(nullable: true),
-                    ExecutionLog = table.Column<string>(nullable: false),
-                    Payload = table.Column<string>(type: "jsonb", nullable: false)
+                    Variables = table.Column<string>(nullable: true),
+                    Input = table.Column<string>(nullable: true),
+                    ExecutionLog = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,11 +59,11 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     Version = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
+                    Variables = table.Column<string>(nullable: false),
                     IsSingleton = table.Column<bool>(nullable: false),
                     IsDisabled = table.Column<bool>(nullable: false),
                     IsPublished = table.Column<bool>(nullable: false),
-                    IsLatest = table.Column<bool>(nullable: false),
-                    Payload = table.Column<string>(type: "jsonb", nullable: true)
+                    IsLatest = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,8 +134,8 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     Type = table.Column<string>(nullable: false),
                     Left = table.Column<int>(nullable: false),
                     Top = table.Column<int>(nullable: false),
-                    Output = table.Column<string>(nullable: true),
-                    Payload = table.Column<string>(type: "jsonb", nullable: true)
+                    State = table.Column<string>(nullable: false),
+                    Output = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

@@ -92,21 +92,18 @@ namespace Elsa.Models
                 }
                 else
                 {
-                    string expressionType = expression["Type"] != null ? expression["Type"] : expression["Value"]["Type"];
-                    string expressionValue = expression["Expression"] != null ? expression["Type"] : expression["Value"]["Expression"];
-
-                    switch (expressionType)
+                    switch (expression["Type"])
                     {
                         case "Literal":
-                            IWorkflowExpression literalExpression = new LiteralExpression(expressionValue);
+                            IWorkflowExpression literalExpression = new LiteralExpression(expression["Expression"]);
                             return (T)literalExpression;
 
                         case "JavaScript":
-                            IWorkflowExpression javaScriptExpression = new JavaScriptExpression(expressionValue);
+                            IWorkflowExpression javaScriptExpression = new JavaScriptExpression(expression["Expression"]);
                             return (T)javaScriptExpression;
 
                         case "Liquid":
-                            IWorkflowExpression liquidExpression = new LiquidExpression(expressionValue);
+                            IWorkflowExpression liquidExpression = new LiquidExpression(expression["Expression"]);
                             return (T)liquidExpression;
                     }
                 }
