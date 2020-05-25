@@ -43,13 +43,11 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         {
             get
             {
-                dynamic data = ConvertVariablesToJson(this._variables);
-                return data;
+                return ConvertVariablesToJson(this._variables);
             }
             set
             {
-                dynamic data = ConvertJsonToVariables(value);
-                this._variables = data;
+                this._variables = ConvertJsonToVariables(value);
             }
         }
 
@@ -61,7 +59,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
             {
                 foreach (var variable in variables)
                 {
-                    vars[variable.Key] = variable.Value;
+                    vars[variable.Key] = variable.Value.Value;
                 }
             }
 
