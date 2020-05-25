@@ -222,7 +222,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Payload")
-                        .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<DateTime?>("StartedAt")
