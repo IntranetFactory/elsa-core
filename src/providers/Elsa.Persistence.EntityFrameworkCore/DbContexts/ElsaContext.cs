@@ -99,13 +99,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             entity.Property(x => x.Status).HasConversion<string>();
             
             entity
-                .Property(x => x.Variables)
-                .HasConversion(
-                    x => Serialize(x),
-                    x => Deserialize<Variables>(x)
-                );
-            
-            entity
                 .Property(x => x.ExecutionLog)
                 .HasConversion(
                     x => Serialize(x),
@@ -117,13 +110,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
                 .HasConversion(
                     x => Serialize(x),
                     x => Deserialize<WorkflowFault>(x)
-                );
-            
-            entity
-                .Property(x => x.Input)
-                .HasConversion(
-                    x => Serialize(x),
-                    x => Deserialize<Variables>(x)
                 );
             
             entity

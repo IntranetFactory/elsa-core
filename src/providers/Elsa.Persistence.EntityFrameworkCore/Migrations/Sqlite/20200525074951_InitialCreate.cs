@@ -38,9 +38,8 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     AbortedAt = table.Column<DateTime>(nullable: true),
                     Status = table.Column<string>(nullable: true),
                     Fault = table.Column<string>(nullable: true),
-                    Variables = table.Column<string>(nullable: true),
-                    Input = table.Column<string>(nullable: true),
-                    ExecutionLog = table.Column<string>(nullable: false)
+                    ExecutionLog = table.Column<string>(nullable: false),
+                    Payload = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {

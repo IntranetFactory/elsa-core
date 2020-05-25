@@ -1,11 +1,13 @@
 using Elsa.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Elsa.Persistence.EntityFrameworkCore.Entities
 {
     public class WorkflowInstanceEntity
     {
+        private Variables _variables;
         public int Id { get; set; }
         public int? TenantId { get; set; }
         public string? InstanceId { get; set; }
@@ -19,10 +21,65 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         public DateTime? AbortedAt { get; set; }
         public WorkflowStatus? Status { get; set; }
         public WorkflowFault? Fault { get; set; }
-        public Variables? Variables { get; set; }
-        public Variables? Input { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
         public ICollection<WorkflowInstanceBlockingActivityEntity> WorkflowInstanceBlockingActivities { get; set; }
         public ICollection<WorkflowInstanceTaskEntity> WorkflowInstanceTasks { get; set; }
+
+        [NotMapped]
+        public Variables? Variables
+        {
+            get
+            {
+                return this._variables;
+            }
+            set
+            {
+                this._variables = value;
+            }
+        }
+
+        [Column(TypeName = "jsonb")]
+        public virtual string Payload
+        {
+            get
+            {
+                dynamic data = ConvertVariablesToJson(this._variables);
+                return data;
+            }
+            set
+            {
+                dynamic data = ConvertJsonToVariables(value);
+                this._variables = data;
+            }
+        }
+
+        private string ConvertVariablesToJson(Variables variables)
+        {
+            dynamic vars = new SimpleJson.JsonObject();
+
+            if(variables != null)
+            {
+                foreach (var variable in variables)
+                {
+                    vars[variable.Key] = variable.Value;
+                }
+            }
+
+            return SimpleJson.SimpleJson.SerializeObject(vars);
+        }
+
+        private Variables ConvertJsonToVariables(string jsonString)
+        {
+            dynamic vars = SimpleJson.SimpleJson.DeserializeObject<SimpleJson.JsonObject>(jsonString);
+
+            Variables variables = new Variables();
+
+            foreach (var variable in vars)
+            {
+                variables.SetVariable(variable.Key, variable.Value);
+            }
+
+            return variables;
+        }
     }
 }
