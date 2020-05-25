@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Dashboard.Areas.Elsa.ViewModels;
@@ -44,7 +47,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Index(
-            int? tenantId, 
+            int? tenantId,
             string definitionId,
             WorkflowStatus status,
             CancellationToken cancellationToken)
@@ -167,19 +170,6 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return NoContent();
         }
 
-        [HttpPost("CreateWorkflowInstance")]
-        public async Task<IActionResult> CreateWorkflowInstance(string definitionId, string? activityId, CancellationToken cancellationToken)
-        {
-            int? tenantId = GetTenant();
-            var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, definitionId, VersionOptions.Latest, cancellationToken);
-
-            if (definitionVersion == null)
-                return NotFound();
-
-            await workflowHost.RunWorkflowDefinitionAsync(tenantId, definitionId, activityId);
-            return Ok();
-        }
-
         [HttpPost("RunScheduledWorkflowInstance")]
         public async Task<IActionResult> RunScheduledWorkflowInstance(string instanceId, CancellationToken cancellationToken)
         {
@@ -187,18 +177,29 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             await workflowHost.RunScheduledWorkflowInstanceAsync(tenantId, instanceId);
             return Ok();
         }
-
-        [HttpPost("ScheduleWorkflowInstance")]
-        public async Task<IActionResult> ScheduleWorkflowInstance(string definitionId, string? activityId, CancellationToken cancellationToken)
+        // https://localhost:44332/Elsa/workflow-instance/Create/abc?correlationId=issue4711
+        [HttpPost("Create/{definitionId}")]
+        public async Task<IActionResult> CreateWorkflowInstance(string definitionId, string? correlationId = default, CancellationToken cancellationToken = default)
         {
             int? tenantId = GetTenant();
+            string payload = null;
+
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                payload = await reader.ReadToEndAsync();
+
+                if (String.IsNullOrEmpty(payload))
+                    payload = "{}";
+            }
+
             var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, definitionId, VersionOptions.Latest, cancellationToken);
 
             if (definitionVersion == null)
                 return NotFound();
 
-            await workflowHost.WorkflowInstanceCreateAsync(tenantId, definitionId, activityId);
-            return Ok();
+            var workflowExecutionContext = await workflowHost.WorkflowInstanceCreateAsync(tenantId, definitionId, correlationId, payload);
+
+            return Ok(workflowExecutionContext.InstanceId);
         }
 
         [HttpPost("SubmitUserTaskDecision")]

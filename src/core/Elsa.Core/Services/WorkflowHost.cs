@@ -89,20 +89,23 @@ namespace Elsa.Services
             return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, workflowInstance.WorkflowInstanceTasks.Pop().ActivityId);
         }
 
-        public async Task<WorkflowExecutionContext> WorkflowInstanceCreateAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
+        public async Task<WorkflowExecutionContext> WorkflowInstanceCreateAsync(int? tenantId, string workflowDefinitionId, string? correlationId = default, string? payload = default, CancellationToken cancellationToken = default)
         {
             var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
             var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
+
+            if(!String.IsNullOrEmpty(payload))
+            {
+                workflowInstance.Payload = payload;
+            }
+
             var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
-            var activity = activityId != null ? workflowDefinitionActiveVersion.GetActivity(activityId) : default;
+            var activity = workflowExecutionContext.GetStartActivities().First();
 
-            if (activity == null)
-                activity = workflowExecutionContext.GetStartActivities().First();
-
-            if (await CanExecuteAsync(workflowExecutionContext, activity, input, cancellationToken))
+            if (await CanExecuteAsync(workflowExecutionContext, activity, null, cancellationToken))
             {
                 workflowExecutionContext.Status = WorkflowStatus.Scheduled;
-                workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, input);
+                workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, null);
 
                 var workflowInstanceTask = workflowExecutionContext.PeekScheduledWorkflowInstanceTask();
                 var currentActivity = workflowInstanceTask.Activity;
