@@ -11,8 +11,8 @@ namespace Elsa.Services
         Task<WorkflowExecutionContext?> RunWorkflowInstanceAsync(int? tenantId, string workflowInstanceId, string? activityId = default, object? input = default, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionContext?> RunWorkflowInstanceAsync(WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default);
         Task<WorkflowExecutionContext> RunWorkflowDefinitionAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default);
-        Task<WorkflowExecutionContext> ScheduleWorkflowInstanceAndPersistAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default);
-        Task<WorkflowExecutionContext> RunScheduledWorkflowInstanceAsync(int? tenantId, string instanceId);
+        Task<WorkflowExecutionContext> WorkflowInstanceCreateAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default);
+        Task<WorkflowExecutionContext> RunScheduledWorkflowInstanceAsync(int? tenantId, string workflowInstanceId, string? activityId = default, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default);
         // /// <summary>
         // /// Resume a workflow instance.
         // /// </summary>
