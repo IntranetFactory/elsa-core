@@ -198,8 +198,9 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 return NotFound();
 
             var workflowExecutionContext = await workflowHost.WorkflowInstanceCreateAsync(tenantId, definitionId, correlationId, payload);
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, workflowExecutionContext.InstanceId);
 
-            return Ok(workflowExecutionContext.InstanceId);
+            return Ok(workflowInstance);
         }
 
         [HttpPost("SubmitUserTaskDecision")]
