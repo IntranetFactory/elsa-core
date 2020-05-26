@@ -92,7 +92,7 @@ namespace Elsa.Services.Models
         public void ScheduleWorkflowInstanceTask(IActivity activity, Variable? input = default) => ScheduleWorkflowInstanceTask(new WorkflowInstanceTask(activity, input));
         public void ScheduleWorkflowInstanceTask(WorkflowInstanceTask activity)
         {
-            activity.Status = WorkflowInstanceTaskStatus.Scheudled;
+            activity.Status = WorkflowInstanceTaskStatus.Scheduled;
             WorkflowInstanceTasks.Push(activity);
         }
 
