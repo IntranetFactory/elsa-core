@@ -140,7 +140,7 @@ namespace Elsa.Services
                     await ResumeWorkflowAsync(workflowExecutionContext, activity, input, cancellationToken);
                     break;
                 case WorkflowStatus.Scheduled:
-                    await ResumeWorkflowAsync(workflowExecutionContext, activity, input, cancellationToken);
+                    await BeginWorkflow(workflowExecutionContext, activity, input, cancellationToken);
                     break;
             }
 
