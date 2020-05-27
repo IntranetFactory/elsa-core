@@ -111,7 +111,8 @@ namespace Elsa.Services
                 var currentActivity = workflowInstanceTask.Activity;
                 var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
 
-                await mediator.Publish(new ActivityScheduled(activityExecutionContext), cancellationToken);
+                //await mediator.Publish(new ActivityScheduled(activityExecutionContext), cancellationToken);
+                await SaveWorkflowInstanceAsync(workflowExecutionContext, cancellationToken);
             }
 
             return workflowExecutionContext;
@@ -220,20 +221,35 @@ namespace Elsa.Services
                 var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
                 var result = await activityOperation(activityExecutionContext, currentActivity, cancellationToken);
 
-                await mediator.Publish(new ActivityExecuting(activityExecutionContext), cancellationToken);
-
-                if (result.GetType().Name == "FaultResult")
+                if(result is ExecutionResult)
                 {
-                    workflowExecutionContext.SetWorkflowInstanceTaskStatusToFailed();
+                    var executionResult = (ExecutionResult)result;
+
+                    if(executionResult.Status == WorkflowInstanceTaskStatus.Completed)
+                    {
+                        workflowExecutionContext.PopScheduledWorkflowInstanceTask();
+                    }
+
+                    ExecuteActivityResult(activityExecutionContext, executionResult);
                 }
                 else
                 {
-                    workflowExecutionContext.PopScheduledWorkflowInstanceTask();
+                    //await mediator.Publish(new ActivityExecuting(activityExecutionContext), cancellationToken);
+
+                    if (result.GetType().Name == "FaultResult")
+                    {
+                        workflowExecutionContext.SetWorkflowInstanceTaskStatusToFailed();
+                    }
+                    else
+                    {
+                        workflowExecutionContext.PopScheduledWorkflowInstanceTask();
+                    }
+
+                    await result.ExecuteAsync(activityExecutionContext, cancellationToken);
                 }
 
-                await result.ExecuteAsync(activityExecutionContext, cancellationToken);
-
-                await mediator.Publish(new ActivityExecuted(activityExecutionContext), cancellationToken);
+                //await mediator.Publish(new ActivityExecuted(activityExecutionContext), cancellationToken);
+                await SaveWorkflowInstanceAsync(workflowExecutionContext, cancellationToken);
 
                 activityOperation = Execute;
                 workflowExecutionContext.CompletePass();
@@ -313,5 +329,40 @@ namespace Elsa.Services
                 correlationId,
                 variables,
                 status);
+        private async Task SaveWorkflowInstanceAsync(WorkflowExecutionContext workflowExecutionContext, CancellationToken cancellationToken)
+        {
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(workflowExecutionContext.TenantId, workflowExecutionContext.InstanceId, cancellationToken);
+
+            if (workflowInstance == null)
+                workflowInstance = workflowExecutionContext.CreateWorkflowInstance();
+            else
+                workflowInstance = workflowExecutionContext.UpdateWorkflowInstance(workflowInstance);
+
+            await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
+        }
+
+        private void ExecuteActivityResult(ActivityExecutionContext activityExecutionContext, ExecutionResult executionResult)
+        {
+            if (executionResult.Output != null)
+                activityExecutionContext.Output = executionResult.Output;
+
+            activityExecutionContext.Outcomes = executionResult.Outcomes.ToList();
+
+            var workflowExecutionContext = activityExecutionContext.WorkflowExecutionContext;
+            var nextActivities = GetNextActivities(workflowExecutionContext, activityExecutionContext.Activity, executionResult.Outcomes).ToList();
+
+            workflowExecutionContext.ScheduleWorkflowInstanceTasks(nextActivities, executionResult.Output);
+        }
+
+        private IEnumerable<IActivity> GetNextActivities(WorkflowExecutionContext workflowContext, IActivity source, IEnumerable<string> outcomes)
+        {
+            var query =
+                from connection in workflowContext.Connections
+                from outcome in outcomes
+                where connection.Source.Activity == source && (connection.Source.Outcome ?? OutcomeNames.Done).Equals(outcome, StringComparison.OrdinalIgnoreCase)
+                select connection.Target.Activity;
+
+            return query.Distinct();
+        }
     }
 }

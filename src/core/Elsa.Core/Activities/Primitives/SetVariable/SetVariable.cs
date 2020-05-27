@@ -2,9 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Expressions;
+using Elsa.Models;
 using Elsa.Results;
 using Elsa.Services;
 using Elsa.Services.Models;
+using Microsoft.Extensions.Localization;
 
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.Primitives
@@ -47,7 +49,7 @@ namespace Elsa.Activities.Primitives
             var value = await context.EvaluateAsync(Value, cancellationToken);
 
             context.SetVariable(VariableName, value);
-            return Done();
+            return ExecutionResult(WorkflowInstanceTaskStatus.Completed);
         }
     }
 }

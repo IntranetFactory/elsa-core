@@ -38,6 +38,13 @@ namespace Elsa.Services
         protected T GetState<T>(Func<T>? defaultValue = null, [CallerMemberName] string? name = null) => State.GetState(name, defaultValue);
         protected void SetState(object value, [CallerMemberName] string? name = null) => State.SetState(value, name);
         protected NoopResult Noop() => new NoopResult();
+        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status) => new ExecutionResult(status);
+        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, string outcome, Variable? output) => new ExecutionResult(status, message, new[] { outcome }, output);
+        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, IEnumerable<string> outcomes, Variable? output) => new ExecutionResult(status, message, outcomes, output);
+        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, IEnumerable<string> outcomes, object? output) => new ExecutionResult(status, message, outcomes, Variable.From(output));
+        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, IEnumerable<string> outcomes) => new ExecutionResult(status, message, outcomes, default);
+        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, params string[] outcomes) => new ExecutionResult(status, message, outcomes, default);
+        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, Variable? output) => new ExecutionResult(status, message, null, output);
         protected OutcomeResult Done() => new OutcomeResult();
         protected OutcomeResult Done(string outcome, Variable? output) => Done(new[] { outcome }, output);
         protected OutcomeResult Done(IEnumerable<string> outcomes, Variable? output) => new OutcomeResult(outcomes, output);
@@ -54,6 +61,6 @@ namespace Elsa.Services
         protected WorkflowInstanceTasksResult Schedule(IEnumerable<WorkflowInstanceTask> activities) => new WorkflowInstanceTasksResult(activities);
         protected CombinedResult Combine(IEnumerable<IActivityExecutionResult> results) => new CombinedResult(results);
         protected CombinedResult Combine(params IActivityExecutionResult[] results) => new CombinedResult(results);
-        protected FaultResult Fault(LocalizedString message) => new FaultResult(message);
+        protected FaultResult Fault(LocalizedString message, WorkflowInstanceTaskStatus status) => new FaultResult(message, status);
     }
 }

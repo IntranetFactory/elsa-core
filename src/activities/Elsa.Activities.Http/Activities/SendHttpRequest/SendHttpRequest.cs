@@ -11,6 +11,7 @@ using Elsa.Activities.Http.Services;
 using Elsa.Attributes;
 using Elsa.Design;
 using Elsa.Expressions;
+using Elsa.Models;
 using Elsa.Results;
 using Elsa.Services;
 using Elsa.Services.Models;
@@ -159,7 +160,7 @@ namespace Elsa.Activities.Http
             {
                 outcomes.Add("UnSupportedStatusCode");
                 LocalizedString message = new LocalizedString("Error", "Status code " + statusCode.ToString() + ": " + response.ReasonPhrase.ToString().ToLower());
-                return Fault(message);
+                return Fault(message, WorkflowInstanceTaskStatus.Faulted);
             }
 
             return Done(outcomes, responseModel);
