@@ -222,6 +222,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Payload")
+                        .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<DateTime?>("StartedAt")
@@ -251,7 +252,16 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ExecutionDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Input")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ScheduleDate")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("Status")

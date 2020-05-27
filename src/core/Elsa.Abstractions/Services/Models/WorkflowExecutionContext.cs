@@ -93,6 +93,8 @@ namespace Elsa.Services.Models
         public void ScheduleWorkflowInstanceTask(WorkflowInstanceTask activity)
         {
             activity.Status = WorkflowInstanceTaskStatus.Scheduled;
+            activity.ScheduleDate = DateTime.UtcNow;
+            activity.CreateDate = DateTime.UtcNow;
             WorkflowInstanceTasks.Push(activity);
         }
 
@@ -102,6 +104,7 @@ namespace Elsa.Services.Models
         {
             var task = WorkflowInstanceTasks.Pop();
             task.Status = WorkflowInstanceTaskStatus.Running;
+            task.ExecutionDate = DateTime.UtcNow;
             WorkflowInstanceTasks.Push(task);
         }
         public void SetWorkflowInstanceTaskStatusToFailed()
@@ -164,7 +167,7 @@ namespace Elsa.Services.Models
         public WorkflowInstance UpdateWorkflowInstance(WorkflowInstance workflowInstance)
         {
             workflowInstance.Variables = Variables;
-            workflowInstance.WorkflowInstanceTasks = new Stack<Elsa.Models.WorkflowInstanceTask>(WorkflowInstanceTasks.Select(x => new Elsa.Models.WorkflowInstanceTask(x.Activity.Id, workflowInstance.TenantId, x.Status, x.Input)));
+            workflowInstance.WorkflowInstanceTasks = new Stack<Elsa.Models.WorkflowInstanceTask>(WorkflowInstanceTasks.Select(x => new Elsa.Models.WorkflowInstanceTask(x.Activity.Id, workflowInstance.TenantId, x.Status, x.CreateDate, x.ScheduleDate, x.ExecutionDate, x.Input)));
             workflowInstance.WorkflowInstanceBlockingActivities = new HashSet<WorkflowInstanceBlockingActivity>(WorkflowInstanceBlockingActivities.Select(x => new WorkflowInstanceBlockingActivity(x.Id, workflowInstance.TenantId, x.Type, x.Tag)), new WorkflowInstanceBlockingActivityEqualityComparer());
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;

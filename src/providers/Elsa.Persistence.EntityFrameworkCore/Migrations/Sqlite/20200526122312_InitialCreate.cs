@@ -39,7 +39,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     Status = table.Column<string>(nullable: true),
                     Fault = table.Column<string>(nullable: true),
                     ExecutionLog = table.Column<string>(nullable: false),
-                    Payload = table.Column<string>(type: "jsonb", nullable: true)
+                    Payload = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -105,10 +105,13 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     TenantId = table.Column<int>(nullable: true),
-                    WorkflowInstanceId = table.Column<int>(nullable: false),
                     ActivityId = table.Column<string>(nullable: false),
                     Input = table.Column<string>(nullable: true),
-                    Status = table.Column<int>(nullable: true)
+                    WorkflowInstanceId = table.Column<int>(nullable: false),
+                    Status = table.Column<int>(nullable: true),
+                    CreateDate = table.Column<DateTime>(nullable: true),
+                    ScheduleDate = table.Column<DateTime>(nullable: true),
+                    ExecutionDate = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {

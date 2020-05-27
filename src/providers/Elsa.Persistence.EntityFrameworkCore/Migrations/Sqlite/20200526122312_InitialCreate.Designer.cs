@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteContext))]
-    [Migration("20200525134743_InitialCreate")]
+    [Migration("20200526122312_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,6 +224,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Payload")
+                        .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<DateTime?>("StartedAt")
@@ -253,7 +254,16 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ExecutionDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Input")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ScheduleDate")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("Status")

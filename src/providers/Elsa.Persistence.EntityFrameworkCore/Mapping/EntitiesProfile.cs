@@ -15,13 +15,20 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
                 .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
-                .ForMember(d => d.Status, d => d.MapFrom(s => s.Status));
+                .ForMember(d => d.Status, d => d.MapFrom(s => s.Status))
+                .ForMember(d => d.CreateDate, d => d.MapFrom(s => s.CreateDate))
+                .ForMember(d => d.ScheduleDate, d => d.MapFrom(s => s.ScheduleDate))
+                .ForMember(d => d.ExecutionDate, d => d.MapFrom(s => s.ExecutionDate));
 
             CreateMap<WorkflowInstanceTaskEntity, WorkflowInstanceTask>(MemberList.Destination)
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
-                .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
                 .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
-                .ForMember(d => d.Status, d => d.MapFrom(s => s.Status));
+                .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
+                .ForMember(d => d.Status, d => d.MapFrom(s => s.Status))
+                .ForMember(d => d.CreateDate, d => d.MapFrom(s => s.CreateDate))
+                .ForMember(d => d.ScheduleDate, d => d.MapFrom(s => s.ScheduleDate))
+                .ForMember(d => d.ExecutionDate, d => d.MapFrom(s => s.ExecutionDate));
+
 
             CreateMap<WorkflowDefinitionVersion, WorkflowDefinitionVersionEntity>()
                 .ForMember(d => d.VersionId, d => d.MapFrom(s => s.Id))
