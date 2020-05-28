@@ -38,6 +38,7 @@ namespace Elsa.Services
         protected T GetState<T>(Func<T>? defaultValue = null, [CallerMemberName] string? name = null) => State.GetState(name, defaultValue);
         protected void SetState(object value, [CallerMemberName] string? name = null) => State.SetState(value, name);
         protected NoopResult Noop() => new NoopResult();
+        protected ExecutionResult ExecutionResult() => new ExecutionResult();
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status) => new ExecutionResult(status);
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, string outcome, Variable? output) => new ExecutionResult(status, message, new[] { outcome }, output);
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, LocalizedString? message, IEnumerable<string> outcomes, Variable? output) => new ExecutionResult(status, message, outcomes, output);
@@ -61,6 +62,6 @@ namespace Elsa.Services
         protected WorkflowInstanceTasksResult Schedule(IEnumerable<WorkflowInstanceTask> activities) => new WorkflowInstanceTasksResult(activities);
         protected CombinedResult Combine(IEnumerable<IActivityExecutionResult> results) => new CombinedResult(results);
         protected CombinedResult Combine(params IActivityExecutionResult[] results) => new CombinedResult(results);
-        protected FaultResult Fault(LocalizedString message, WorkflowInstanceTaskStatus status) => new FaultResult(message, status);
+        protected FaultResult Fault(LocalizedString message) => new FaultResult(message);
     }
 }

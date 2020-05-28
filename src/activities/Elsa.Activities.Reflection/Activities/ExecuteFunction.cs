@@ -57,7 +57,7 @@ namespace Elsa.Activities.Reflection.Activities
             var type = System.Type.GetType(TypeName);
 
             if (type == null)
-                return Fault(T["Type {0} not found.", TypeName], WorkflowInstanceTaskStatus.Faulted);
+                return Fault(T["Type {0} not found.", TypeName]);
 
             var inputValues = await context.EvaluateAsync(Arguments, cancellationToken) ?? new object[0];
 
@@ -67,7 +67,7 @@ namespace Elsa.Activities.Reflection.Activities
                 .FirstOrDefault(x => x.Name == MethodName);
 
             if (method == null)
-                return Fault(T["Type {0} does not have a method called {1}.", TypeName, MethodName], WorkflowInstanceTaskStatus.Faulted);
+                return Fault(T["Type {0} does not have a method called {1}.", TypeName, MethodName]);
 
 
             var instance = method.IsStatic ? default : ActivatorUtilities.GetServiceOrCreateInstance(context.WorkflowExecutionContext.ServiceProvider, type);
