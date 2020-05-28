@@ -160,10 +160,10 @@ namespace Elsa.Activities.Http
             {
                 outcomes.Add("UnSupportedStatusCode");
                 LocalizedString message = new LocalizedString("Error", "Status code " + statusCode.ToString() + ": " + response.ReasonPhrase.ToString().ToLower());
-                return Fault(message, WorkflowInstanceTaskStatus.Faulted);
+                return ExecutionResult(WorkflowInstanceTaskStatus.Faulted, message);
             }
 
-            return Done(outcomes, responseModel);
+            return ExecutionResult(WorkflowInstanceTaskStatus.Completed, default, outcomes, responseModel);
         }
 
         private IHttpResponseBodyParser SelectContentParser(string contentType)

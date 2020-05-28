@@ -230,6 +230,11 @@ namespace Elsa.Services
                         workflowExecutionContext.PopScheduledWorkflowInstanceTask();
                     }
 
+                    if(executionResult.Status == WorkflowInstanceTaskStatus.Faulted)
+                    {
+                        workflowExecutionContext.SetWorkflowInstanceTaskStatusToFailed();
+                    }
+
                     ExecuteActivityResult(activityExecutionContext, executionResult);
                 }
                 else
