@@ -181,7 +181,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return Json(workflowExecutionContext.InstanceId);
         }
 
-        // TO DO: implement this once UserTask works
+        // TO DO: implement this once UserTask works and when workflow execution can be resumed after blocking task
         //[HttpPost("SubmitUserTaskDecision")]
         //public async Task<IActionResult> SubmitUserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
         //{
@@ -194,8 +194,9 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         //    }
         //    else
         //    {
-        //        var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
-        //        await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, decision);
+        //        var blockingTaskId = workflowInstance.WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Blocked).Select(x => x.ActivityId).FirstOrDefault();
+        //        //var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
+        //        await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingTaskId, decision);
         //        return Ok();
         //    }
         //}

@@ -19,6 +19,7 @@ namespace Elsa
 
             WorkflowDefinitionVersionStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionVersionStore>();
             WorkflowInstanceStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowInstanceStore>();
+            WorkflowInstanceTaskStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowInstanceTaskStore>();
             WorkflowDefinitionStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionStore>();
             DistributedLockProviderFactory = sp => new DefaultLockProvider();
             SignalFactory = sp => new Signal();
@@ -28,6 +29,7 @@ namespace Elsa
         public IServiceCollection Services { get; }
         internal Func<IServiceProvider, IWorkflowDefinitionVersionStore> WorkflowDefinitionVersionStoreFactory { get; private set; }
         internal Func<IServiceProvider, IWorkflowInstanceStore> WorkflowInstanceStoreFactory { get; private set; }
+        internal Func<IServiceProvider, IWorkflowInstanceTaskStore> WorkflowInstanceTaskStoreFactory { get; private set; }
         internal Func<IServiceProvider, IWorkflowDefinitionStore> WorkflowDefinitionStoreFactory { get; private set; }
         internal Func<IServiceProvider, IDistributedLockProvider> DistributedLockProviderFactory { get; private set; }
         internal Func<IServiceProvider, ISignal> SignalFactory { get; private set; }
@@ -42,6 +44,11 @@ namespace Elsa
         public ElsaOptions UseWorkflowInstanceStore(Func<IServiceProvider, IWorkflowInstanceStore> factory)
         {
             WorkflowInstanceStoreFactory = factory;
+            return this;
+        }
+        public ElsaOptions UseWorkflowInstanceTaskStore(Func<IServiceProvider, IWorkflowInstanceTaskStore> factory)
+        {
+            WorkflowInstanceTaskStoreFactory = factory;
             return this;
         }
         public ElsaOptions UseWorkflowDefinitionStore(Func<IServiceProvider, IWorkflowDefinitionStore> factory)

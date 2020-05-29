@@ -250,7 +250,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 
                     b.HasIndex("WorkflowInstanceId");
 
-                    b.ToTable("WorkflowInstanceTaskEntity");
+                    b.ToTable("WorkflowInstanceTasks");
                 });
 
             modelBuilder.Entity("Elsa.Persistence.EntityFrameworkCore.Entities.WorkflowDefinitionActivityEntity", b =>

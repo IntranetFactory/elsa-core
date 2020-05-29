@@ -1,11 +1,8 @@
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 using Elsa.Dashboard.Options;
 using Elsa.Persistence;
 using Elsa.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Elsa.Dashboard.Areas.Elsa.Controllers
@@ -15,6 +12,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
     public class TestController : Controller
     {
         private readonly IWorkflowDefinitionVersionStore workflowDefinitionVersionStore;
+        private readonly IWorkflowInstanceTaskService workflowInstanceTaskService;
+        private readonly IWorkflowInstanceTaskStore workflowInstanceTaskStore;
         private readonly IWorkflowDefinitionStore workflowDefinitionStore;
         private readonly IWorkflowInstanceStore workflowInstanceStore;
         private readonly IWorkflowHost workflowHost;
@@ -24,6 +23,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
         public TestController(
             IWorkflowDefinitionVersionStore workflowDefinitionVersionStore,
+            IWorkflowInstanceTaskService workflowInstanceTaskService,
+            IWorkflowInstanceTaskStore workflowInstanceTaskStore,
             IWorkflowDefinitionStore workflowDefinitionStore,
             IWorkflowInstanceStore workflowInstanceStore,
             IWorkflowHost workflowHost,
@@ -32,6 +33,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             IClock clock)
         {
             this.workflowDefinitionVersionStore = workflowDefinitionVersionStore;
+            this.workflowInstanceTaskService = workflowInstanceTaskService;
+            this.workflowInstanceTaskStore = workflowInstanceTaskStore;
             this.workflowDefinitionStore = workflowDefinitionStore;
             this.workflowInstanceStore = workflowInstanceStore;
             this.workflowHost = workflowHost;

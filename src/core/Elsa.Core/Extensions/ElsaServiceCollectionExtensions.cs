@@ -45,6 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddTransient(options.WorkflowDefinitionVersionStoreFactory)
                 .AddTransient(options.WorkflowDefinitionStoreFactory)
                 .AddTransient(options.WorkflowInstanceStoreFactory)
+                .AddTransient(options.WorkflowInstanceTaskStoreFactory)
                 .AddSingleton(options.DistributedLockProviderFactory)
                 .AddSingleton(options.SignalFactory);
 
@@ -112,6 +113,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<IWorkflowScheduler, WorkflowScheduler>()
                 .AddSingleton<IWorkflowSchedulerQueue, WorkflowSchedulerQueue>()
                 .AddScoped<IWorkflowHost, WorkflowHost>()
+                .AddScoped<IWorkflowInstanceTaskService, WorkflowInstanceTaskService>()
                 .AddSingleton<IWorkflowActivator, WorkflowActivator>()
                 .AddSingleton<MemoryWorkflowDefinitionVersionStore>()
                 .AddSingleton<MemoryWorkflowInstanceStore>()

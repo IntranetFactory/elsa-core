@@ -39,6 +39,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
         public DbSet<WorkflowDefinitionEntity> WorkflowDefinitions { get; set; }
         public DbSet<WorkflowDefinitionVersionEntity> WorkflowDefinitionVersions { get; set; }
         public DbSet<WorkflowInstanceEntity> WorkflowInstances { get; set; }
+        public DbSet<WorkflowInstanceTaskEntity> WorkflowInstanceTasks { get; set; }
         public DbSet<WorkflowDefinitionActivityEntity> WorkflowDefinitionActivities { get; set; }
         public DbSet<WorkflowDefinitionConnectionEntity> WorkflowDefinitionConnections { get; set; }
 
