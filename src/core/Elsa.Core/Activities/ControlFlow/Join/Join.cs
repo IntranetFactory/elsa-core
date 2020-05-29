@@ -9,7 +9,6 @@ using Elsa.Messaging.Domain;
 using Elsa.Results;
 using Elsa.Services;
 using Elsa.Services.Models;
-using MediatR;
 
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
@@ -29,48 +28,21 @@ namespace Elsa.Activities.ControlFlow
 
         protected override IActivityExecutionResult OnExecute(ActivityExecutionContext context)
         {
-            // TO DO: Join must be re-implemented because blocking activities have been removed
-            //var workflowExecutionContext = context.WorkflowExecutionContext;
-            //var inboundConnectionActivityIds = workflowExecutionContext.GetInboundConnections(this).Select(x => x.Source.Activity.Id).ToList();
-            //var allDone = true;
+            var workflowExecutionContext = context.WorkflowExecutionContext;
+            var inboundConnectionActivityIds = workflowExecutionContext.GetInboundConnections(this).Select(x => x.Source.Activity.Id).ToList();
+            var allDone = true;
 
-            //foreach(string id in inboundConnectionActivityIds)
-            //{
-            //    if(workflowExecutionContext.WorkflowInstanceTasks.Where(x => x.Activity.Id == id).Any())
-            //    {
-            //        allDone = false;
-            //    }
-            //}
+            foreach (string id in inboundConnectionActivityIds)
+            {
+                if (workflowExecutionContext.WorkflowInstanceTasks.Where(x => x.Activity.Id == id).Any())
+                {
+                    allDone = false;
+                }
+            }
 
-            //if(allDone)
-            //{
-            //    // Remove any inbound blocking activities.
-            //    var ancestorActivityIds = workflowExecutionContext.GetInboundActivityPath(this).ToList();
+            if (!allDone)
+                return Noop();
 
-            //    List<IActivity> blockingActivities = new List<IActivity>();
-
-            //    foreach (var blockingActivity in workflowExecutionContext.WorkflowInstanceBlockingActivities)
-            //    {
-            //        if (ancestorActivityIds.Contains(blockingActivity.Id))
-            //        {
-            //            blockingActivities.Add(blockingActivity);
-            //        }
-            //        else
-            //        {
-            //            var thisActivity = workflowExecutionContext.WorkflowInstanceBlockingActivities.Where(x => x.Id == this.Id).FirstOrDefault();
-
-            //            if (thisActivity != null)
-            //                blockingActivities.Add(thisActivity);
-            //        }
-            //    }
-
-            //    foreach (var blockingActivity in blockingActivities)
-            //        workflowExecutionContext.WorkflowInstanceBlockingActivities.Remove(blockingActivity);
-            //}
-
-            //if (!allDone)
-            //    return Noop();
-            
             return Done();
         }
     }
