@@ -1,6 +1,5 @@
 using Elsa.Activities.Email.Extensions;
 using Elsa.Activities.Timers.Extensions;
-using Elsa.Activities.UserTask.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Elsa.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Elsa.Dashboard.Extensions;
+using Elsa.Activities.UserTask.Extensions;
 
 namespace Elsa.Dashboard.Web
 {

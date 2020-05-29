@@ -16,17 +16,6 @@ namespace Elsa.Persistence.YesSql.Indexes
         public DateTime CreatedAt { get; set; }
     }
 
-    public class WorkflowInstanceBlockingActivitiesIndex : MapIndex
-    {
-        public string ActivityId { get; set; }
-        public int? TenantId { get; set; }
-        public string ActivityType { get; set; }
-        public string Tag { get; set; }
-        public string CorrelationId { get; set; }
-        public WorkflowStatus ProcessStatus { get; set; }
-        public DateTime CreatedAt { get; set; }
-    }
-
     public class WorkflowInstanceIndexProvider : IndexProvider<WorkflowInstanceDocument>
     {
         public override void Describe(DescribeContext<WorkflowInstanceDocument> context)
@@ -42,21 +31,6 @@ namespace Elsa.Persistence.YesSql.Indexes
                         CorrelationId = workflowInstance.CorrelationId,
                         CreatedAt = workflowInstance.CreatedAt
                     });
-
-            context.For<WorkflowInstanceBlockingActivitiesIndex>()
-                .Map(
-                    workflowInstance => workflowInstance.WorkflowInstanceBlockingActivities
-                        .Select(
-                            activity => new WorkflowInstanceBlockingActivitiesIndex
-                            {
-                                ActivityId = activity.ActivityId,
-                                TenantId = activity.TenantId,
-                                ActivityType = activity.ActivityType,
-                                Tag = activity.Tag,
-                                CorrelationId = workflowInstance.CorrelationId,
-                                ProcessStatus = workflowInstance.Status,
-                                CreatedAt = workflowInstance.CreatedAt
-                            }));
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
             CreateMap<WorkflowInstanceTask, WorkflowInstanceTaskEntity>()
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
+                .ForMember(d => d.Tag, d => d.MapFrom(s => s.Tag))
                 .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
                 .ForMember(d => d.Status, d => d.MapFrom(s => s.Status))
                 .ForMember(d => d.CreateDate, d => d.MapFrom(s => s.CreateDate))
@@ -23,6 +24,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
             CreateMap<WorkflowInstanceTaskEntity, WorkflowInstanceTask>(MemberList.Destination)
                 .ForMember(d => d.ActivityId, d => d.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.TenantId, d => d.MapFrom(s => s.TenantId))
+                .ForMember(d => d.Tag, d => d.MapFrom(s => s.Tag))
                 .ForMember(d => d.Input, d => d.MapFrom(s => s.Input))
                 .ForMember(d => d.Status, d => d.MapFrom(s => s.Status))
                 .ForMember(d => d.CreateDate, d => d.MapFrom(s => s.CreateDate))
@@ -57,7 +59,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
                 .ForCtorParam("id", p => p.MapFrom(s => s.ActivityId))
                 .ForMember(d => d.Id, d => d.MapFrom(s => s.ActivityId));
 
-            CreateMap<WorkflowInstanceBlockingActivity, WorkflowInstanceBlockingActivityEntity>().ReverseMap();
             CreateMap<WorkflowDefinitionConnection, WorkflowDefinitionConnectionEntity>().ReverseMap();
         }
     }

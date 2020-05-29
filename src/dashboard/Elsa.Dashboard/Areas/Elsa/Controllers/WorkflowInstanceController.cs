@@ -150,26 +150,6 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return NoContent();
         }
 
-        [HttpGet("ListWorkflowInstancesByTag")]
-        public async Task<IActionResult> ListWorkflowInstancesByTag(string tag)
-        {
-            int? tenantId = GetTenant();
-            var instancesList = await workflowInstanceStore.ListByBlockingActivityTagAsync(tenantId, tag);
-
-            if (instancesList.Count() > 0)
-            {
-                var settings = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    NullValueHandling = NullValueHandling.Ignore
-                };
-
-                return Ok(JsonConvert.SerializeObject(instancesList, settings));
-            }
-
-            return NoContent();
-        }
-
         [HttpPost("RunScheduledWorkflowInstance")]
         public async Task<IActionResult> RunScheduledWorkflowInstance(string instanceId, CancellationToken cancellationToken)
         {
@@ -201,23 +181,24 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return Json(workflowExecutionContext.InstanceId);
         }
 
-        [HttpPost("SubmitUserTaskDecision")]
-        public async Task<IActionResult> SubmitUserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
-        {
-            int? tenantId = GetTenant();
-            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
+        // TO DO: implement this once UserTask works
+        //[HttpPost("SubmitUserTaskDecision")]
+        //public async Task<IActionResult> SubmitUserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
+        //{
+        //    int? tenantId = GetTenant();
+        //    var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
 
-            if (workflowInstance == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
-                await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, decision);
-                return Ok();
-            }
-        }
+        //    if (workflowInstance == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    else
+        //    {
+        //        var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
+        //        await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, decision);
+        //        return Ok();
+        //    }
+        //}
 
         // temporary solution that returns tenantId = 1 until integrated into the final project
         private int GetTenant()
@@ -229,7 +210,6 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             WorkflowDefinitionActivity workflowDefinitionActivity,
             WorkflowInstance workflowInstance)
         {
-            var isBlocking = workflowInstance.WorkflowInstanceBlockingActivities.Any(x => x.ActivityId == workflowDefinitionActivity.Id);
             var logEntry = workflowInstance.ExecutionLog.OrderByDescending(x => x.Timestamp)
                 .FirstOrDefault(x => x.ActivityId == workflowDefinitionActivity.Id);
             var isExecuted = logEntry != null;
@@ -238,14 +218,10 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
 
             if (isFaulted)
                 message = new ActivityMessageModel("Faulted", logEntry.Message);
-            else if (isBlocking)
-                message = new ActivityMessageModel(
-                    "Blocking",
-                    "This activity is blocking workflow execution until the appropriate event is triggered.");
             else if (isExecuted)
                 message = new ActivityMessageModel("Executed", logEntry.Message);
 
-            return new ActivityModel(workflowDefinitionActivity, isBlocking, isExecuted, isFaulted, message);
+            return new ActivityModel(workflowDefinitionActivity, isExecuted, isFaulted, message);
         }
     }
 }

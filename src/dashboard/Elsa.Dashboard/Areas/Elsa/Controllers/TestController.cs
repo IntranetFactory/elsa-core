@@ -39,23 +39,5 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             this.idGenerator = idGenerator;
             this.clock = clock;
         }
-
-        [HttpGet("InvokeUserAction")]
-        public async Task<IActionResult> InvokeUserAction(string instanceId, string actionName, CancellationToken cancellationToken)
-        {
-            int? tenantId = 1;
-
-            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
-
-            if (workflowInstance == null)
-            {
-                return NotFound();
-            } else
-            {
-                var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
-                await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingActivityId, actionName);
-                return Ok();
-            }
-        }
     }
 }

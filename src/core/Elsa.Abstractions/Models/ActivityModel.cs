@@ -6,7 +6,7 @@ namespace Elsa.Models
         {
         }
 
-        public ActivityModel(string id, int? tenantId, string type, int? left, int? top, Variables state, bool blocking, bool executed, bool faulted, ActivityMessageModel? message = null)
+        public ActivityModel(string id, int? tenantId, string type, int? left, int? top, Variables state, bool executed, bool faulted, ActivityMessageModel? message = null)
         {
             Id = id;
             TenantId = tenantId;
@@ -14,7 +14,6 @@ namespace Elsa.Models
             Left = left;
             Top = top;
             State = state;
-            Blocking = blocking;
             Executed = executed;
             Faulted = faulted;
             Message = message;
@@ -28,19 +27,17 @@ namespace Elsa.Models
             workflowDefinitionActivity.Top,
             workflowDefinitionActivity.State,
             false,
-            false,
             false)
         {
         }
 
-        public ActivityModel(WorkflowDefinitionActivity workflowDefinitionActivity, bool blocking, bool executed, bool faulted, ActivityMessageModel? message = null) : this(
+        public ActivityModel(WorkflowDefinitionActivity workflowDefinitionActivity, bool executed, bool faulted, ActivityMessageModel? message = null) : this(
             workflowDefinitionActivity.Id,
             workflowDefinitionActivity.TenantId,
             workflowDefinitionActivity.Type,
             workflowDefinitionActivity.Left,
             workflowDefinitionActivity.Top,
             workflowDefinitionActivity.State,
-            blocking,
             executed,
             faulted,
             message)
@@ -53,7 +50,6 @@ namespace Elsa.Models
         public int? Left { get; set; }
         public int? Top { get; set; }
         public Variables? State { get; set; }
-        public bool Blocking { get; set; }
         public bool Executed { get; set; }
         public bool Faulted { get; set; }
         public ActivityMessageModel? Message { get; set; }

@@ -57,66 +57,6 @@ namespace Elsa.Persistence.Memory
             var workflows = workflowInstances.Values.Where(x => x.TenantId == tenantId).AsEnumerable();
             return Task.FromResult(workflows);
         }
-        public Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
-            int? tenantId, 
-            string activityType,
-            string tag,
-            string? correlationId = null, 
-            CancellationToken cancellationToken = default)
-        {
-            var query = workflowInstances.Values.AsQueryable();
-
-            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
-
-            if (!string.IsNullOrWhiteSpace(correlationId))
-                query = query.Where(x => x.CorrelationId == correlationId);
-
-            query = query.Where(
-                x => x.WorkflowInstanceBlockingActivities.Any(y => y.ActivityType == activityType && y.Tag == tag && y.TenantId == tenantId)
-            );
-
-            return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
-        }
-
-        public Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityTagAsync(
-            int? tenantId,
-            string tag,
-            string? correlationId = null,
-            CancellationToken cancellationToken = default)
-        {
-            var query = workflowInstances.Values.AsQueryable();
-
-            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
-
-            if (!string.IsNullOrWhiteSpace(correlationId))
-                query = query.Where(x => x.CorrelationId == correlationId);
-
-            query = query.Where(
-                x => x.WorkflowInstanceBlockingActivities.Any(y => y.Tag == tag && y.TenantId == tenantId)
-            );
-
-            return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
-        }
-
-        public Task<IEnumerable<(WorkflowInstance, WorkflowInstanceBlockingActivity)>> ListByBlockingActivityAsync(
-            int? tenantId, 
-            string activityType,
-            string? correlationId = default, 
-            CancellationToken cancellationToken = default)
-        {
-            var query = workflowInstances.Values.AsQueryable();
-
-            query = query.Where(x => x.Status == WorkflowStatus.Suspended && x.TenantId == tenantId);
-
-            if (!string.IsNullOrWhiteSpace(correlationId))
-                query = query.Where(x => x.CorrelationId == correlationId);
-
-            query = query.Where(
-                x => x.WorkflowInstanceBlockingActivities.Any(y => y.ActivityType == activityType && y.TenantId == tenantId)
-            );
-
-            return Task.FromResult(query.AsEnumerable().GetBlockingActivities());
-        }
 
         public Task<IEnumerable<WorkflowInstance>> ListByStatusAsync(
             int? tenantId, 

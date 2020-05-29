@@ -76,29 +76,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkflowInstanceBlockingActivities",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TenantId = table.Column<int>(nullable: true),
-                    WorkflowInstanceId = table.Column<int>(nullable: false),
-                    ActivityId = table.Column<string>(nullable: false),
-                    ActivityType = table.Column<string>(nullable: false),
-                    Tag = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WorkflowInstanceBlockingActivities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WorkflowInstanceBlockingActivities_WorkflowInstances_WorkflowInstanceId",
-                        column: x => x.WorkflowInstanceId,
-                        principalTable: "WorkflowInstances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "WorkflowInstanceTaskEntity",
                 columns: table => new
                 {
@@ -106,6 +83,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         .Annotation("Sqlite:Autoincrement", true),
                     TenantId = table.Column<int>(nullable: true),
                     ActivityId = table.Column<string>(nullable: false),
+                    Tag = table.Column<string>(nullable: true),
                     Input = table.Column<string>(nullable: true),
                     WorkflowInstanceId = table.Column<int>(nullable: false),
                     Status = table.Column<int>(nullable: true),
@@ -189,11 +167,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 column: "DefinitionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkflowInstanceBlockingActivities_WorkflowInstanceId",
-                table: "WorkflowInstanceBlockingActivities",
-                column: "WorkflowInstanceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_WorkflowInstanceTaskEntity_WorkflowInstanceId",
                 table: "WorkflowInstanceTaskEntity",
                 column: "WorkflowInstanceId");
@@ -206,9 +179,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 
             migrationBuilder.DropTable(
                 name: "WorkflowDefinitionConnections");
-
-            migrationBuilder.DropTable(
-                name: "WorkflowInstanceBlockingActivities");
 
             migrationBuilder.DropTable(
                 name: "WorkflowInstanceTaskEntity");

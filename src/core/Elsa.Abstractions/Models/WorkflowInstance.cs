@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Elsa.Comparers;
 using NodaTime;
 
 namespace Elsa.Models
@@ -9,7 +8,6 @@ namespace Elsa.Models
         public WorkflowInstance()
         {
             Variables = new Variables();
-            WorkflowInstanceBlockingActivities = new HashSet<WorkflowInstanceBlockingActivity>(new WorkflowInstanceBlockingActivityEqualityComparer());
             ExecutionLog = new List<ExecutionLogEntry>();
             WorkflowInstanceTasks = new Stack<WorkflowInstanceTask>();
         }
@@ -31,7 +29,6 @@ namespace Elsa.Models
         // Variables? Input is inserted because of mapping problems and until we figure out what Output is for.
         public Variables? Input { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
-        public HashSet<WorkflowInstanceBlockingActivity> WorkflowInstanceBlockingActivities { get; set; }
         public Stack<WorkflowInstanceTask> WorkflowInstanceTasks { get; set; }
         public string? Payload
         {

@@ -49,9 +49,6 @@ namespace Elsa.Persistence.DocumentDb.Documents
         [JsonProperty(PropertyName = "input")] public Variable? Input { get; set; }
         [JsonProperty(PropertyName = "input")] public Variable? Output { get; set; }
 
-        [JsonProperty(PropertyName = "workflowInstanceBlockingActivities")]
-        public HashSet<WorkflowInstanceBlockingActivity> WorkflowInstanceBlockingActivities { get; set; }
-
         [JsonProperty(PropertyName = "workflowInstanceTasks")]
         public Stack<string> WorkflowInstanceTasks { get; set; }
 

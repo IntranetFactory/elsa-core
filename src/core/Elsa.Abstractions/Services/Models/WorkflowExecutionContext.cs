@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Elsa.Comparers;
 using Elsa.Expressions;
 using Elsa.Models;
 using Microsoft.Extensions.Localization;
@@ -24,7 +23,6 @@ namespace Elsa.Services.Models
             IEnumerable<IActivity> activities,
             IEnumerable<Connection> connections,
             IEnumerable<WorkflowInstanceTask>? workflowInstanceTasks = default,
-            IEnumerable<IActivity>? workflowInstanceBlockingActivities = default,
             string? correlationId = default,
             Variables? variables = default,
             WorkflowStatus status = WorkflowStatus.Running,
@@ -42,7 +40,6 @@ namespace Elsa.Services.Models
             ExpressionEvaluator = expressionEvaluator;
             Clock = clock;
             WorkflowInstanceTasks = workflowInstanceTasks != null ? new Stack<WorkflowInstanceTask>(workflowInstanceTasks) : new Stack<WorkflowInstanceTask>();
-            WorkflowInstanceBlockingActivities = workflowInstanceBlockingActivities != null ? new HashSet<IActivity>(workflowInstanceBlockingActivities) : new HashSet<IActivity>();
             Variables = variables ?? new Variables();
             Status = status;
             WorkflowFault = workflowFault;
@@ -57,11 +54,10 @@ namespace Elsa.Services.Models
         public ICollection<Connection> Connections { get; }
         public WorkflowStatus Status { get; set; }
         public Stack<WorkflowInstanceTask> WorkflowInstanceTasks { get; }
-        public HashSet<IActivity> WorkflowInstanceBlockingActivities { get; }
         public Variables Variables { get; }
         public bool HasWorkflowInstanceTasks()
         {
-            int count = WorkflowInstanceTasks.Where(x => x.Status != WorkflowInstanceTaskStatus.Faulted).Count();
+            int count = WorkflowInstanceTasks.Where(x => x.Status != WorkflowInstanceTaskStatus.Faulted && x.Status != WorkflowInstanceTaskStatus.Blocked).Count();
 
             if(count > 0)
             {
@@ -92,9 +88,10 @@ namespace Elsa.Services.Models
         public void ScheduleWorkflowInstanceTask(IActivity activity, Variable? input = default) => ScheduleWorkflowInstanceTask(new WorkflowInstanceTask(activity, input));
         public void ScheduleWorkflowInstanceTask(WorkflowInstanceTask activity)
         {
-            activity.Status = WorkflowInstanceTaskStatus.Scheduled;
+            activity.Status = WorkflowInstanceTaskStatus.Execute;
             activity.ScheduleDate = DateTime.UtcNow;
             activity.CreateDate = DateTime.UtcNow;
+            activity.Tag = activity.Activity.Tag;
             WorkflowInstanceTasks.Push(activity);
         }
 
@@ -113,6 +110,12 @@ namespace Elsa.Services.Models
             task.Status = WorkflowInstanceTaskStatus.Faulted;
             WorkflowInstanceTasks.Push(task);
         }
+        public void SetWorkflowInstanceTaskStatusToBlocked()
+        {
+            var task = WorkflowInstanceTasks.Pop();
+            task.Status = WorkflowInstanceTaskStatus.Blocked;
+            WorkflowInstanceTasks.Push(task);
+        }
         public IExpressionEvaluator ExpressionEvaluator { get; }
         public IClock Clock { get; }
         public string InstanceId { get; set; }
@@ -120,8 +123,6 @@ namespace Elsa.Services.Models
         public string CorrelationId { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; }
         public bool IsFirstPass { get; private set; }
-
-        public bool AddBlockingActivity(IActivity activity) => WorkflowInstanceBlockingActivities.Add(activity);
         public void SetVariable(string name, object value) => Variables.SetVariable(name, value);
         public T GetVariable<T>(string name) => (T)GetVariable(name);
         public object GetVariable(string name) => Variables.GetVariable(name);
@@ -167,8 +168,7 @@ namespace Elsa.Services.Models
         public WorkflowInstance UpdateWorkflowInstance(WorkflowInstance workflowInstance)
         {
             workflowInstance.Variables = Variables;
-            workflowInstance.WorkflowInstanceTasks = new Stack<Elsa.Models.WorkflowInstanceTask>(WorkflowInstanceTasks.Select(x => new Elsa.Models.WorkflowInstanceTask(x.Activity.Id, workflowInstance.TenantId, x.Status, x.CreateDate, x.ScheduleDate, x.ExecutionDate, x.Input)));
-            workflowInstance.WorkflowInstanceBlockingActivities = new HashSet<WorkflowInstanceBlockingActivity>(WorkflowInstanceBlockingActivities.Select(x => new WorkflowInstanceBlockingActivity(x.Id, workflowInstance.TenantId, x.Type, x.Tag)), new WorkflowInstanceBlockingActivityEqualityComparer());
+            workflowInstance.WorkflowInstanceTasks = new Stack<Elsa.Models.WorkflowInstanceTask>(WorkflowInstanceTasks.Select(x => new Elsa.Models.WorkflowInstanceTask(x.Activity.Id, workflowInstance.TenantId, x.Activity.Tag, x.Status, x.CreateDate, x.ScheduleDate, x.ExecutionDate, x.Input)));
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;
             workflowInstance.Output = Output;

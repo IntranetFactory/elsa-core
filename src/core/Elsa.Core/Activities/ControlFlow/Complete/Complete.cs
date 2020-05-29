@@ -27,8 +27,6 @@ namespace Elsa.Activities.ControlFlow
         protected override async Task<IActivityExecutionResult> OnExecuteAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
             var output = await context.EvaluateAsync(OutputValue, cancellationToken) ?? new Variable();
-            
-            context.WorkflowExecutionContext.WorkflowInstanceBlockingActivities.Clear();
             context.WorkflowExecutionContext.Complete();
             
             return Done(Variable.From(output));
