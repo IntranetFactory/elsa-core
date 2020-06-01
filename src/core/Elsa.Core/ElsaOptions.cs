@@ -18,6 +18,7 @@ namespace Elsa
             Services = services;
 
             WorkflowDefinitionVersionStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionVersionStore>();
+            WorkflowDefinitionActivityStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionActivityStore>();
             WorkflowInstanceStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowInstanceStore>();
             WorkflowInstanceTaskStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowInstanceTaskStore>();
             WorkflowDefinitionStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionStore>();
@@ -31,6 +32,7 @@ namespace Elsa
         internal Func<IServiceProvider, IWorkflowInstanceStore> WorkflowInstanceStoreFactory { get; private set; }
         internal Func<IServiceProvider, IWorkflowInstanceTaskStore> WorkflowInstanceTaskStoreFactory { get; private set; }
         internal Func<IServiceProvider, IWorkflowDefinitionStore> WorkflowDefinitionStoreFactory { get; private set; }
+        internal Func<IServiceProvider, IWorkflowDefinitionActivityStore> WorkflowDefinitionActivityStoreFactory { get; private set; }
         internal Func<IServiceProvider, IDistributedLockProvider> DistributedLockProviderFactory { get; private set; }
         internal Func<IServiceProvider, ISignal> SignalFactory { get; private set; }
         internal Func<RebusConfigurer, IServiceProvider, RebusConfigurer> ServiceBusConfigurer { get; private set; }
@@ -54,6 +56,11 @@ namespace Elsa
         public ElsaOptions UseWorkflowDefinitionStore(Func<IServiceProvider, IWorkflowDefinitionStore> factory)
         {
             WorkflowDefinitionStoreFactory = factory;
+            return this;
+        }
+        public ElsaOptions UseWorkflowDefinitionActivityStore(Func<IServiceProvider, IWorkflowDefinitionActivityStore> factory)
+        {
+            WorkflowDefinitionActivityStoreFactory = factory;
             return this;
         }
 

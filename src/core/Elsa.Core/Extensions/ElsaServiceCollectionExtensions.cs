@@ -43,6 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services
                 .AddTransient(options.WorkflowDefinitionVersionStoreFactory)
+                .AddTransient(options.WorkflowDefinitionActivityStoreFactory)
                 .AddTransient(options.WorkflowDefinitionStoreFactory)
                 .AddTransient(options.WorkflowInstanceStoreFactory)
                 .AddTransient(options.WorkflowInstanceTaskStoreFactory)
