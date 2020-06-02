@@ -55,8 +55,7 @@ namespace Elsa.Activities.UserTask.Activities
 
         protected override bool OnCanExecute(ActivityExecutionContext context)
         {
-            var userAction = GetUserAction(context);
-
+            string userAction = context.GetVariable(VariableName).ToString();
             return Actions.Contains(userAction, StringComparer.OrdinalIgnoreCase);
         }
 
@@ -67,13 +66,10 @@ namespace Elsa.Activities.UserTask.Activities
 
         protected override IActivityExecutionResult OnResume(ActivityExecutionContext context)
         {
-            var userAction = GetUserAction(context);
             // We set the variable with specified name so that it can be used in next activities.
             VariableName = VariableName == "" ? "Decision" : VariableName;
-            context.SetVariable(VariableName, userAction);
+            string userAction = context.GetVariable(VariableName).ToString();
             return ExecutionResult(WorkflowInstanceTaskStatus.Completed, this.Tag, default, userAction);
         }
-
-        private string GetUserAction(ActivityExecutionContext context) => context.Input?.GetValue<string>();
     }
 }

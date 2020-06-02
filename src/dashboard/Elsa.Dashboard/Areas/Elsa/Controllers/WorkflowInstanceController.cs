@@ -25,21 +25,27 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
     [Route("[area]/workflow-instance")]
     public class WorkflowInstanceController : Controller
     {
+        private readonly IWorkflowInstanceTaskService workflowInstanceTaskService;
         private readonly IWorkflowInstanceStore workflowInstanceStore;
         private readonly IWorkflowDefinitionVersionStore workflowDefinitionVersionStore;
+        private readonly IWorkflowDefinitionActivityStore workflowDefinitionActivityStore;
         private readonly IWorkflowHost workflowHost;
         private readonly IOptions<ElsaDashboardOptions> options;
         private readonly INotifier notifier;
 
         public WorkflowInstanceController(
+            IWorkflowInstanceTaskService workflowInstanceTaskService,
             IWorkflowInstanceStore workflowInstanceStore,
             IWorkflowDefinitionVersionStore workflowDefinitionVersionStore,
+            IWorkflowDefinitionActivityStore workflowDefinitionActivityStore,
             IWorkflowHost workflowHost,
             IOptions<ElsaDashboardOptions> options,
             INotifier notifier)
         {
+            this.workflowInstanceTaskService = workflowInstanceTaskService;
             this.workflowInstanceStore = workflowInstanceStore;
             this.workflowDefinitionVersionStore = workflowDefinitionVersionStore;
+            this.workflowDefinitionActivityStore = workflowDefinitionActivityStore;
             this.workflowHost = workflowHost;
             this.options = options;
             this.notifier = notifier;
@@ -181,25 +187,41 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return Json(workflowExecutionContext.InstanceId);
         }
 
-        // TO DO: implement this once UserTask works and when workflow execution can be resumed after blocking task
-        //[HttpPost("SubmitUserTaskDecision")]
-        //public async Task<IActionResult> SubmitUserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
-        //{
-        //    int? tenantId = GetTenant();
-        //    var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
+        [HttpPost("UserTaskDecision")]
+        public async Task<IActionResult> UserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
+        {
+            int? tenantId = GetTenant();
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
 
-        //    if (workflowInstance == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    else
-        //    {
-        //        var blockingTaskId = workflowInstance.WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Blocked).Select(x => x.ActivityId).FirstOrDefault();
-        //        //var blockingActivityId = workflowInstance.WorkflowInstanceBlockingActivities.Select(x => x.ActivityId).FirstOrDefault();
-        //        await workflowHost.RunWorkflowInstanceAsync(tenantId, workflowInstance.Id, blockingTaskId, decision);
-        //        return Ok();
-        //    }
-        //}
+            if (workflowInstance == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                // set's UserTask task to "Resume" and get's the name of the variable which should hold the user task decision
+                var blockingTaskId = workflowInstance.WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Blocked).Select(x => x.ActivityId).FirstOrDefault();
+                var activityDefinition = await workflowDefinitionActivityStore.GetByIdAsync(tenantId, blockingTaskId, cancellationToken);
+                string variableName;
+
+                if (activityDefinition == null)
+                    return NotFound();
+
+                if(activityDefinition.State.ContainsKey("VariableName"))
+                {
+                    variableName = activityDefinition.State["VariableName"].Value.ToString();
+                }
+                else
+                {
+                    variableName = "Decision";
+                }
+
+                workflowInstanceTaskService.Unblock(tenantId, blockingTaskId, cancellationToken);
+                workflowInstance.Variables.SetVariable(variableName, decision);
+                await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
+                return Ok();
+            }
+        }
 
         // temporary solution that returns tenantId = 1 until integrated into the final project
         private int GetTenant()
