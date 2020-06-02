@@ -37,7 +37,6 @@ namespace Elsa.Services
         protected virtual IActivityExecutionResult OnResume(ActivityExecutionContext context) => Done();
         protected T GetState<T>(Func<T>? defaultValue = null, [CallerMemberName] string? name = null) => State.GetState(name, defaultValue);
         protected void SetState(object value, [CallerMemberName] string? name = null) => State.SetState(value, name);
-        protected NoopResult Noop() => new NoopResult();
         protected ExecutionResult ExecutionResult() => new ExecutionResult();
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status) => new ExecutionResult(status);
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag) => new ExecutionResult(status, tag);

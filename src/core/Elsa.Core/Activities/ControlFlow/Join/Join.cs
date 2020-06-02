@@ -6,6 +6,7 @@ using Elsa.Attributes;
 using Elsa.Design;
 using Elsa.Extensions;
 using Elsa.Messaging.Domain;
+using Elsa.Models;
 using Elsa.Results;
 using Elsa.Services;
 using Elsa.Services.Models;
@@ -41,9 +42,9 @@ namespace Elsa.Activities.ControlFlow
             }
 
             if (!allDone)
-                return Noop();
+                return ExecutionResult(WorkflowInstanceTaskStatus.Blocked);
 
-            return Done();
+            return ExecutionResult(WorkflowInstanceTaskStatus.Completed);
         }
     }
 }
