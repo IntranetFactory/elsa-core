@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Elsa;
 using Elsa.Activities.ControlFlow;
 using Elsa.Activities.Primitives;
-using Elsa.Activities.Signaling;
 using Elsa.AutoMapper.Extensions;
 using Elsa.Builders;
 using Elsa.Converters;
@@ -178,10 +177,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddActivity<Switch>()
                 .AddActivity<While>()
                 .AddActivity<Correlate>()
-                .AddActivity<SetVariable>()
-                .AddActivity<Signaled>()
-                .AddActivity<TriggerEvent>()
-                .AddActivity<TriggerSignal>();
+                .AddActivity<SetVariable>();
 
         private static ElsaOptions AddServiceBus(this ElsaOptions options)
         {

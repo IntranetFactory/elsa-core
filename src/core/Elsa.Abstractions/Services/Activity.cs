@@ -54,7 +54,6 @@ namespace Elsa.Services
         protected OutcomeResult Done(IEnumerable<string> outcomes) => Done(outcomes, default);
         protected OutcomeResult Done(params string[] outcomes) => Done(outcomes, default);
         protected OutcomeResult Done(Variable? output) => new OutcomeResult(null, output);
-        protected SuspendResult Suspend() => new SuspendResult();
         protected WorkflowInstanceTasksResult Schedule(params IActivity[] activities) => new WorkflowInstanceTasksResult(activities);
         protected WorkflowInstanceTasksResult Schedule(IEnumerable<IActivity> activities, Variable input) => new WorkflowInstanceTasksResult(activities, input);
         protected WorkflowInstanceTasksResult Schedule(IEnumerable<IActivity> activities, object input) => new WorkflowInstanceTasksResult(activities, Variable.From(input));

@@ -1,5 +1,4 @@
 using Elsa.Activities.Email.Extensions;
-using Elsa.Activities.Timers.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -37,9 +36,7 @@ namespace Elsa.Dashboard.Web
             services
                 .AddHttp(options => options.Bind(elsaSection.GetSection("Http")))
                 .AddEmail(options => options.Bind(elsaSection.GetSection("Smtp")))
-                .AddConsoleActivities()
                 .AddUserTaskActivities()
-                .AddTimerActivities(options => options.Bind(elsaSection.GetSection("Timers")))
                 .AddElsaDashboard();
 
         }
