@@ -77,7 +77,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var record = await dbContext.WorkflowInstanceTasks
                 .Include(x => x.WorkflowInstance)
-                .OrderByDescending(x => x.ScheduleDate)
+                .OrderBy(x => x.ScheduleDate)
                 .Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Resume)
                 .FirstOrDefaultAsync(cancellationToken);
 

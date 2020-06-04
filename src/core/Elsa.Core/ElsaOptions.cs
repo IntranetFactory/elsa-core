@@ -1,7 +1,6 @@
 using System;
 using Elsa.Caching;
 using Elsa.Persistence;
-using Elsa.Persistence.Memory;
 using Elsa.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Rebus.Config;
@@ -16,12 +15,6 @@ namespace Elsa
         public ElsaOptions(IServiceCollection services)
         {
             Services = services;
-
-            WorkflowDefinitionVersionStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionVersionStore>();
-            WorkflowDefinitionActivityStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionActivityStore>();
-            WorkflowInstanceStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowInstanceStore>();
-            WorkflowInstanceTaskStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowInstanceTaskStore>();
-            WorkflowDefinitionStoreFactory = sp => sp.GetRequiredService<MemoryWorkflowDefinitionStore>();
             DistributedLockProviderFactory = sp => new DefaultLockProvider();
             SignalFactory = sp => new Signal();
             ServiceBusConfigurer = ConfigureInMemoryServiceBus;

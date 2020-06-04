@@ -13,7 +13,6 @@ using Elsa.Messaging.Distributed;
 using Elsa.Messaging.Distributed.Handlers;
 using Elsa.Metadata;
 using Elsa.Metadata.Handlers;
-using Elsa.Persistence.Memory;
 using Elsa.Runtime;
 using Elsa.Serialization;
 using Elsa.Serialization.Formatters;
@@ -116,8 +115,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<IWorkflowInstanceTaskService, WorkflowInstanceTaskService>()
                 .AddScoped<IWorkflowTaskRunner, WorkflowTaskRunner>()
                 .AddSingleton<IWorkflowActivator, WorkflowActivator>()
-                .AddSingleton<MemoryWorkflowDefinitionVersionStore>()
-                .AddSingleton<MemoryWorkflowInstanceStore>()
                 .AddStartupRunner()
                 .AddTransient<IActivityResolver, ActivityResolver>()
                 .AddTransient<IWorkflowProvider, StoreWorkflowProvider>()
