@@ -73,9 +73,19 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task<WorkflowInstanceTask> GetTopScheduledTask(CancellationToken cancellationToken = default)
+        {
+            var record = await dbContext.WorkflowInstanceTasks
+                .Include(x => x.WorkflowInstance)
+                .OrderByDescending(x => x.ScheduleDate)
+                .Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Resume)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return Map(record);
+        }
+
         private WorkflowInstanceTaskEntity Map(WorkflowInstanceTask source) => mapper.Map<WorkflowInstanceTaskEntity>(source);
         private WorkflowInstanceTask Map(WorkflowInstanceTaskEntity source) => mapper.Map<WorkflowInstanceTask>(source);
         private IEnumerable<WorkflowInstanceTask> Map(IEnumerable<WorkflowInstanceTaskEntity> source) => mapper.Map<IEnumerable<WorkflowInstanceTask>>(source);
-
     }
 }

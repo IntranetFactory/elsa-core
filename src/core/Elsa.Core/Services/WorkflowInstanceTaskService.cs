@@ -1,6 +1,7 @@
 using Elsa.Models;
 using Elsa.Persistence;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Elsa.Services
 {
@@ -11,15 +12,22 @@ namespace Elsa.Services
         {
             this.workflowInstanceTaskStore = workflowInstanceTaskStore;
         }
-        public async void Unblock(int? tenantId, string taskId, CancellationToken cancellationToken = default)
+
+        public async Task<WorkflowInstanceTask> Unblock(int? tenantId, string taskId, CancellationToken cancellationToken)
         {
             var task = await workflowInstanceTaskStore.GetByIdAsync(tenantId, taskId, cancellationToken);
 
-            if(task != null)
+            if (task != null)
             {
                 task.Status = WorkflowInstanceTaskStatus.Resume;
                 await workflowInstanceTaskStore.SaveAsync(task, cancellationToken);
+                return task;
             }
+            else
+            {
+                return null;
+            }
+
         }
     }
 }

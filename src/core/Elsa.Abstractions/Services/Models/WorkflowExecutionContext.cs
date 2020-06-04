@@ -88,6 +88,12 @@ namespace Elsa.Services.Models
         public void ScheduleWorkflowInstanceTask(IActivity activity, Variable? input = default) => ScheduleWorkflowInstanceTask(new WorkflowInstanceTask(activity, input));
         public void ScheduleWorkflowInstanceTask(WorkflowInstanceTask activity)
         {
+            // do not schedule an already scheduled task
+            // this can happen during Join activity execution when Join executes but previous activities didn't finish
+            // example: join doesn't complete -> return execution to previous activity -> previous activity executes -> next activities (join) are scheduled
+            if (WorkflowInstanceTasks.Where(x => x.Activity.Id == activity.Activity.Id).Any())
+                return;
+
             activity.Status = WorkflowInstanceTaskStatus.Execute;
             activity.ScheduleDate = DateTime.UtcNow;
             activity.CreateDate = DateTime.UtcNow;

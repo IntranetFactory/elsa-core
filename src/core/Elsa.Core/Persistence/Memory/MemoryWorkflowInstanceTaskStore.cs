@@ -46,5 +46,11 @@ namespace Elsa.Persistence.Memory
 
             return Task.CompletedTask;
         }
+
+        public Task<WorkflowInstanceTask> GetTopScheduledTask(CancellationToken cancellationToken = default)
+        {
+            var task = workflowInstanceTasks.Values.Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Resume).OrderByDescending(x => x.ScheduleDate).FirstOrDefault();
+            return Task.FromResult(task);
+        }
     }
 }

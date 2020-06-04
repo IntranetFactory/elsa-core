@@ -94,7 +94,7 @@ namespace Elsa.Services
             var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
             var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
 
-            if(!String.IsNullOrEmpty(payload))
+            if (!String.IsNullOrEmpty(payload))
             {
                 workflowInstance.Payload = payload;
             }
@@ -167,7 +167,7 @@ namespace Elsa.Services
 
             if (statusEvent != null)
                 await mediator.Publish(statusEvent, cancellationToken);
-            
+
             return workflowExecutionContext;
         }
 
@@ -193,12 +193,12 @@ namespace Elsa.Services
         {
             if (!await CanExecuteAsync(workflowExecutionContext, activity, input, cancellationToken))
                 return;
-            
+
             workflowExecutionContext.Status = WorkflowStatus.Running;
             workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, input);
             await RunAsync(workflowExecutionContext, Resume, cancellationToken);
         }
-        
+
         private Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowExecutionContext, IActivity activity, object? input, CancellationToken cancellationToken)
         {
             var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, activity, Variable.From(input));
@@ -220,16 +220,16 @@ namespace Elsa.Services
                 var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
                 var result = await activityOperation(activityExecutionContext, currentActivity, cancellationToken);
 
-                if(result is ExecutionResult)
+                if (result is ExecutionResult)
                 {
                     var executionResult = (ExecutionResult)result;
 
-                    if(executionResult.Status == WorkflowInstanceTaskStatus.Completed)
+                    if (executionResult.Status == WorkflowInstanceTaskStatus.Completed)
                     {
                         workflowExecutionContext.PopScheduledWorkflowInstanceTask();
                     }
 
-                    if(executionResult.Status == WorkflowInstanceTaskStatus.Faulted)
+                    if (executionResult.Status == WorkflowInstanceTaskStatus.Faulted)
                     {
                         workflowExecutionContext.SetWorkflowInstanceTaskStatusToFailed();
                     }
@@ -289,7 +289,7 @@ namespace Elsa.Services
 
                 var activityInstance = workflowDefinitionVersion.Activities.Where(x => x.Id == activity.Id).FirstOrDefault();
 
-                if(activityInstance != null)
+                if (activityInstance != null)
                 {
                     activity.State = activityInstance.State;
                     activity.Output = activityInstance.Output;
@@ -311,7 +311,7 @@ namespace Elsa.Services
 
         private WorkflowExecutionContext CreateWorkflowExecutionContext(
             string workflowInstanceId,
-            int? tenantId, 
+            int? tenantId,
             string workflowDefinitionId,
             int version,
             IEnumerable<IActivity> activities,
@@ -355,12 +355,12 @@ namespace Elsa.Services
 
             var workflowExecutionContext = activityExecutionContext.WorkflowExecutionContext;
 
-            if(executionResult.Status != WorkflowInstanceTaskStatus.Blocked)
+            if (executionResult.Status != WorkflowInstanceTaskStatus.Blocked)
             {
                 var nextActivities = GetNextActivities(workflowExecutionContext, activityExecutionContext.Activity, executionResult.Outcomes).ToList();
                 workflowExecutionContext.ScheduleWorkflowInstanceTasks(nextActivities, executionResult.Output);
             }
-           
+
         }
 
         private IEnumerable<IActivity> GetNextActivities(WorkflowExecutionContext workflowContext, IActivity source, IEnumerable<string> outcomes)

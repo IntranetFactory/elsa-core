@@ -21,6 +21,7 @@ namespace Elsa.Models
         }
         public string? ActivityId { get; set; }
         public int? TenantId { get; set; }
+        public string InstanceId { get; set; }
         public string? Tag { get; set; }
         public WorkflowInstanceTaskStatus? Status { get; set; }
         public Variable? Input { get; set; }

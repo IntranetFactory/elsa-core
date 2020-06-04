@@ -216,8 +216,10 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                     variableName = "Decision";
                 }
 
-                workflowInstanceTaskService.Unblock(tenantId, blockingTaskId, cancellationToken);
+                var resumedTask = await workflowInstanceTaskService.Unblock(tenantId, blockingTaskId, cancellationToken);
                 workflowInstance.Variables.SetVariable(variableName, decision);
+                workflowInstance.WorkflowInstanceTasks.Pop();
+                workflowInstance.WorkflowInstanceTasks.Push(resumedTask);
                 await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
                 return Ok();
             }

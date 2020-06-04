@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Elsa.Services
 {
-    public interface IWorkflowInstanceTaskService
+    public interface IWorkflowTaskRunner
     {
-        Task<WorkflowInstanceTask> Unblock(int? tenantId, string taskId, CancellationToken cancellationToken = default);
+        Task<WorkflowInstanceTask> RunWorkflowInstanceTaskAsync(CancellationToken cancellationToken = default);
     }
 }
