@@ -55,7 +55,7 @@ namespace Elsa.Services.Models
         public WorkflowStatus Status { get; set; }
         public Stack<WorkflowInstanceTask> WorkflowInstanceTasks { get; }
         public Variables Variables { get; }
-        public bool HasWorkflowInstanceTasks()
+        public bool HasWorkflowInstanceActiveTasks()
         {
             int count = WorkflowInstanceTasks.Where(x => x.Status != WorkflowInstanceTaskStatus.Faulted && x.Status != WorkflowInstanceTaskStatus.Blocked).Count();
 

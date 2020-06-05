@@ -211,7 +211,7 @@ namespace Elsa.Services
             CancellationToken cancellationToken = default)
         {
 
-            while (workflowExecutionContext.HasWorkflowInstanceTasks())
+            while (workflowExecutionContext.HasWorkflowInstanceActiveTasks())
             {
                 var workflowInstanceTask = workflowExecutionContext.PeekScheduledWorkflowInstanceTask();
                 workflowExecutionContext.SetWorkflowInstanceTaskStatusToRunning();
