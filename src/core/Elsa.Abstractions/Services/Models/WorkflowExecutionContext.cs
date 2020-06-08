@@ -58,15 +58,7 @@ namespace Elsa.Services.Models
         public bool HasWorkflowInstanceActiveTasks()
         {
             int count = WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Running || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.OnHold).Count();
-
-            if (count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return count > 0 ? true : false;
         }
         public WorkflowInstanceTask? WorkflowInstanceTask { get; private set; }
         public WorkflowFault? WorkflowFault { get; private set; }
@@ -91,8 +83,7 @@ namespace Elsa.Services.Models
             // do not schedule an already scheduled task
             // this can happen during Join activity execution when Join executes but previous activities didn't finish
             // example: join doesn't complete -> return execution to previous activity -> previous activity executes -> next activities (join) are scheduled
-            if (WorkflowInstanceTasks.Where(x => x.Activity.Id == activity.Activity.Id).Any())
-                return;
+            if (WorkflowInstanceTasks.Where(x => x.Activity.Id == activity.Activity.Id).Any()) return;
 
             activity.Status = WorkflowInstanceTaskStatus.Execute;
             activity.ScheduleDate = DateTime.UtcNow;
@@ -103,29 +94,21 @@ namespace Elsa.Services.Models
 
         public WorkflowInstanceTask PopScheduledWorkflowInstanceTask(string id)
         {
-            if(WorkflowInstanceTasks.Peek().Activity.Id == id)
+            if (WorkflowInstanceTasks.Peek().Activity.Id == id)
             {
                 var task = WorkflowInstanceTasks.Pop();
                 return task;
-            } else
+            }
+            else
             {
                 throw new Exception("First task in the stack does not have the Id: " + id);
             }
         }
         public WorkflowInstanceTask NextScheduledWorkflowInstanceTask()
         {
-            // return null if there are no tasks in the stack
-            if (WorkflowInstanceTasks.Count() == 0)
-                return null;
+            if (WorkflowInstanceTasks.Count() == 0) return null;
 
-            int numberOfExecuteTasks = WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Execute).Count();
-            int numberOfResumeTasks = WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Resume).Count();
-            int numberOfRunningTasks = WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Running).Count();
-            int numberOfOnHoldTasks = WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.OnHold).Count();
-
-            // return null if there are no tasks with status Execute or Resume
-            if (numberOfExecuteTasks == 0 && numberOfResumeTasks == 0 && numberOfRunningTasks == 0 && numberOfOnHoldTasks == 0)
-                return null;
+            if (!HasWorkflowInstanceActiveTasks()) return null;
 
             bool canExecute = false;
             var tasksList = WorkflowInstanceTasks.ToList();
@@ -165,6 +148,20 @@ namespace Elsa.Services.Models
 
             return false;
         }
+
+        private void MoveTaskToEndOfStack(WorkflowInstanceTask task)
+        {
+            var tasksList = WorkflowInstanceTasks.ToList();
+            tasksList.Add(task);
+            tasksList.Reverse();
+            WorkflowInstanceTasks.Clear();
+
+            foreach (var instanceTask in tasksList)
+            {
+                WorkflowInstanceTasks.Push(instanceTask);
+            }
+        }
+
         public void SetWorkflowInstanceTaskStatusToRunning()
         {
             var task = WorkflowInstanceTasks.Pop();
@@ -178,15 +175,7 @@ namespace Elsa.Services.Models
             var task = WorkflowInstanceTasks.Pop();
             task.Status = WorkflowInstanceTaskStatus.Faulted;
             task.IterationCount++;
-            var tasksList = WorkflowInstanceTasks.ToList();
-            tasksList.Add(task);
-            tasksList.Reverse();
-            WorkflowInstanceTasks.Clear();
-
-            foreach (var instanceTask in tasksList)
-            {
-                WorkflowInstanceTasks.Push(instanceTask);
-            }
+            MoveTaskToEndOfStack(task);
         }
         public void SetWorkflowInstanceTaskStatusToBlocked()
         {
@@ -201,15 +190,7 @@ namespace Elsa.Services.Models
             var task = WorkflowInstanceTasks.Pop();
             task.Status = WorkflowInstanceTaskStatus.OnHold;
             task.IterationCount++;
-            var tasksList = WorkflowInstanceTasks.ToList();
-            tasksList.Add(task);
-            tasksList.Reverse();
-            WorkflowInstanceTasks.Clear();
-
-            foreach (var instanceTask in tasksList)
-            {
-                WorkflowInstanceTasks.Push(instanceTask);
-            }
+            MoveTaskToEndOfStack(task);
         }
 
         public IExpressionEvaluator ExpressionEvaluator { get; }

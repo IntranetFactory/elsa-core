@@ -94,10 +94,7 @@ namespace Elsa.Services
             var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
             var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
 
-            if (!String.IsNullOrEmpty(payload))
-            {
-                workflowInstance.Payload = payload;
-            }
+            if (!String.IsNullOrEmpty(payload)) workflowInstance.Payload = payload;
 
             var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
             var activity = workflowExecutionContext.GetStartActivities().First();
@@ -139,19 +136,22 @@ namespace Elsa.Services
                 case WorkflowStatus.Cancelled:
                     statusEvent = new WorkflowCancelled(workflowExecutionContext);
                     break;
+
                 case WorkflowStatus.Completed:
                     statusEvent = new WorkflowCompleted(workflowExecutionContext);
                     break;
+
                 case WorkflowStatus.Faulted:
                     statusEvent = new WorkflowFaulted(workflowExecutionContext);
                     break;
+
                 case WorkflowStatus.Suspended:
                     statusEvent = new WorkflowSuspended(workflowExecutionContext);
                     break;
+
             }
 
-            if (statusEvent != null)
-                await mediator.Publish(statusEvent, cancellationToken);
+            if (statusEvent != null) await mediator.Publish(statusEvent, cancellationToken);
 
             return workflowExecutionContext;
         }
@@ -181,22 +181,27 @@ namespace Elsa.Services
                     case WorkflowInstanceTaskStatus.Execute:
                         activityOperation = Execute;
                         break;
+
                     case WorkflowInstanceTaskStatus.Running:
                         activityOperation = Execute;
                         break;
+
                     case WorkflowInstanceTaskStatus.Resume:
                         activityOperation = Resume;
                         break;
+
                     case WorkflowInstanceTaskStatus.Faulted:
                         break;
+
                     case WorkflowInstanceTaskStatus.Blocked:
                         break;
+
                     case WorkflowInstanceTaskStatus.OnHold:
-                        if (iterationCount == workflowInstanceTask.IterationCount)
-                            return;
-                        
+                        if (iterationCount == workflowInstanceTask.IterationCount) return;
+
                         activityOperation = Execute;
                         break;
+
                     case WorkflowInstanceTaskStatus.Completed:
                         break;
                 }
@@ -216,15 +221,19 @@ namespace Elsa.Services
                         case WorkflowInstanceTaskStatus.Faulted:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToFailed();
                             break;
+
                         case WorkflowInstanceTaskStatus.Blocked:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToBlocked();
                             break;
+
                         case WorkflowInstanceTaskStatus.Completed:
                             workflowExecutionContext.PopScheduledWorkflowInstanceTask(currentActivity.Id);
                             break;
+
                         case WorkflowInstanceTaskStatus.OnHold:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToOnHold();
                             break;
+
                     }
 
                     ExecuteActivityResult(activityExecutionContext, executionResult);
@@ -249,8 +258,8 @@ namespace Elsa.Services
                 iterationCount++;
             }
 
-            if (workflowExecutionContext.Status == WorkflowStatus.Running)
-                workflowExecutionContext.Complete();
+            if (workflowExecutionContext.Status == WorkflowStatus.Running) workflowExecutionContext.Complete();
+
         }
 
         private WorkflowInstanceTask CreateScheduledWorkflowInstanceTask(Elsa.Models.WorkflowInstanceTask workflowInstanceTaskModel, IDictionary<string, IActivity> activityLookup)
@@ -275,8 +284,7 @@ namespace Elsa.Services
 
             foreach (var activity in workflowDefinitionActiveVersion.Activities)
             {
-                if (!workflowDefinitionVersion.Activities.Any(x => x.Id == activity.Id))
-                    continue;
+                if (!workflowDefinitionVersion.Activities.Any(x => x.Id == activity.Id)) continue;
 
                 var activityInstance = workflowDefinitionVersion.Activities.Where(x => x.Id == activity.Id).FirstOrDefault();
 
@@ -339,24 +347,20 @@ namespace Elsa.Services
 
         private void ExecuteActivityResult(ActivityExecutionContext activityExecutionContext, ExecutionResult executionResult)
         {
-            if (executionResult.Output != null)
-                activityExecutionContext.Output = executionResult.Output;
+            if (executionResult.Output != null) activityExecutionContext.Output = executionResult.Output;
 
             activityExecutionContext.Outcomes = executionResult.Outcomes.ToList();
-
             var workflowExecutionContext = activityExecutionContext.WorkflowExecutionContext;
-
-            // do not query for next activities if result is Blocked or OnHold
-            if (executionResult.Status != WorkflowInstanceTaskStatus.Blocked && executionResult.Status != WorkflowInstanceTaskStatus.OnHold)
-            {
-                var nextActivities = GetNextActivities(workflowExecutionContext, activityExecutionContext.Activity, executionResult.Outcomes).ToList();
-                workflowExecutionContext.ScheduleWorkflowInstanceTasks(nextActivities, executionResult.Output);
-            }
-
+            var nextActivities = GetNextActivities(workflowExecutionContext, activityExecutionContext.Activity, executionResult).ToList();
+            workflowExecutionContext.ScheduleWorkflowInstanceTasks(nextActivities, executionResult.Output);
         }
 
-        private IEnumerable<IActivity> GetNextActivities(WorkflowExecutionContext workflowContext, IActivity source, IEnumerable<string> outcomes)
+        private IEnumerable<IActivity> GetNextActivities(WorkflowExecutionContext workflowContext, IActivity source, ExecutionResult executionResult)
         {
+            if (executionResult.Status == WorkflowInstanceTaskStatus.Blocked || executionResult.Status == WorkflowInstanceTaskStatus.OnHold || executionResult.Status == WorkflowInstanceTaskStatus.Faulted) return new List<IActivity>();
+
+            IEnumerable<string> outcomes = executionResult.Outcomes;
+
             var query =
                 from connection in workflowContext.Connections
                 from outcome in outcomes

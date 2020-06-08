@@ -68,8 +68,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 cancellationToken
             );
 
-            if (definitionVersion == null)
-                return NotFound();
+            if (definitionVersion == null) return NotFound();
 
             var instances = await workflowInstanceStore
                 .ListByStatusAsync(tenantId, definitionId, status, cancellationToken)
@@ -96,8 +95,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         {
             var instance = await workflowInstanceStore.GetByIdAsync(tenantId, id, cancellationToken);
 
-            if (instance == null)
-                return NotFound();
+            if (instance == null) return NotFound();
 
             var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(
                 tenantId,
@@ -127,14 +125,12 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         {
             var instance = await workflowInstanceStore.GetByIdAsync(tenantId, id, cancellationToken);
 
-            if (instance == null)
-                return NotFound();
+            if (instance == null) return NotFound();
 
             await workflowInstanceStore.DeleteAsync(tenantId, id, cancellationToken);
             notifier.Notify("Workflow instance successfully deleted.", NotificationType.Success);
 
-            if (Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
+            if (Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
 
             return RedirectToAction("Index", "WorkflowDefinition", new { tenantId = tenantId });
         }
@@ -177,14 +173,12 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             {
                 payload = await reader.ReadToEndAsync();
 
-                if (String.IsNullOrEmpty(payload))
-                    payload = "{}";
+                if (String.IsNullOrEmpty(payload)) payload = "{}";
             }
 
             var definitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(tenantId, definitionId, VersionOptions.Latest, cancellationToken);
 
-            if (definitionVersion == null)
-                return NotFound();
+            if (definitionVersion == null) return NotFound();
 
             var workflowExecutionContext = await workflowHost.WorkflowInstanceCreateAsync(tenantId, definitionId, correlationId, payload);
             return Json(workflowExecutionContext.InstanceId);
@@ -205,8 +199,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                 var activityDefinition = await workflowDefinitionActivityStore.GetByIdAsync(tenantId, blockingTask.ActivityId, cancellationToken);
                 string variableName;
 
-                if (activityDefinition == null)
-                    return NotFound();
+                if (activityDefinition == null) return NotFound();
 
                 if (activityDefinition.State.ContainsKey("VariableName"))
                 {
