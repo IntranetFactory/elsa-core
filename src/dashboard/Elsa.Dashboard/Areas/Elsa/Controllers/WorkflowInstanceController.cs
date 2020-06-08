@@ -27,6 +27,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
     {
         private readonly IWorkflowInstanceTaskService workflowInstanceTaskService;
         private readonly IWorkflowInstanceStore workflowInstanceStore;
+        private readonly IWorkflowInstanceTaskStore workflowInstanceTaskStore;
         private readonly IWorkflowDefinitionVersionStore workflowDefinitionVersionStore;
         private readonly IWorkflowDefinitionActivityStore workflowDefinitionActivityStore;
         private readonly IWorkflowHost workflowHost;
@@ -36,6 +37,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         public WorkflowInstanceController(
             IWorkflowInstanceTaskService workflowInstanceTaskService,
             IWorkflowInstanceStore workflowInstanceStore,
+            IWorkflowInstanceTaskStore workflowInstanceTaskStore,
             IWorkflowDefinitionVersionStore workflowDefinitionVersionStore,
             IWorkflowDefinitionActivityStore workflowDefinitionActivityStore,
             IWorkflowHost workflowHost,
@@ -44,6 +46,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         {
             this.workflowInstanceTaskService = workflowInstanceTaskService;
             this.workflowInstanceStore = workflowInstanceStore;
+            this.workflowInstanceTaskStore = workflowInstanceTaskStore;
             this.workflowDefinitionVersionStore = workflowDefinitionVersionStore;
             this.workflowDefinitionActivityStore = workflowDefinitionActivityStore;
             this.workflowHost = workflowHost;
@@ -191,23 +194,21 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         public async Task<IActionResult> UserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
         {
             int? tenantId = GetTenant();
-            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
+            var blockingTask = await workflowInstanceTaskStore.GetFirstBlockingTaskByInstanceIdAsync(tenantId, instanceId, cancellationToken);
 
-            if (workflowInstance == null)
+            if (blockingTask == null)
             {
                 return NotFound();
             }
             else
             {
-                // set's UserTask task to "Resume" and get's the name of the variable which should hold the user task decision
-                var blockingTaskId = workflowInstance.WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Blocked).Select(x => x.ActivityId).FirstOrDefault();
-                var activityDefinition = await workflowDefinitionActivityStore.GetByIdAsync(tenantId, blockingTaskId, cancellationToken);
+                var activityDefinition = await workflowDefinitionActivityStore.GetByIdAsync(tenantId, blockingTask.ActivityId, cancellationToken);
                 string variableName;
 
                 if (activityDefinition == null)
                     return NotFound();
 
-                if(activityDefinition.State.ContainsKey("VariableName"))
+                if (activityDefinition.State.ContainsKey("VariableName"))
                 {
                     variableName = activityDefinition.State["VariableName"].Value.ToString();
                 }
@@ -216,10 +217,9 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
                     variableName = "Decision";
                 }
 
-                var resumedTask = await workflowInstanceTaskService.Unblock(tenantId, blockingTaskId, cancellationToken);
+                await workflowInstanceTaskService.Unblock(blockingTask, cancellationToken);
+                var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, blockingTask.InstanceId, cancellationToken);
                 workflowInstance.Variables.SetVariable(variableName, decision);
-                workflowInstance.WorkflowInstanceTasks.Pop();
-                workflowInstance.WorkflowInstanceTasks.Push(resumedTask);
                 await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
                 return Ok();
             }

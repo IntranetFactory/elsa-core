@@ -13,21 +13,11 @@ namespace Elsa.Services
             this.workflowInstanceTaskStore = workflowInstanceTaskStore;
         }
 
-        public async Task<WorkflowInstanceTask> Unblock(int? tenantId, string taskId, CancellationToken cancellationToken)
+        public async Task<WorkflowInstanceTask> Unblock(WorkflowInstanceTask task, CancellationToken cancellationToken = default)
         {
-            var task = await workflowInstanceTaskStore.GetByIdAsync(tenantId, taskId, cancellationToken);
-
-            if (task != null)
-            {
-                task.Status = WorkflowInstanceTaskStatus.Resume;
-                await workflowInstanceTaskStore.SaveAsync(task, cancellationToken);
-                return task;
-            }
-            else
-            {
-                return null;
-            }
-
+            task.Status = WorkflowInstanceTaskStatus.Resume;
+            await workflowInstanceTaskStore.SaveAsync(task, cancellationToken);
+            return task;
         }
     }
 }

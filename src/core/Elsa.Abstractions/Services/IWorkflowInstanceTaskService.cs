@@ -9,6 +9,6 @@ namespace Elsa.Services
 {
     public interface IWorkflowInstanceTaskService
     {
-        Task<WorkflowInstanceTask> Unblock(int? tenantId, string taskId, CancellationToken cancellationToken = default);
+        Task<WorkflowInstanceTask> Unblock(WorkflowInstanceTask task, CancellationToken cancellationToken = default);
     }
 }
