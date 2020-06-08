@@ -89,7 +89,8 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     Status = table.Column<int>(nullable: true),
                     CreateDate = table.Column<DateTime>(nullable: true),
                     ScheduleDate = table.Column<DateTime>(nullable: true),
-                    ExecutionDate = table.Column<DateTime>(nullable: true)
+                    ExecutionDate = table.Column<DateTime>(nullable: true),
+                    IterationCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

@@ -231,6 +231,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     b.Property<string>("Input")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("IterationCount")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime?>("ScheduleDate")
                         .HasColumnType("TEXT");
 

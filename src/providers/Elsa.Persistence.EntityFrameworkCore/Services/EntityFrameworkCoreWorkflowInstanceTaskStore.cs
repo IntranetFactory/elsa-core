@@ -52,6 +52,18 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return Map(taskEntity);
         }
 
+        public async Task<WorkflowInstanceTask> GetFirstBlockingTaskByInstanceIdAsync(int? tenantId, string instanceId, CancellationToken cancellationToken = default)
+        {
+            var workflowInstanceEntity = await dbContext
+                .WorkflowInstances
+                .Include(x => x.WorkflowInstanceTasks)
+                .Where(x => x.InstanceId == instanceId).FirstOrDefaultAsync(cancellationToken);
+
+            var taskEntity = workflowInstanceEntity.WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Blocked).FirstOrDefault();
+
+            return Map(taskEntity);
+        }
+
         public async Task<IEnumerable<WorkflowInstanceTask>> ListAllAsync(int? tenantId, CancellationToken cancellationToken = default)
         {
             var tasks = await dbContext

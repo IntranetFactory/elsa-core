@@ -21,5 +21,6 @@ namespace Elsa.Services.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? ScheduleDate { get; set; }
         public DateTime? ExecutionDate { get; set; }
+        public int IterationCount { get; set; }
     }
 }
