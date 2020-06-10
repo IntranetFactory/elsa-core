@@ -40,16 +40,11 @@ namespace Elsa.Services
         protected ExecutionResult ExecutionResult() => new ExecutionResult();
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status) => new ExecutionResult(status);
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag) => new ExecutionResult(status, tag);
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, string outcome, Variable? output) => new ExecutionResult(status, tag, message, new[] { outcome }, output);
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, IEnumerable<string> outcomes, Variable? output) => new ExecutionResult(status, tag, message, outcomes, output);
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, IEnumerable<string> outcomes, object? output) => new ExecutionResult(status, tag, message, outcomes, Variable.From(output));
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, IEnumerable<string> outcomes) => new ExecutionResult(status, tag, message, outcomes, default);
         protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, params string[] outcomes) => new ExecutionResult(status, tag, message, outcomes, default);
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, Variable? output) => new ExecutionResult(status, tag, message, null, output);
         protected OutcomeResult Done() => new OutcomeResult();
         protected OutcomeResult Done(string outcome, Variable? output) => Done(new[] { outcome }, output);
         protected OutcomeResult Done(IEnumerable<string> outcomes, Variable? output) => new OutcomeResult(outcomes, output);
-        protected OutcomeResult Done(IEnumerable<string> outcomes, object? output) => Done(outcomes, Variable.From(output));
         protected OutcomeResult Done(IEnumerable<string> outcomes) => Done(outcomes, default);
         protected OutcomeResult Done(params string[] outcomes) => Done(outcomes, default);
         protected OutcomeResult Done(Variable? output) => new OutcomeResult(null, output);
