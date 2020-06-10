@@ -9,14 +9,21 @@ namespace Elsa.Results
 {
     public class WorkflowInstanceTasksResult : ActivityExecutionResult
     {
-        public WorkflowInstanceTasksResult(IEnumerable<IActivity> activities, Variable? input = default) => 
+        public WorkflowInstanceTasksResult(IEnumerable<IActivity> activities, Variable? input = default)
+        {
             Activities = activities.Select(x => new WorkflowInstanceTask(x, input));
+        }
 
-        public WorkflowInstanceTasksResult(IEnumerable<WorkflowInstanceTask> activities) => Activities = activities;
+        public WorkflowInstanceTasksResult(IEnumerable<WorkflowInstanceTask> activities)
+        {
+            Activities = activities;
+        }
 
         public IEnumerable<WorkflowInstanceTask> Activities { get; }
 
-        protected override void Execute(ActivityExecutionContext activityExecutionContext) => 
+        protected override void Execute(ActivityExecutionContext activityExecutionContext)
+        {
             activityExecutionContext.WorkflowExecutionContext.ScheduleWorkflowInstanceTasks(Activities);
+        }
     }
 }
