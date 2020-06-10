@@ -12,7 +12,6 @@ namespace Elsa.Persistence
         Task<WorkflowInstanceTask> GetFirstBlockingTaskByInstanceIdAsync(int? tenantId, string instanceId, CancellationToken cancellationToken = default);
         Task<IEnumerable<WorkflowInstanceTask>> ListAllAsync(int? tenantId, CancellationToken cancellationToken = default);
         Task DeleteAsync(int? tenantId, string id, CancellationToken cancellationToken = default);
-        Task<WorkflowInstanceTask> GetTopScheduledTaskAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<WorkflowInstanceTask>> GetTopScheduledTasksAsync(int numberOfTasks, CancellationToken cancellationToken = default);
     }
 }

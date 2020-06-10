@@ -15,7 +15,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return services
                 .AddElsaCore(configure)
-                .AddStartupRunner()
                 .AddJavaScriptExpressionEvaluator()
                 .AddLiquidExpressionEvaluator()
                 .AddUserTaskActivities();

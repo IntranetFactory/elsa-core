@@ -18,7 +18,6 @@ using Elsa.Serialization;
 using Elsa.Serialization.Formatters;
 using Elsa.Serialization.Handlers;
 using Elsa.Services;
-using Elsa.StartupTasks;
 using Elsa.WorkflowProviders;
 using MediatR;
 using Microsoft.AspNetCore.Http;
