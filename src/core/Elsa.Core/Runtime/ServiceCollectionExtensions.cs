@@ -1,3 +1,4 @@
+using Elsa.StartupTasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Runtime
@@ -9,6 +10,7 @@ namespace Elsa.Runtime
             return services
                 .AddTransient<IStartupRunner, StartupRunner>()
                 .AddHostedService<StartupRunnerHostedService>();
+
         }
 
         public static IServiceCollection AddStartupTask<TStartupTask>(this IServiceCollection services)
@@ -23,6 +25,12 @@ namespace Elsa.Runtime
             return services
                 .AddStartupRunner()
                 .AddHostedService<StartupRunnerHostedService>();
+        }
+
+        public static IServiceCollection AddWorkflowTasksRunner(this IServiceCollection services)
+        {
+            return services
+                .AddHostedService<WorkflowTasksRunner>();
         }
     }
 }

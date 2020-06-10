@@ -22,8 +22,7 @@ namespace Elsa.Runtime
                 
                 foreach (var startupTask in startupTasks)
                 {
-                    // TO DO: inspect if tenantId should be passed here
-                    await startupTask.ExecuteAsync(null, cancellationToken);
+                    await startupTask.ExecuteAsync(cancellationToken);
                 }
             }
         }

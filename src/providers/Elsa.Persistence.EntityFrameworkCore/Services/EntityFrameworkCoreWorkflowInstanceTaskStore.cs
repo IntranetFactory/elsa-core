@@ -85,7 +85,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<WorkflowInstanceTask> GetTopScheduledTask(CancellationToken cancellationToken = default)
+        public async Task<WorkflowInstanceTask> GetTopScheduledTaskAsync(CancellationToken cancellationToken = default)
         {
             var record = await dbContext.WorkflowInstanceTasks
                 .Include(x => x.WorkflowInstance)
@@ -96,8 +96,21 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             return Map(record);
         }
 
+        public async Task<IEnumerable<WorkflowInstanceTask>> GetTopScheduledTasksAsync(int numberOfTasks, CancellationToken cancellationToken = default)
+        {
+            var records = await dbContext.WorkflowInstanceTasks
+                .Include(x => x.WorkflowInstance)
+                .OrderBy(x => x.ScheduleDate)
+                .Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Resume)
+                .Take(numberOfTasks)
+                .ToListAsync(cancellationToken);
+
+            return Map(records);
+        }
+
         private WorkflowInstanceTaskEntity Map(WorkflowInstanceTask source) => mapper.Map<WorkflowInstanceTaskEntity>(source);
         private WorkflowInstanceTask Map(WorkflowInstanceTaskEntity source) => mapper.Map<WorkflowInstanceTask>(source);
         private IEnumerable<WorkflowInstanceTask> Map(IEnumerable<WorkflowInstanceTaskEntity> source) => mapper.Map<IEnumerable<WorkflowInstanceTask>>(source);
+
     }
 }
