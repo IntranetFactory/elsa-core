@@ -59,7 +59,6 @@ namespace Elsa.Services
         protected WorkflowInstanceTasksResult Schedule(IActivity activity, object input) => Schedule(new[] { activity }, input);
         protected WorkflowInstanceTasksResult Schedule(IActivity activity, Variable input) => Schedule(new[] { activity }, input);
         protected WorkflowInstanceTasksResult Schedule(IEnumerable<WorkflowInstanceTask> activities) => new WorkflowInstanceTasksResult(activities);
-        protected CombinedResult Combine(IEnumerable<IActivityExecutionResult> results) => new CombinedResult(results);
         protected CombinedResult Combine(params IActivityExecutionResult[] results) => new CombinedResult(results);
     }
 }
