@@ -30,8 +30,10 @@ namespace Elsa.Dashboard.Web
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
 
+            // comment out first and uncomment second to try with PostgreSql database
             services
                 .AddElsa(x => x.UseEntityFrameworkWorkflowStores(x => x.UseSqlite(Configuration.GetConnectionString("Sqlite"))));
+            //.AddElsa(x => x.UseEntityFrameworkWorkflowStores(x => x.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"))));
 
             services
                 .AddHttp(options => options.Bind(elsaSection.GetSection("Http")))

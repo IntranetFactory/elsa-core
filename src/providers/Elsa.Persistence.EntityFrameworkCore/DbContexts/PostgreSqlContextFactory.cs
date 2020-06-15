@@ -10,7 +10,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
         {
             var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlContext>();
             var migrationAssembly = typeof(PostgreSqlContext).Assembly.FullName;
-            var connectionString = Environment.GetEnvironmentVariable("EF_CONNECTIONSTRING");
+            // Uncomment if EF_CONNECTIONSTRING env variable is set. Using hardcoded value is temporary.
+            //var connectionString = Environment.GetEnvironmentVariable("EF_CONNECTIONSTRING");
+            var connectionString = "Server=localhost;Database=Elsa;Port=5432;User Id=postgres;Password=adenin;";
 
             if (connectionString == null)
                 throw new InvalidOperationException(@"Set the EF_CONNECTIONSTRING environment variable to a valid PostgreSql connection string. E.g. SET EF_CONNECTIONSTRING=Server=localhost;Database=Elsa;Port=5432;User Id=postgres;Password=Secret_password123!;");
