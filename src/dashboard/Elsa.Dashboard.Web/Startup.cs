@@ -30,17 +30,20 @@ namespace Elsa.Dashboard.Web
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
 
-            // comment out first and uncomment second to try with PostgreSql database
+            // uncomment this to enable Sqlite and In-Memory default lock provider
             services
                 .AddElsa(x => x.UseEntityFrameworkWorkflowStores(x => x.UseSqlite(Configuration.GetConnectionString("Sqlite"))));
-            //.AddElsa(x => x.UseEntityFrameworkWorkflowStores(x => x.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"))));
+
+            // uncomment this to enable PostgreSql and Postgres distributed lock provider
+            //services
+            //.AddElsa(x => x.UseEntityFrameworkWorkflowStores(x => x.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")))
+            //.AddPostgreSqlLockProvider(Configuration.GetConnectionString("PostgreSQL")));
 
             services
                 .AddHttp(options => options.Bind(elsaSection.GetSection("Http")))
                 .AddEmail(options => options.Bind(elsaSection.GetSection("Smtp")))
                 .AddUserTaskActivities()
                 .AddElsaDashboard();
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

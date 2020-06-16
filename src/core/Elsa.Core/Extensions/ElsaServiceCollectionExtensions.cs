@@ -110,7 +110,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddTransient<IWorkflowRegistry, WorkflowRegistry>()
                 .AddScoped<IWorkflowScheduler, WorkflowScheduler>()
                 .AddSingleton<IWorkflowSchedulerQueue, WorkflowSchedulerQueue>()
-                .AddSingleton<IAdvisoryLockManager, AdvisoryLockManager>()
                 .AddScoped<IWorkflowHost, WorkflowHost>()
                 .AddScoped<IWorkflowInstanceTaskService, WorkflowInstanceTaskService>()
                 .AddSingleton<IWorkflowActivator, WorkflowActivator>()

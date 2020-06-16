@@ -12,16 +12,13 @@ namespace Elsa.Services
     public class WorkflowTasksRunner : BackgroundService
     {
         private readonly IDistributedLockProvider distributedLockProvider;
-        private readonly IAdvisoryLockManager advisoryLockManager;
         private readonly IServiceProvider serviceProvider;
         private readonly ILogger<WorkflowTasksRunner> logger;
         public WorkflowTasksRunner(
             IDistributedLockProvider distributedLockProvider,
-            IAdvisoryLockManager advisoryLockManager,
             IServiceProvider serviceProvider,
             ILogger<WorkflowTasksRunner> logger)
         {
-            this.advisoryLockManager = advisoryLockManager;
             this.distributedLockProvider = distributedLockProvider;
             this.serviceProvider = serviceProvider;
             this.logger = logger;
@@ -33,7 +30,6 @@ namespace Elsa.Services
             var workflowInstanceTaskStore = scope.ServiceProvider.GetRequiredService<IWorkflowInstanceTaskStore>();
             var workflowInstanceStore = scope.ServiceProvider.GetRequiredService<IWorkflowInstanceStore>();
             var workflowHost = scope.ServiceProvider.GetRequiredService<IWorkflowHost>();
-            var advisoryLockManager = scope.ServiceProvider.GetRequiredService<IAdvisoryLockManager>();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -52,13 +48,8 @@ namespace Elsa.Services
                     {
                         try
                         {
-                            string advisoryLockString = "workflow_instance_" + task.InstanceId;
-
-                            if(await advisoryLockManager.Lock(advisoryLockString))
-                            {
-                                var workflowInstance = await workflowInstanceStore.GetByIdAsync(task.TenantId, task.InstanceId, stoppingToken);
-                                await workflowHost.RunWorkflowInstanceAsync(workflowInstance, task.ActivityId, cancellationToken: stoppingToken);
-                            }
+                            var workflowInstance = await workflowInstanceStore.GetByIdAsync(task.TenantId, task.InstanceId, stoppingToken);
+                            await workflowHost.RunWorkflowInstanceAsync(workflowInstance, task.ActivityId, cancellationToken: stoppingToken);
                         }
                         catch (Exception ex)
                         {

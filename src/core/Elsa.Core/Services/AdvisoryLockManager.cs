@@ -10,30 +10,33 @@ using NpgsqlTypes;
 
 namespace Elsa.Services
 {
-    public class AdvisoryLockManager : IAdvisoryLockManager
+    public class AdvisoryLockManager : IDistributedLockProvider
     {
+        private readonly string connectionString;
         private readonly ILogger<AdvisoryLockManager> logger;
-        // connection string should probably be moved from here
-        private readonly string connectionString = "Server=localhost;Database=Elsa;Port=5432;User Id=postgres;Password=adenin;";
+        private readonly IDictionary<string, NpgsqlConnection> locks = new Dictionary<string, NpgsqlConnection>();
 
-        public AdvisoryLockManager(ILogger<AdvisoryLockManager> logger)
+        public AdvisoryLockManager(string connectionString, ILogger<AdvisoryLockManager> logger)
         {
             this.logger = logger;
+            this.connectionString = connectionString;
         }
 
-        // Lock is used to create/acquire an advisory lock for the specified workflow_instance_xxx in the database by calling pg_try_advisory_lock command.
+        // AcquireLock is used to create/acquire an advisory lock for the specified workflow_instance_xxx in the database by calling pg_try_advisory_lock command.
         // If lock is succesfully acquired - it returns true, otherwise - it returns false.
-        public async Task<bool> Lock(string name, CancellationToken cancellationToken = default)
+        public async Task<bool> AcquireLockAsync(string name, CancellationToken cancellationToken = default)
         {
             bool lockAcquired = false;
+            // the string that we want to use as an advisory lock
+            string advisoryLockString = "workflow_instance_" + name;
+            // open database connection
+            var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync();
 
             try
             {
-                // open database connection
-                var connection = new NpgsqlConnection(connectionString);
-                await connection.OpenAsync();
-                // get integer value from hashed string "name"
-                var hashedName = await HashName(name, connection, cancellationToken);
+                // get integer value by hashing advisoryLockString
+                var hashedName = await HashName(advisoryLockString, connection, cancellationToken);
                 // creates a command to be executed
                 NpgsqlCommand command = new NpgsqlCommand("pg_try_advisory_lock", connection);
                 command.CommandType = CommandType.StoredProcedure;
@@ -44,25 +47,39 @@ namespace Elsa.Services
                 // execute command
                 await command.ExecuteNonQueryAsync(cancellationToken);
                 lockAcquired = Convert.ToBoolean(advisoryLockReturnValue.Value);
-
             }
             catch (Exception ex)
             {
+                await connection.CloseAsync();
                 logger.LogError(ex, $"Exception occured while acquiring the advisory lock.");
             }
 
-            return lockAcquired;
+            // save the connection in the dictionary if the lock is successfully acquired so that it can be used when releasing the lock
+            if (lockAcquired)
+            {
+                locks[advisoryLockString] = connection;
+                return true;
+            }
+            else
+            {
+                connection.Close();
+                return false;
+            }
         }
 
-        public async Task Unlock(string name, CancellationToken cancellationToken = default)
+        public async Task ReleaseLockAsync(string name, CancellationToken cancellationToken = default)
         {
+            // the string that we want to use as an advisory lock
+            string advisoryLockString = "workflow_instance_" + name;
+            // try to get the connection if it exists in the locks dictionary
+            if (!locks.ContainsKey(advisoryLockString)) return;
+            var connection = locks[advisoryLockString];
+            if (connection == null) return;
+
             try
             {
-                // open database connection
-                var connection = new NpgsqlConnection(connectionString);
-                await connection.OpenAsync();
-                // get integer value from hashed string "name"
-                var hashedName = await HashName(name, connection, cancellationToken);
+                // get integer value by hashing advisoryLockString
+                var hashedName = await HashName(advisoryLockString, connection, cancellationToken);
                 // creates a command to be executed
                 NpgsqlCommand command = new NpgsqlCommand("pg_advisory_unlock", connection);
                 command.CommandType = CommandType.StoredProcedure;
@@ -72,10 +89,15 @@ namespace Elsa.Services
             }
             catch (Exception ex)
             {
+                await connection.CloseAsync();
                 logger.LogError(ex, $"Exception occured while removing the advisory lock.");
             }
+            finally
+            {
+                connection.Close();
+                locks.Remove(advisoryLockString);
+            }
         }
-
 
         // HashName is used to return an integer value by hashing a string "name". 
         // This is used because advisory locking functions require integers instead of strings.
