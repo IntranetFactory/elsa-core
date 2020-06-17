@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Attributes;
@@ -51,14 +52,25 @@ namespace Elsa.Activities.ControlFlow
             var startValue = await context.EvaluateAsync(Start, cancellationToken);
             var endValue = await context.EvaluateAsync(End, cancellationToken);
             var step = await context.EvaluateAsync(Step, cancellationToken);
-            var currentValue = CurrentValue ?? startValue;
+            int? currentValue;
+
+            if(CurrentValue == null)
+            {
+                var currentValueVariable = context.GetVariable("For_" + this.Id);
+                currentValue = (currentValueVariable != null) ? Convert.ToInt32(currentValueVariable) : startValue;
+            }
+            else
+            {
+                currentValue = CurrentValue;
+            }
 
             if (currentValue < endValue)
             {
-                var input = currentValue;
                 currentValue += step;
                 CurrentValue = currentValue;
-                return Combine(Schedule(this), Done(OutcomeNames.Iterate, Variable.From(input)));
+                context.SetVariable("For_" + this.Id, CurrentValue);
+                return Combine(Schedule(this), Done(OutcomeNames.Iterate, Variable.From(currentValue)));
+                // TO DO: check how to remove Combine result and make this work: return Done(OutcomeNames.Iterate, Variable.From(input));
             }
 
             CurrentValue = null;

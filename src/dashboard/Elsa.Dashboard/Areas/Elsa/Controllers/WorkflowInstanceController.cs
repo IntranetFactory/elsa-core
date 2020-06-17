@@ -185,37 +185,25 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
         }
 
         [HttpPost("UserTaskDecision")]
-        public async Task<IActionResult> UserTaskDecision(string instanceId, string decision, CancellationToken cancellationToken)
+        public async Task<IActionResult> UserTaskDecision(string userTaskId, string decision, CancellationToken cancellationToken)
         {
             int? tenantId = GetTenant();
-            var blockingTask = await workflowInstanceTaskStore.GetFirstBlockingTaskByInstanceIdAsync(tenantId, instanceId, cancellationToken);
+            var userTask = await workflowInstanceTaskStore.GetByIdAsync(tenantId, userTaskId, cancellationToken);
+            if (userTask == null) return NotFound();
+            var activityDefinition = await workflowDefinitionActivityStore.GetByIdAsync(tenantId, userTask.ActivityId, cancellationToken);
+            if (activityDefinition == null) return NotFound();
+            string variableName = "Decision_" + activityDefinition.Id;
 
-            if (blockingTask == null)
+            if (activityDefinition.State.ContainsKey("VariableName") && !String.IsNullOrWhiteSpace(activityDefinition.State["VariableName"].Value.ToString()))
             {
-                return NotFound();
+                variableName = activityDefinition.State["VariableName"].Value.ToString();
             }
-            else
-            {
-                var activityDefinition = await workflowDefinitionActivityStore.GetByIdAsync(tenantId, blockingTask.ActivityId, cancellationToken);
-                string variableName;
 
-                if (activityDefinition == null) return NotFound();
-
-                if (activityDefinition.State.ContainsKey("VariableName"))
-                {
-                    variableName = activityDefinition.State["VariableName"].Value.ToString();
-                }
-                else
-                {
-                    variableName = "Decision";
-                }
-
-                await workflowInstanceTaskService.Unblock(blockingTask, cancellationToken);
-                var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, blockingTask.InstanceId, cancellationToken);
-                workflowInstance.Variables.SetVariable(variableName, decision);
-                await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
-                return Ok();
-            }
+            await workflowInstanceTaskService.Unblock(userTask, cancellationToken);
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, userTask.InstanceId, cancellationToken);
+            workflowInstance.Variables.SetVariable(variableName, decision);
+            await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
+            return Ok();
         }
 
         // temporary solution that returns tenantId = 1 until integrated into the final project

@@ -47,6 +47,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
         {
             var taskEntity = await dbContext
                 .WorkflowInstanceTasks
+                .Include(x => x.WorkflowInstance)
                 .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.ActivityId == id, cancellationToken);
 
             return Map(taskEntity);
