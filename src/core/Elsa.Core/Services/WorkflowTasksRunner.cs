@@ -26,13 +26,14 @@ namespace Elsa.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using var scope = serviceProvider.CreateScope();
-            var workflowInstanceTaskStore = scope.ServiceProvider.GetRequiredService<IWorkflowInstanceTaskStore>();
-            var workflowInstanceStore = scope.ServiceProvider.GetRequiredService<IWorkflowInstanceStore>();
-            var workflowHost = scope.ServiceProvider.GetRequiredService<IWorkflowHost>();
 
             while (!stoppingToken.IsCancellationRequested)
             {
+                using var scope = serviceProvider.CreateScope();
+                var workflowInstanceTaskStore = scope.ServiceProvider.GetRequiredService<IWorkflowInstanceTaskStore>();
+                var workflowInstanceStore = scope.ServiceProvider.GetRequiredService<IWorkflowInstanceStore>();
+                var workflowHost = scope.ServiceProvider.GetRequiredService<IWorkflowHost>();
+
                 // returns top 10 scheduled tasks - hardcoded number is for test purposes now
                 var pendingTasks = await workflowInstanceTaskStore.GetTopScheduledTasksAsync(10, stoppingToken);
 
