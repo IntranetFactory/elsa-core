@@ -16,7 +16,7 @@ namespace Elsa.Activities.ControlFlow
         Category = "Control Flow",
         Description = "Evaluate a Boolean expression and continue execution depending on the result.",
         RuntimeDescription = "x => !!x.state.expression ? `Evaluate <strong>${ x.state.expression.expression }</strong> and continue execution depending on the result.` : x.definition.description",
-        Outcomes = new[] { OutcomeNames.True, OutcomeNames.False, OutcomeNames.Done }
+        Outcomes = new[] { OutcomeNames.True, OutcomeNames.False }
     )]
     public class IfElse : Activity
     {
@@ -44,9 +44,7 @@ namespace Elsa.Activities.ControlFlow
         protected override async Task<IActivityExecutionResult> OnExecuteAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
             var result = await context.EvaluateAsync(Condition, cancellationToken);
-            var outcome = result ? OutcomeNames.True : OutcomeNames.False;
-
-            return Done(OutcomeNames.Done, outcome);
+            return result ? Done(OutcomeNames.True) : Done(OutcomeNames.False);
         }
     }
 }
