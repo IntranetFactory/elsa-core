@@ -27,11 +27,7 @@ namespace Elsa.Activities.ControlFlow
         protected override async Task<IActivityExecutionResult> OnExecuteAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
             var loop = await context.EvaluateAsync(Condition, cancellationToken);
-
-            if (loop)
-                return Combine(Schedule(this), Done(OutcomeNames.Iterate));
-
-            return Done();
+            return loop ? Done(OutcomeNames.Iterate) : Done();
         }
     }
 }
