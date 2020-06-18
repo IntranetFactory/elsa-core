@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,6 +9,7 @@ using Elsa.Models;
 using Elsa.Results;
 using Elsa.Services;
 using Elsa.Services.Models;
+using SimpleJson;
 
 // ReSharper disable once CheckNamespace
 namespace Elsa.Activities.ControlFlow
@@ -20,10 +22,17 @@ namespace Elsa.Activities.ControlFlow
     )]
     public class ForEach : Activity
     {
-        [ActivityProperty(Hint = "Enter an expression that evaluates to a collection of items to iterate over.")]
-        public IWorkflowExpression<ICollection<object>> Collection
+        [ActivityProperty(Hint = "Enter the name of an array of items to iterate over.")]
+        public string ArrayName
         {
-            get => GetState<IWorkflowExpression<ICollection<object>>>();
+            get => GetState<string>();
+            set => SetState(value);
+        }
+
+        [ActivityProperty(Hint = "Enter the name of the variable that holds iterated items.")]
+        public string ItemName
+        {
+            get => GetState<string>();
             set => SetState(value);
         }
 
@@ -35,17 +44,39 @@ namespace Elsa.Activities.ControlFlow
 
         protected override async Task<IActivityExecutionResult> OnExecuteAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
-            var collection = (await context.EvaluateAsync(Collection, cancellationToken))?.ToArray() ?? new object[0];
-            var currentIndex = CurrentIndex ?? 0;
+            int? currentIndex;
 
-            if (currentIndex < collection.Length)
+            // finish iteration if ArrayName is not provided, array is null or the type of an array is different than SimpleJson.JsonArray
+            if (String.IsNullOrWhiteSpace(ArrayName)) return Done();
+            if (context.GetVariable(ArrayName) == null || context.GetVariable(ArrayName).GetType().FullName != "SimpleJson.JsonArray") return Done();
+
+            // we have to cast to JsonArray in order to be able to use .Count() because context returns object{SimpleJson.JsonArray}
+            var itemsArray = (JsonArray)context.GetVariable(ArrayName);
+
+            if(String.IsNullOrWhiteSpace(ItemName)) ItemName = "Item";
+
+            if(CurrentIndex == null)
             {
-                var input = collection[currentIndex];
+                var currentIndexVariable = context.GetVariable("_ForEach_" + this.Id);
+                currentIndex = (currentIndexVariable != null) ? Convert.ToInt32(currentIndexVariable) : 0;
+            } 
+            else
+            {
+                currentIndex = CurrentIndex;
+            }
+
+            if (currentIndex < itemsArray.Count())
+            {
+                var currentItem = itemsArray[currentIndex.GetValueOrDefault()];
                 CurrentIndex = currentIndex + 1;
-                return Combine(Schedule(this), Done(OutcomeNames.Iterate, Variable.From(input)));
+                context.SetVariable("_ForEach_" + this.Id, CurrentIndex);
+                context.SetVariable(ItemName, currentItem);
+                return Done(OutcomeNames.Iterate, Variable.From(currentItem));
             }
 
             CurrentIndex = null;
+            context.SetVariable("_ForEach_" + this.Id, null);
+            context.SetVariable(ItemName, null);
             return Done();
         }
     }
