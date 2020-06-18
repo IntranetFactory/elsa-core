@@ -66,8 +66,8 @@ namespace Elsa.Activities.UserTask.Activities
 
         protected override IActivityExecutionResult OnResume(ActivityExecutionContext context)
         {
-            // use Decision_activityId as a default name for variable which holds the decision if VariableName is not provided.
-            VariableName = (String.IsNullOrWhiteSpace(VariableName)) ? "Decision_" + this.Id : VariableName;
+            // use _Decision_activityId as a default name for variable which holds the decision if VariableName is not provided.
+            VariableName = (String.IsNullOrWhiteSpace(VariableName)) ? "_Decision_" + this.Id : VariableName;
             string userAction = context.GetVariable(VariableName).ToString();
             return ExecutionResult(WorkflowInstanceTaskStatus.Completed, this.Tag, default, userAction);
         }

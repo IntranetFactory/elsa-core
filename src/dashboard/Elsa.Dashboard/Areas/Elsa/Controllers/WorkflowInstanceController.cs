@@ -192,7 +192,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             if (userTask == null) return NotFound();
             var activityDefinition = await workflowDefinitionActivityStore.GetByIdAsync(tenantId, userTask.ActivityId, cancellationToken);
             if (activityDefinition == null) return NotFound();
-            string variableName = "Decision_" + activityDefinition.Id;
+            string variableName = "_Decision_" + activityDefinition.Id;
 
             if (activityDefinition.State.ContainsKey("VariableName") && !String.IsNullOrWhiteSpace(activityDefinition.State["VariableName"].Value.ToString()))
             {

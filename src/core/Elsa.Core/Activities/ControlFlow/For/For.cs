@@ -56,7 +56,7 @@ namespace Elsa.Activities.ControlFlow
 
             if(CurrentValue == null)
             {
-                var currentValueVariable = context.GetVariable("For_" + this.Id);
+                var currentValueVariable = context.GetVariable("_For_" + this.Id);
                 currentValue = (currentValueVariable != null) ? Convert.ToInt32(currentValueVariable) : startValue;
             }
             else
@@ -68,12 +68,12 @@ namespace Elsa.Activities.ControlFlow
             {
                 currentValue += step;
                 CurrentValue = currentValue;
-                context.SetVariable("For_" + this.Id, CurrentValue);
-                return Combine(Schedule(this), Done(OutcomeNames.Iterate, Variable.From(currentValue)));
-                // TO DO: check how to remove Combine result and make this work: return Done(OutcomeNames.Iterate, Variable.From(input));
+                context.SetVariable("_For_" + this.Id, CurrentValue);
+                return Done(OutcomeNames.Iterate, Variable.From(currentValue));
             }
 
             CurrentValue = null;
+            context.SetVariable("_For_" + this.Id, null);
             return Done();
         }
     }
