@@ -55,6 +55,23 @@ namespace Elsa.Services.Models
         public WorkflowStatus Status { get; set; }
         public Stack<WorkflowInstanceTask> WorkflowInstanceTasks { get; }
         public Variables Variables { get; }
+        // CheckedActivities is used to store all Id's of parent nodes of an activity
+        private List<string> CheckedActivities { get; set; }
+        public List<string> EnumerateParents(string activityId)
+        {
+            if (CheckedActivities == null) CheckedActivities = new List<string>();
+
+            foreach (var inboundConnection in this.Connections.Where(x => x.Target.Activity.Id == activityId))
+            {
+                if (!CheckedActivities.Contains(inboundConnection.Source.Activity.Id))
+                {
+                    CheckedActivities.Add(inboundConnection.Source.Activity.Id);
+                    EnumerateParents(inboundConnection.Source.Activity.Id);
+                }
+            }
+
+            return CheckedActivities;
+        }
         public bool HasWorkflowInstanceActiveTasks()
         {
             int count = WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Running || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.OnHold).Count();

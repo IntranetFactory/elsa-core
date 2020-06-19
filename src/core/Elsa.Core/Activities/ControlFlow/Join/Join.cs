@@ -30,15 +30,12 @@ namespace Elsa.Activities.ControlFlow
         protected override IActivityExecutionResult OnExecute(ActivityExecutionContext context)
         {
             var workflowExecutionContext = context.WorkflowExecutionContext;
-            var inboundConnectionActivityIds = workflowExecutionContext.GetInboundConnections(this).Select(x => x.Source.Activity.Id).ToList();
             var allDone = true;
+            var checkedActivityIdList = workflowExecutionContext.EnumerateParents(this.Id);
 
-            foreach (string id in inboundConnectionActivityIds)
+            foreach(var checkedActivityId in checkedActivityIdList)
             {
-                if (workflowExecutionContext.WorkflowInstanceTasks.Where(x => x.Activity.Id == id).Any())
-                {
-                    allDone = false;
-                }
+                if (workflowExecutionContext.WorkflowInstanceTasks.Where(x => x.Activity.Id == checkedActivityId).Any()) allDone = false;
             }
 
             if (!allDone)
