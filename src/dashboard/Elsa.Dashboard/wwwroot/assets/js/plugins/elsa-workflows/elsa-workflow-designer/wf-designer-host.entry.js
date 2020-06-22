@@ -100,7 +100,12 @@ class SelectFieldDriver {
             const items = property.options.Items || [];
             const itemsValues = [];
             items.forEach(function (item, index) {
-                itemsValues.push(item["label"]);
+                if (item["value"]) {
+                    itemsValues.push(item);
+                }
+                else {
+                    itemsValues.push(item["label"]);
+                }
             });
             const itemsJson = encodeURI(JSON.stringify(itemsValues));
             return `<wf-select-field name="${name}" label="${label}" hint="${property.hint}" data-items="${itemsJson}" value="${value}"></wf-select-field>`;

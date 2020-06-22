@@ -12,7 +12,13 @@ export class SelectFieldDriver implements FieldDriver {
     const itemsValues = [];
 
     items.forEach(function(item, index) {
-      itemsValues.push(item["label"]);
+
+      if(item["value"]) {
+        itemsValues.push(item);
+      } else {
+        itemsValues.push(item["label"]);
+      }
+      
     });
 
     const itemsJson = encodeURI(JSON.stringify(itemsValues));
@@ -22,6 +28,7 @@ export class SelectFieldDriver implements FieldDriver {
 
   updateEditor = (activity: Activity, property: ActivityPropertyDescriptor, formData: FormData) => {
     const value = formData.get(property.name).toString();
+
     activity.state[property.name] = {
       value: value.trim()
     };
