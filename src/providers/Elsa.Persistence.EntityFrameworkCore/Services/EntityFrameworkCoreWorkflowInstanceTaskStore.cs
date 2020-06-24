@@ -3,6 +3,7 @@ using Elsa.Models;
 using Elsa.Persistence.EntityFrameworkCore.DbContexts;
 using Elsa.Persistence.EntityFrameworkCore.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -91,7 +92,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var records = await dbContext.WorkflowInstanceTasks
                 .Include(x => x.WorkflowInstance)
                 .OrderBy(x => x.ScheduleDate)
-                .Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Resume)
+                .Where(x => x.ScheduleDate <= DateTime.UtcNow && (x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.Scheduled))
                 .Take(numberOfTasks)
                 .ToListAsync(cancellationToken);
 

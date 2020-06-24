@@ -25,6 +25,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NodaTime;
 using Rebus.Handlers;
 using Elsa.ExpressionTypes;
+using Elsa.Activities;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
@@ -122,7 +123,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddAutoMapperProfile<WorkflowDefinitionVersionProfile>(ServiceLifetime.Singleton)
                 .AddSerializationHandlers()
                 .AddMetadataHandlers()
-                .AddPrimitiveActivities();
+                .AddPrimitiveActivities()
+                .AddTimerActivities();
 
             return configuration;
         }
@@ -173,6 +175,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddActivity<While>()
                 .AddActivity<Correlate>()
                 .AddActivity<SetVariable>();
+
+        private static IServiceCollection AddTimerActivities(this IServiceCollection services) =>
+            services
+                .AddActivity<Timer>();
 
         private static ElsaOptions AddServiceBus(this ElsaOptions options)
         {

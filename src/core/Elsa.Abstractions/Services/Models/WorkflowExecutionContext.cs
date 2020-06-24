@@ -74,7 +74,7 @@ namespace Elsa.Services.Models
         }
         public bool HasWorkflowInstanceActiveTasks()
         {
-            int count = WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Running || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.OnHold).Count();
+            int count = WorkflowInstanceTasks.Where(x => x.ScheduleDate <= DateTime.UtcNow && (x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Running || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.OnHold || x.Status == WorkflowInstanceTaskStatus.Scheduled)).Count();
             return count > 0 ? true : false;
         }
         public WorkflowInstanceTask? WorkflowInstanceTask { get; private set; }
@@ -160,10 +160,26 @@ namespace Elsa.Services.Models
 
         private bool CanExecuteTask(WorkflowInstanceTask task)
         {
-            if (task.Status == WorkflowInstanceTaskStatus.Execute || task.Status == WorkflowInstanceTaskStatus.Resume || task.Status == WorkflowInstanceTaskStatus.Running || task.Status == WorkflowInstanceTaskStatus.OnHold)
-                return true;
+            switch (task.Status)
+            {
+                case WorkflowInstanceTaskStatus.Execute:
+                    return true;
 
-            return false;
+                case WorkflowInstanceTaskStatus.Resume:
+                    return true;
+
+                case WorkflowInstanceTaskStatus.Running:
+                    return true;
+
+                case WorkflowInstanceTaskStatus.OnHold:
+                    return true;
+
+                case WorkflowInstanceTaskStatus.Scheduled:
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         private void MoveTaskToEndOfStack(WorkflowInstanceTask task)
@@ -206,6 +222,24 @@ namespace Elsa.Services.Models
         {
             var task = WorkflowInstanceTasks.Pop();
             task.Status = WorkflowInstanceTaskStatus.OnHold;
+            task.IterationCount++;
+            MoveTaskToEndOfStack(task);
+        }
+
+        public void SetWorkflowInstanceTaskStatusToResume(DateTime newScheduleDate)
+        {
+            var task = WorkflowInstanceTasks.Pop();
+            task.Status = WorkflowInstanceTaskStatus.Resume;
+            task.ScheduleDate = newScheduleDate;
+            task.IterationCount++;
+            MoveTaskToEndOfStack(task);
+        }
+
+        public void SetWorkflowInstanceTaskStatusToScheduled(DateTime newScheduleDate)
+        {
+            var task = WorkflowInstanceTasks.Pop();
+            task.Status = WorkflowInstanceTaskStatus.Scheduled;
+            task.ScheduleDate = newScheduleDate;
             task.IterationCount++;
             MoveTaskToEndOfStack(task);
         }

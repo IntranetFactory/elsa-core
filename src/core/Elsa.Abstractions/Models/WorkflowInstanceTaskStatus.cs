@@ -8,6 +8,7 @@ namespace Elsa.Models
         Faulted = 3,
         Blocked = 4,
         OnHold = 5,
-        Completed = 6
+        Scheduled = 6,
+        Completed = 7
     }
 }

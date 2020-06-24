@@ -34,7 +34,7 @@ namespace Elsa.Services
                 var workflowInstanceStore = scope.ServiceProvider.GetRequiredService<IWorkflowInstanceStore>();
                 var workflowHost = scope.ServiceProvider.GetRequiredService<IWorkflowHost>();
 
-                // returns top 10 scheduled tasks - hardcoded number is for test purposes now
+                // returns top 10 scheduled tasks that are due to execute - hardcoded number is for test purposes now
                 var pendingTasks = await workflowInstanceTaskStore.GetTopScheduledTasksAsync(10, stoppingToken);
 
                 if (pendingTasks.Count() == 0)

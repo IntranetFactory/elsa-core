@@ -148,7 +148,6 @@ namespace Elsa.Services
                 case WorkflowStatus.Suspended:
                     statusEvent = new WorkflowSuspended(workflowExecutionContext);
                     break;
-
             }
 
             if (statusEvent != null) await mediator.Publish(statusEvent, cancellationToken);
@@ -202,6 +201,10 @@ namespace Elsa.Services
                         activityOperation = Execute;
                         break;
 
+                    case WorkflowInstanceTaskStatus.Scheduled:
+                        activityOperation = Resume;
+                        break;
+
                     case WorkflowInstanceTaskStatus.Completed:
                         break;
                 }
@@ -234,6 +237,13 @@ namespace Elsa.Services
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToOnHold();
                             break;
 
+                        case WorkflowInstanceTaskStatus.Resume:
+                            workflowExecutionContext.SetWorkflowInstanceTaskStatusToResume(Convert.ToDateTime(executionResult.Output.Value));
+                            break;
+
+                        case WorkflowInstanceTaskStatus.Scheduled:
+                            workflowExecutionContext.SetWorkflowInstanceTaskStatusToScheduled(Convert.ToDateTime(executionResult.Output.Value));
+                            break;
                     }
 
                     ExecuteActivityResult(activityExecutionContext, executionResult);
@@ -357,7 +367,21 @@ namespace Elsa.Services
 
         private IEnumerable<IActivity> GetNextActivities(WorkflowExecutionContext workflowContext, IActivity source, ExecutionResult executionResult)
         {
-            if (executionResult.Status == WorkflowInstanceTaskStatus.Blocked || executionResult.Status == WorkflowInstanceTaskStatus.OnHold || executionResult.Status == WorkflowInstanceTaskStatus.Faulted) return new List<IActivity>();
+            // if any of the listed executionResult.Statuses happen - do not query for next activities
+            switch (executionResult.Status)
+            {
+                case WorkflowInstanceTaskStatus.Blocked:
+                    return new List<IActivity>();
+
+                case WorkflowInstanceTaskStatus.OnHold:
+                    return new List<IActivity>();
+
+                case WorkflowInstanceTaskStatus.Faulted:
+                    return new List<IActivity>();
+
+                case WorkflowInstanceTaskStatus.Scheduled:
+                    return new List<IActivity>();
+            }
 
             IEnumerable<string> outcomes = executionResult.Outcomes;
 
