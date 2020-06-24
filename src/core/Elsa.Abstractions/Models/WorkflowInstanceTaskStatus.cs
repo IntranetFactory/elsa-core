@@ -2,13 +2,18 @@ namespace Elsa.Models
 {
     public enum WorkflowInstanceTaskStatus
     {
+        // Tasks which are queried should be placed within < 60 range
         Execute = 0,
-        Running = 1,
-        Resume = 2,
-        Faulted = 3,
-        Blocked = 4,
-        OnHold = 5,
-        Scheduled = 6,
-        Completed = 7
+        Resume = 1,
+        Scheduled = 2,
+
+        // Tasks which are not queried should be placed within 60 - 90 range
+        Running = 60,
+        Faulted = 61,
+        Blocked = 62,
+        OnHold = 63,
+
+        // Tasks which are done should be placed in range >= 90
+        Completed = 90
     }
 }

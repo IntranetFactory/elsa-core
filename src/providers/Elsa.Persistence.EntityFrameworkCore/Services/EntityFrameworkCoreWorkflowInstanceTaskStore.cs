@@ -92,7 +92,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             var records = await dbContext.WorkflowInstanceTasks
                 .Include(x => x.WorkflowInstance)
                 .OrderBy(x => x.ScheduleDate)
-                .Where(x => x.ScheduleDate <= DateTime.UtcNow && (x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.Scheduled))
+                .Where(x => x.ScheduleDate <= DateTime.UtcNow && (int)x.Status < 60) // query tasks where the task status falls within 0-60 range
                 .Take(numberOfTasks)
                 .ToListAsync(cancellationToken);
 
