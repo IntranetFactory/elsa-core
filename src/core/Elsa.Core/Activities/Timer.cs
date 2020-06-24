@@ -79,6 +79,7 @@ namespace Elsa.Activities
             return new ExecutionResult(WorkflowInstanceTaskStatus.Scheduled, null, null, null, Variable.From(Date));
         }
 
+        // OnResumeAsync method is called when Scheduled task is due
         protected override async Task<IActivityExecutionResult> OnResumeAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
             return new ExecutionResult(WorkflowInstanceTaskStatus.Completed);
