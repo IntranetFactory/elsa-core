@@ -66,11 +66,6 @@ namespace Elsa.ExpressionTypes.JavaScript.Services
                 options.AllowClr();
         }
 
-        private async Task ConfigureEngineAsync(Engine engine, ActivityExecutionContext activityExecutionContext, CancellationToken cancellationToken)
-        {
-            await mediator.Publish(new EvaluatingJavaScriptExpression(engine, activityExecutionContext), cancellationToken);
-        }
-
         private object ConvertValue(JsValue value, Type targetType)
         {
             if (value.IsUndefined())

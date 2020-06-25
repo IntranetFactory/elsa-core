@@ -103,12 +103,9 @@ namespace Elsa.Services
             {
                 workflowExecutionContext.Status = WorkflowStatus.Scheduled;
                 workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, null);
-
                 var workflowInstanceTask = workflowExecutionContext.NextScheduledWorkflowInstanceTask();
                 var currentActivity = workflowInstanceTask.Activity;
                 var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
-
-                //await mediator.Publish(new ActivityScheduled(activityExecutionContext), cancellationToken);
                 await SaveWorkflowInstanceAsync(workflowExecutionContext, cancellationToken);
             }
 
@@ -124,34 +121,7 @@ namespace Elsa.Services
         private async Task<WorkflowExecutionContext> RunAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
         {
             var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
-
             await RunWorkflowAsync(workflowExecutionContext, cancellationToken);
-
-            await mediator.Publish(new WorkflowExecuted(workflowExecutionContext), cancellationToken);
-
-            var statusEvent = default(object);
-
-            switch (workflowExecutionContext.Status)
-            {
-                case WorkflowStatus.Cancelled:
-                    statusEvent = new WorkflowCancelled(workflowExecutionContext);
-                    break;
-
-                case WorkflowStatus.Completed:
-                    statusEvent = new WorkflowCompleted(workflowExecutionContext);
-                    break;
-
-                case WorkflowStatus.Faulted:
-                    statusEvent = new WorkflowFaulted(workflowExecutionContext);
-                    break;
-
-                case WorkflowStatus.Suspended:
-                    statusEvent = new WorkflowSuspended(workflowExecutionContext);
-                    break;
-            }
-
-            if (statusEvent != null) await mediator.Publish(statusEvent, cancellationToken);
-
             return workflowExecutionContext;
         }
 
