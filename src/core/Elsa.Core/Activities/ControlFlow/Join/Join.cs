@@ -35,7 +35,7 @@ namespace Elsa.Activities.ControlFlow
 
             foreach(var checkedActivityId in checkedActivityIdList)
             {
-                if (workflowExecutionContext.WorkflowInstanceTasks.Where(x => x.Activity.Id == checkedActivityId).Any()) allDone = false;
+                if (workflowExecutionContext.WorkflowInstanceTaskStack.Where(x => x.Activity.Id == checkedActivityId).Any()) allDone = false;
             }
 
             if (!allDone)

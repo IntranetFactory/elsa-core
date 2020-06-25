@@ -9,7 +9,7 @@ namespace Elsa.Models
         {
             Variables = new Variables();
             ExecutionLog = new List<ExecutionLogEntry>();
-            WorkflowInstanceTasks = new Stack<WorkflowInstanceTask>();
+            WorkflowInstanceTaskStack = new Stack<WorkflowInstanceTask>();
         }
 
         private Variables _variables;
@@ -29,7 +29,7 @@ namespace Elsa.Models
         // Variables? Input is inserted because of mapping problems and until we figure out what Output is for.
         public Variables? Input { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
-        public Stack<WorkflowInstanceTask> WorkflowInstanceTasks { get; set; }
+        public Stack<WorkflowInstanceTask> WorkflowInstanceTaskStack { get; set; }
         public string? Payload
         {
             get

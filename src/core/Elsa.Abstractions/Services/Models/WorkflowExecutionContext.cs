@@ -22,7 +22,7 @@ namespace Elsa.Services.Models
             int version,
             IEnumerable<IActivity> activities,
             IEnumerable<Connection> connections,
-            IEnumerable<WorkflowInstanceTask>? workflowInstanceTasks = default,
+            IEnumerable<WorkflowInstanceTask>? workflowInstanceTaskStack = default,
             string? correlationId = default,
             Variables? variables = default,
             WorkflowStatus status = WorkflowStatus.Running,
@@ -39,7 +39,7 @@ namespace Elsa.Services.Models
             Connections = connections.ToList();
             ExpressionEvaluator = expressionEvaluator;
             Clock = clock;
-            WorkflowInstanceTasks = workflowInstanceTasks != null ? new Stack<WorkflowInstanceTask>(workflowInstanceTasks) : new Stack<WorkflowInstanceTask>();
+            WorkflowInstanceTaskStack = workflowInstanceTaskStack != null ? new Stack<WorkflowInstanceTask>(workflowInstanceTaskStack) : new Stack<WorkflowInstanceTask>();
             Variables = variables ?? new Variables();
             Status = status;
             WorkflowFault = workflowFault;
@@ -53,7 +53,7 @@ namespace Elsa.Services.Models
         public ICollection<IActivity> Activities { get; }
         public ICollection<Connection> Connections { get; }
         public WorkflowStatus Status { get; set; }
-        public Stack<WorkflowInstanceTask> WorkflowInstanceTasks { get; }
+        public Stack<WorkflowInstanceTask> WorkflowInstanceTaskStack { get; }
         public Variables Variables { get; }
         // CheckedActivities is used to store all Id's of parent nodes of an activity
         private List<string> CheckedActivities { get; set; }
@@ -74,7 +74,7 @@ namespace Elsa.Services.Models
         }
         public bool HasWorkflowInstanceActiveTasks()
         {
-            int count = WorkflowInstanceTasks.Where(x => x.ScheduleDate <= DateTime.UtcNow && (x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Running || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.OnHold || x.Status == WorkflowInstanceTaskStatus.Scheduled)).Count();
+            int count = WorkflowInstanceTaskStack.Where(x => x.ScheduleDate <= DateTime.UtcNow && (x.Status == WorkflowInstanceTaskStatus.Execute || x.Status == WorkflowInstanceTaskStatus.Running || x.Status == WorkflowInstanceTaskStatus.Resume || x.Status == WorkflowInstanceTaskStatus.OnHold || x.Status == WorkflowInstanceTaskStatus.Scheduled)).Count();
             return count > 0 ? true : false;
         }
         public WorkflowInstanceTask? WorkflowInstanceTask { get; private set; }
@@ -100,20 +100,20 @@ namespace Elsa.Services.Models
             // do not schedule an already scheduled task
             // this can happen during Join activity execution when Join executes but previous activities didn't finish
             // example: join doesn't complete -> return execution to previous activity -> previous activity executes -> next activities (join) are scheduled
-            if (WorkflowInstanceTasks.Where(x => x.Activity.Id == activity.Activity.Id).Any()) return;
+            if (WorkflowInstanceTaskStack.Where(x => x.Activity.Id == activity.Activity.Id).Any()) return;
 
             activity.Status = WorkflowInstanceTaskStatus.Execute;
             activity.ScheduleDate = DateTime.UtcNow;
             activity.CreateDate = DateTime.UtcNow;
             activity.Tag = activity.Activity.Tag;
-            WorkflowInstanceTasks.Push(activity);
+            WorkflowInstanceTaskStack.Push(activity);
         }
 
         public WorkflowInstanceTask PopScheduledWorkflowInstanceTask(string id)
         {
-            if (WorkflowInstanceTasks.Peek().Activity.Id == id)
+            if (WorkflowInstanceTaskStack.Peek().Activity.Id == id)
             {
-                var task = WorkflowInstanceTasks.Pop();
+                var task = WorkflowInstanceTaskStack.Pop();
                 return task;
             }
             else
@@ -123,12 +123,12 @@ namespace Elsa.Services.Models
         }
         public WorkflowInstanceTask NextScheduledWorkflowInstanceTask()
         {
-            if (WorkflowInstanceTasks.Count() == 0) return null;
+            if (WorkflowInstanceTaskStack.Count() == 0) return null;
 
             if (!HasWorkflowInstanceActiveTasks()) return null;
 
             bool canExecute = false;
-            var tasksList = WorkflowInstanceTasks.ToList();
+            var tasksList = WorkflowInstanceTaskStack.ToList();
 
             do
             {
@@ -147,15 +147,15 @@ namespace Elsa.Services.Models
             } while (canExecute == false);
 
             tasksList.Reverse();
-            WorkflowInstanceTasks.Clear();
+            WorkflowInstanceTaskStack.Clear();
 
             foreach (var task in tasksList)
             {
-                WorkflowInstanceTasks.Push(task);
+                WorkflowInstanceTaskStack.Push(task);
             }
 
             // return first task that is also executable but do not pop it from the stack
-            return WorkflowInstanceTasks.Peek();
+            return WorkflowInstanceTaskStack.Peek();
         }
 
         private bool CanExecuteTask(WorkflowInstanceTask task)
@@ -184,43 +184,43 @@ namespace Elsa.Services.Models
 
         private void MoveTaskToEndOfStack(WorkflowInstanceTask task)
         {
-            var tasksList = WorkflowInstanceTasks.ToList();
+            var tasksList = WorkflowInstanceTaskStack.ToList();
             tasksList.Add(task);
             tasksList.Reverse();
-            WorkflowInstanceTasks.Clear();
+            WorkflowInstanceTaskStack.Clear();
 
             foreach (var instanceTask in tasksList)
             {
-                WorkflowInstanceTasks.Push(instanceTask);
+                WorkflowInstanceTaskStack.Push(instanceTask);
             }
         }
 
         public void SetWorkflowInstanceTaskStatusToRunning()
         {
-            var task = WorkflowInstanceTasks.Pop();
+            var task = WorkflowInstanceTaskStack.Pop();
             task.Status = WorkflowInstanceTaskStatus.Running;
             task.IterationCount++;
             task.ExecutionDate = DateTime.UtcNow;
-            WorkflowInstanceTasks.Push(task);
+            WorkflowInstanceTaskStack.Push(task);
         }
         public void SetWorkflowInstanceTaskStatusToFailed()
         {
-            var task = WorkflowInstanceTasks.Pop();
+            var task = WorkflowInstanceTaskStack.Pop();
             task.Status = WorkflowInstanceTaskStatus.Faulted;
             task.IterationCount++;
             MoveTaskToEndOfStack(task);
         }
         public void SetWorkflowInstanceTaskStatusToBlocked()
         {
-            var task = WorkflowInstanceTasks.Pop();
+            var task = WorkflowInstanceTaskStack.Pop();
             task.Status = WorkflowInstanceTaskStatus.Blocked;
             task.IterationCount++;
-            WorkflowInstanceTasks.Push(task);
+            WorkflowInstanceTaskStack.Push(task);
         }
 
         public void SetWorkflowInstanceTaskStatusToOnHold()
         {
-            var task = WorkflowInstanceTasks.Pop();
+            var task = WorkflowInstanceTaskStack.Pop();
             task.Status = WorkflowInstanceTaskStatus.OnHold;
             task.IterationCount++;
             MoveTaskToEndOfStack(task);
@@ -228,7 +228,7 @@ namespace Elsa.Services.Models
 
         public void SetWorkflowInstanceTaskStatusToResume(DateTime newScheduleDate)
         {
-            var task = WorkflowInstanceTasks.Pop();
+            var task = WorkflowInstanceTaskStack.Pop();
             task.Status = WorkflowInstanceTaskStatus.Resume;
             task.ScheduleDate = newScheduleDate;
             task.IterationCount++;
@@ -237,7 +237,7 @@ namespace Elsa.Services.Models
 
         public void SetWorkflowInstanceTaskStatusToScheduled(DateTime newScheduleDate)
         {
-            var task = WorkflowInstanceTasks.Pop();
+            var task = WorkflowInstanceTaskStack.Pop();
             task.Status = WorkflowInstanceTaskStatus.Scheduled;
             task.ScheduleDate = newScheduleDate;
             task.IterationCount++;
@@ -296,7 +296,7 @@ namespace Elsa.Services.Models
         public WorkflowInstance UpdateWorkflowInstance(WorkflowInstance workflowInstance)
         {
             workflowInstance.Variables = Variables;
-            workflowInstance.WorkflowInstanceTasks = new Stack<Elsa.Models.WorkflowInstanceTask>(WorkflowInstanceTasks.Select(x => new Elsa.Models.WorkflowInstanceTask(x.Activity.Id, workflowInstance.TenantId, x.Activity.Tag, x.Status, x.CreateDate, x.ScheduleDate, x.ExecutionDate, x.Input)));
+            workflowInstance.WorkflowInstanceTaskStack = new Stack<Elsa.Models.WorkflowInstanceTask>(WorkflowInstanceTaskStack.Select(x => new Elsa.Models.WorkflowInstanceTask(x.Activity.Id, workflowInstance.TenantId, x.Activity.Tag, x.Status, x.CreateDate, x.ScheduleDate, x.ExecutionDate, x.Input)));
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;
             workflowInstance.Output = Output;

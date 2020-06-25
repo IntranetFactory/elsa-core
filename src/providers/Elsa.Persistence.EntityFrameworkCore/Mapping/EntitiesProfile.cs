@@ -50,7 +50,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
             CreateMap<WorkflowInstanceEntity, WorkflowInstance>()
                 .ForMember(d => d.Id, d => d.MapFrom(s => s.InstanceId))
                 .ForMember(d => d.Payload, d => d.MapFrom(s => s.Payload))
-                .ForMember(d => d.WorkflowInstanceTasks, d => d.Ignore());
+                .ForMember(d => d.WorkflowInstanceTaskStack, d => d.Ignore());
 
             CreateMap<WorkflowDefinitionActivity, WorkflowDefinitionActivityEntity>()
                 .ForMember(d => d.Id, d => d.Ignore())

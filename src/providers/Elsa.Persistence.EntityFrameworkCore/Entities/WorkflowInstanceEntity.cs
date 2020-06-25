@@ -21,6 +21,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         public WorkflowStatus? Status { get; set; }
         public WorkflowFault? Fault { get; set; }
         public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
+        // this property is mapped to WorkflowInstance WorkflowInstanceTaskStack
         public ICollection<WorkflowInstanceTaskEntity> WorkflowInstanceTasks { get; set; }
 
         [Column(TypeName = "jsonb")]

@@ -86,7 +86,7 @@ namespace Elsa.Services
         {
             var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
             var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowInstance.DefinitionId, VersionOptions.Published);
-            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, workflowInstance.WorkflowInstanceTasks.Peek().ActivityId);
+            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, workflowInstance.WorkflowInstanceTaskStack.Peek().ActivityId);
         }
 
         public async Task<WorkflowExecutionContext> WorkflowInstanceCreateAsync(int? tenantId, string workflowDefinitionId, string? correlationId = default, string? payload = default, CancellationToken cancellationToken = default)
@@ -288,7 +288,7 @@ namespace Elsa.Services
         {
             var activityLookup = workflowDefinitionActiveVersion.Activities.ToDictionary(x => x.Id);
             var workflowDefinitionVersion = await workflowDefinitionVersionStore.GetByIdAsync(workflowInstance.TenantId, workflowInstance.DefinitionId, VersionOptions.Latest);
-            var workflowInstanceTasks = new Stack<WorkflowInstanceTask>(workflowInstance.WorkflowInstanceTasks.Reverse().Select(x => CreateScheduledWorkflowInstanceTask(x, activityLookup)));
+            var workflowInstanceTasksStack = new Stack<WorkflowInstanceTask>(workflowInstance.WorkflowInstanceTaskStack.Reverse().Select(x => CreateScheduledWorkflowInstanceTask(x, activityLookup)));
             var variables = workflowInstance.Variables;
             var status = workflowInstance.Status;
 
@@ -312,7 +312,7 @@ namespace Elsa.Services
                 workflowDefinitionActiveVersion.Version,
                 workflowDefinitionActiveVersion.Activities,
                 workflowDefinitionActiveVersion.Connections,
-                workflowInstanceTasks,
+                workflowInstanceTasksStack,
                 workflowInstance.CorrelationId,
                 variables,
                 status);

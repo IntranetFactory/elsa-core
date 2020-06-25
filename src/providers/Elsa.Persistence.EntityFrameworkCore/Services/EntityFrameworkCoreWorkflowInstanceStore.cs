@@ -33,7 +33,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             if (existingEntity == null)
             {
                 var entity = Map(instance);
-                entity.WorkflowInstanceTasks = Map(instance.WorkflowInstanceTasks);
+                entity.WorkflowInstanceTasks = Map(instance.WorkflowInstanceTaskStack);
 
                 await dbContext.WorkflowInstances.AddAsync(entity, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);
@@ -42,7 +42,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
             else
             {
                 var entity = mapper.Map(instance, existingEntity);
-                entity.WorkflowInstanceTasks = Map(instance.WorkflowInstanceTasks);
+                entity.WorkflowInstanceTasks = Map(instance.WorkflowInstanceTaskStack);
 
                 dbContext.WorkflowInstances.Update(entity);
                 await dbContext.SaveChangesAsync(cancellationToken);
@@ -67,7 +67,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 foreach (var workflowInstanceTaskEntity in document.WorkflowInstanceTasks)
                 {
                     var workflowInstanceTask = Map(workflowInstanceTaskEntity);
-                    instance.WorkflowInstanceTasks.Push(workflowInstanceTask);
+                    instance.WorkflowInstanceTaskStack.Push(workflowInstanceTask);
                 }
             }
 
