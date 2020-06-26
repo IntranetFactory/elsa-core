@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Attributes;
-using Elsa.Expressions;
 using Elsa.Models;
 using Elsa.Results;
 using Elsa.Services;
@@ -12,24 +11,16 @@ namespace Elsa.Activities.ControlFlow
 {
     [WorkflowDefinitionActivity(
         Category = "Workflows",
-        Description = "Removes any blocking activities and sets the status of the workflow to Completed.",
-        Icon = "fas fa-flag-checkered"
+        Description = "Is used to mark the ending of the workflow diagram.",
+        Icon = "fas fa-flag-checkered",
+        Outcomes = new string[0],
+        AllowEdit = false
     )]
     public class Complete : Activity
     {
-        [ActivityProperty(Hint = "An expression that evaluates to the activity's output.'")]
-        public IWorkflowExpression OutputValue
-        {
-            get => GetState<IWorkflowExpression>();
-            set => SetState(value);
-        }
-
         protected override async Task<IActivityExecutionResult> OnExecuteAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
-            var output = await context.EvaluateAsync(OutputValue, cancellationToken) ?? new Variable();
-            context.WorkflowExecutionContext.Complete();
-            
-            return Done(Variable.From(output));
+            return new ExecutionResult(WorkflowInstanceTaskStatus.Completed);
         }
     }
 }

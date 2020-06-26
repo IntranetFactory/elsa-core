@@ -11,4 +11,5 @@ export interface ActivityDefinition {
   icon?: string
   properties: Array<ActivityPropertyDescriptor>
   outcomes?: Lambda<Array<string>>
+  allowEdit: boolean
 }

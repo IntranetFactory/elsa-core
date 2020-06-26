@@ -31,6 +31,8 @@ class ActivityEditor {
             return;
         }
         const displayName = activityDefinition.displayName;
+        if (activityDefinition.allowEdit == false)
+            return;
         return (h("div", null, h("div", { class: "modal", tabindex: "-1", role: "dialog" }, h("div", { class: "modal-dialog modal-xl", role: "document" }, h("div", { class: "modal-content" }, h("form", { onSubmit: e => this.onSubmit(e) }, h("div", { class: "modal-header" }, h("h5", { class: "modal-title" }, "Edit ", displayName), h("button", { type: "button", class: "close", "data-dismiss": "modal", "aria-label": "Close" }, h("span", { "aria-hidden": "true" }, "\u00D7"))), h("div", { class: "modal-body" }, h("wf-activity-renderer", { activity: activity, activityDefinition: activityDefinition, displayMode: ActivityDisplayMode.Edit, ref: x => this.renderer = x })), h("div", { class: "modal-footer" }, h("button", { type: "button", class: "btn btn-secondary", "data-dismiss": "modal" }, "Cancel"), h("button", { type: "submit", class: "btn btn-primary" }, "Save"))))))));
     }
     get el() { return getElement(this); }

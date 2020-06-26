@@ -25,16 +25,13 @@ namespace Elsa.Metadata
         {
             var workflowDefinitionActivityAttribute = activityType.GetCustomAttribute<WorkflowDefinitionActivityAttribute>();
             var typeName = workflowDefinitionActivityAttribute?.Type ?? activityType.Name;
-
-            var displayName =
-                workflowDefinitionActivityAttribute?.DisplayName ??
-                activityType.Name.Humanize(LetterCasing.Title);
-
+            var displayName = workflowDefinitionActivityAttribute?.DisplayName ?? activityType.Name.Humanize(LetterCasing.Title);
             var description = workflowDefinitionActivityAttribute?.Description;
             var runtimeDescription = workflowDefinitionActivityAttribute?.RuntimeDescription;
             var category = workflowDefinitionActivityAttribute?.Category ?? "Miscellaneous";
             var icon = workflowDefinitionActivityAttribute?.Icon;
             var outcomes = workflowDefinitionActivityAttribute?.Outcomes ?? new[] { OutcomeNames.Done };
+            var allowEdit = workflowDefinitionActivityAttribute != null ? workflowDefinitionActivityAttribute.AllowEdit : true;
             var properties = DescribeProperties(activityType);
 
             return new ActivityDescriptor
@@ -46,7 +43,8 @@ namespace Elsa.Metadata
                 Category = category,
                 Icon = icon,
                 Properties = properties.ToArray(),
-                Outcomes = outcomes
+                Outcomes = outcomes,
+                AllowEdit = allowEdit
             };
         }
 

@@ -19,6 +19,7 @@ namespace Elsa.Metadata
         public string Category { get; set; }
         public string? Icon { get; set; }
         public string[] Outcomes { get; set; }
+        public bool AllowEdit { get; set; }
         public ActivityPropertyDescriptor[] Properties { get; set; }
     }
 }

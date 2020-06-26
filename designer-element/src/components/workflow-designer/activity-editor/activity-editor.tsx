@@ -58,6 +58,8 @@ export class ActivityEditor {
 
     const displayName = activityDefinition.displayName;
 
+    if(activityDefinition.allowEdit == false) return;
+
     return (
       <div>
         <div class="modal" tabindex="-1" role="dialog">

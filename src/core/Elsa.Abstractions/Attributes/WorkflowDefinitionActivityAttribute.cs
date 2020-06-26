@@ -12,5 +12,6 @@ namespace Elsa.Attributes
         public string? Category { get; set; }
         public string? Icon { get; set; }
         public string[]? Outcomes { get; set; }
+        public bool AllowEdit { get; set; } = true;
     }
 }

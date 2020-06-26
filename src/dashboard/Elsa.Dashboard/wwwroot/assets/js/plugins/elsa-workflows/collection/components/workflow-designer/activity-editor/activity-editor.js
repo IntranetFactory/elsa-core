@@ -28,6 +28,8 @@ export class ActivityEditor {
             return;
         }
         const displayName = activityDefinition.displayName;
+        if (activityDefinition.allowEdit == false)
+            return;
         return (h("div", null,
             h("div", { class: "modal", tabindex: "-1", role: "dialog" },
                 h("div", { class: "modal-dialog modal-xl", role: "document" },
