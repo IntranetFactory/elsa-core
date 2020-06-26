@@ -118,6 +118,7 @@ namespace Elsa.Services
             return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
 
+        // TO DO: check if unused parameters can be removed (also from other methods that pass it)
         private async Task<WorkflowExecutionContext> RunAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
         {
             var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
@@ -232,14 +233,12 @@ namespace Elsa.Services
                     await result.ExecuteAsync(activityExecutionContext, cancellationToken);
                 }
 
+                LogTaskExecution(activityExecutionContext);
                 await SaveWorkflowInstanceAsync(workflowExecutionContext, cancellationToken);
 
                 workflowExecutionContext.CompletePass();
                 iterationCount++;
             }
-
-            if (workflowExecutionContext.Status == WorkflowStatus.Running) workflowExecutionContext.Complete();
-
         }
 
         private WorkflowInstanceTask CreateScheduledWorkflowInstanceTask(Elsa.Models.WorkflowInstanceTask workflowInstanceTaskModel, IDictionary<string, IActivity> activityLookup)
@@ -323,6 +322,11 @@ namespace Elsa.Services
                 workflowInstance = workflowExecutionContext.UpdateWorkflowInstance(workflowInstance);
 
             await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
+        }
+
+        private void LogTaskExecution(ActivityExecutionContext activityExecutionContext)
+        {
+            activityExecutionContext.WorkflowExecutionContext.ExecutionLog.Add(new Elsa.Services.Models.ExecutionLogEntry(activityExecutionContext.Activity, clock.GetCurrentInstant()));
         }
 
         private void ExecuteActivityResult(ActivityExecutionContext activityExecutionContext, ExecutionResult executionResult)

@@ -262,20 +262,10 @@ namespace Elsa.Services.Models
         public Task<object> EvaluateAsync(IWorkflowExpression expression, Type targetType, ActivityExecutionContext activityExecutionContext, CancellationToken cancellationToken) =>
             ExpressionEvaluator.EvaluateAsync(expression, targetType, activityExecutionContext, cancellationToken);
 
-        public void Suspend()
-        {
-            Status = WorkflowStatus.Suspended;
-        }
-
         public void Fault(IActivity? activity, LocalizedString? message)
         {
             Status = WorkflowStatus.Faulted;
             WorkflowFault = new WorkflowFault(activity, message);
-        }
-
-        public void Complete()
-        {
-            Status = WorkflowStatus.Completed;
         }
 
         public IActivity GetActivity(string id) => Activities.FirstOrDefault(x => x.Id == id);
@@ -301,8 +291,15 @@ namespace Elsa.Services.Models
             workflowInstance.CorrelationId = CorrelationId;
             workflowInstance.Output = Output;
 
-            var executionLog = workflowInstance.ExecutionLog.Concat(ExecutionLog.Select(x => new Elsa.Models.ExecutionLogEntry(x.Activity.Id, x.Timestamp)));
-            workflowInstance.ExecutionLog = executionLog.ToList();
+            var executionLogList = ExecutionLog.Select(x => new Elsa.Models.ExecutionLogEntry(x.Activity.Id, x.Timestamp)).ToList();
+
+            foreach (var log in executionLogList)
+            {
+                if (!workflowInstance.ExecutionLog.Where(x => x.ActivityId == log.ActivityId && x.Timestamp == log.Timestamp).Any())
+                {
+                    workflowInstance.ExecutionLog.Add(log);
+                }
+            }
 
             if (WorkflowFault != null)
             {
