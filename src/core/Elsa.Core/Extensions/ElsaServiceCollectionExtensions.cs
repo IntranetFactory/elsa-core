@@ -9,8 +9,6 @@ using Elsa.Converters;
 using Elsa.Expressions;
 using Elsa.Mapping;
 using Elsa.Messaging;
-using Elsa.Messaging.Distributed;
-using Elsa.Messaging.Distributed.Handlers;
 using Elsa.Metadata;
 using Elsa.Metadata.Handlers;
 using Elsa.Runtime;
@@ -109,8 +107,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .TryAddProvider<IExpressionHandler, VariableHandler>(ServiceLifetime.Singleton)
                 .AddScoped<IExpressionEvaluator, ExpressionEvaluator>()
                 .AddTransient<IWorkflowRegistry, WorkflowRegistry>()
-                .AddScoped<IWorkflowScheduler, WorkflowScheduler>()
-                .AddSingleton<IWorkflowSchedulerQueue, WorkflowSchedulerQueue>()
                 .AddScoped<IWorkflowHost, WorkflowHost>()
                 .AddScoped<IWorkflowInstanceTaskService, WorkflowInstanceTaskService>()
                 .AddSingleton<IWorkflowActivator, WorkflowActivator>()
@@ -119,7 +115,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddTransient<IWorkflowProvider, StoreWorkflowProvider>()
                 .AddTransient<IWorkflowBuilder, WorkflowBuilder>()
                 .AddTransient<Func<IWorkflowBuilder>>(sp => sp.GetRequiredService<IWorkflowBuilder>)
-                .AddConsumer<RunWorkflow, RunWorkflowHandler>()
                 .AddAutoMapperProfile<WorkflowDefinitionVersionProfile>(ServiceLifetime.Singleton)
                 .AddSerializationHandlers()
                 .AddMetadataHandlers()
