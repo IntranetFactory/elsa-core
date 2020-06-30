@@ -8,6 +8,10 @@ namespace Elsa.Persistence.EntityFrameworkCore.Mapping
     {
         public EntitiesProfile()
         {
+            CreateMap<WorkflowInstanceLog, WorkflowInstanceLogEntity>();
+            CreateMap<WorkflowInstanceLogEntity, WorkflowInstanceLog>()
+                .ForMember(d => d.InstanceId, d => d.MapFrom(s => s.WorkflowInstance.InstanceId));
+
             CreateMap<WorkflowDefinition, WorkflowDefinitionEntity>();
             CreateMap<WorkflowDefinitionEntity, WorkflowDefinition>();
 

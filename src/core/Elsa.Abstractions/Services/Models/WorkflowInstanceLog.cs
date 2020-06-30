@@ -2,9 +2,9 @@ using NodaTime;
 
 namespace Elsa.Services.Models
 {
-    public class ExecutionLogEntry
+    public class WorkflowInstanceLog
     {
-        public ExecutionLogEntry(IActivity activity, Instant timestamp)
+        public WorkflowInstanceLog(IActivity activity, Instant timestamp)
         {
             Activity = activity;
             Timestamp = timestamp;

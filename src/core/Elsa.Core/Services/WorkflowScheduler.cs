@@ -170,7 +170,8 @@ namespace Elsa.Services
         {
             var workflowExecutionContext = notification.WorkflowExecutionContext;
             var workflowDefinitionId = workflowExecutionContext.DefinitionId;
-            var startActivityId = workflowExecutionContext.ExecutionLog.Select(x => x.Activity.Id).FirstOrDefault();
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(workflowExecutionContext.TenantId ,workflowExecutionContext.InstanceId, cancellationToken);
+            var startActivityId = workflowInstance.ExecutionLog.Select(x => x.ActivityId).FirstOrDefault();
 
             if (startActivityId == null)
                 return;
@@ -178,7 +179,7 @@ namespace Elsa.Services
             var entry = queue.Dequeue(workflowDefinitionId, startActivityId);
             if (entry == null)
                 return;
-            
+
             await ScheduleWorkflowAsync(entry.Value.WorkflowDefinitionActiveVersion, entry.Value.Activity, entry.Value.Input, entry.Value.CorrelationId, cancellationToken);
         }
     }

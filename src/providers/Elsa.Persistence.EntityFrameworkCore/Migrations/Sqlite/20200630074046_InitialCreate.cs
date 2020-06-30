@@ -38,7 +38,6 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                     AbortedAt = table.Column<DateTime>(nullable: true),
                     Status = table.Column<string>(nullable: true),
                     Fault = table.Column<string>(nullable: true),
-                    ExecutionLog = table.Column<string>(nullable: false),
                     Payload = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
@@ -71,6 +70,29 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                         name: "FK_WorkflowDefinitionVersions_WorkflowDefinitions_DefinitionId",
                         column: x => x.DefinitionId,
                         principalTable: "WorkflowDefinitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkflowInstanceLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ActivityId = table.Column<string>(nullable: false),
+                    Timestamp = table.Column<DateTime>(nullable: false),
+                    Faulted = table.Column<bool>(nullable: false),
+                    Message = table.Column<string>(nullable: true),
+                    WorkflowInstanceId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkflowInstanceLogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WorkflowInstanceLogs_WorkflowInstances_WorkflowInstanceId",
+                        column: x => x.WorkflowInstanceId,
+                        principalTable: "WorkflowInstances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -168,6 +190,11 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
                 column: "DefinitionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_WorkflowInstanceLogs_WorkflowInstanceId",
+                table: "WorkflowInstanceLogs",
+                column: "WorkflowInstanceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WorkflowInstanceTasks_WorkflowInstanceId",
                 table: "WorkflowInstanceTasks",
                 column: "WorkflowInstanceId");
@@ -180,6 +207,9 @@ namespace Elsa.Persistence.EntityFrameworkCore.Migrations.Sqlite
 
             migrationBuilder.DropTable(
                 name: "WorkflowDefinitionConnections");
+
+            migrationBuilder.DropTable(
+                name: "WorkflowInstanceLogs");
 
             migrationBuilder.DropTable(
                 name: "WorkflowInstanceTasks");

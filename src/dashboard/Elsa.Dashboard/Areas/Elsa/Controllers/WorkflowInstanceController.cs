@@ -155,6 +155,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return NoContent();
         }
 
+        // Used to run an instance of the workflow that was only scheduled but not executed
+        // https://localhost:44332/Elsa/workflow-instance/RunScheduledWorkflowInstance?instanceId=abc
         [HttpPost("RunScheduledWorkflowInstance")]
         public async Task<IActionResult> RunScheduledWorkflowInstance(string instanceId, CancellationToken cancellationToken)
         {
@@ -162,6 +164,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             await workflowHost.RunScheduledWorkflowInstanceAsync(tenantId, instanceId);
             return Ok();
         }
+
         // https://localhost:44332/Elsa/workflow-instance/Create/abc?correlationId=issue4711
         [HttpPost("Create/{definitionId}")]
         public async Task<IActionResult> CreateWorkflowInstance(string definitionId, string? correlationId = default, CancellationToken cancellationToken = default)

@@ -26,8 +26,7 @@ namespace Elsa.Services.Models
             string? correlationId = default,
             Variables? variables = default,
             WorkflowStatus status = WorkflowStatus.Running,
-            WorkflowFault? workflowFault = default,
-            IEnumerable<ExecutionLogEntry>? executionLog = default)
+            WorkflowFault? workflowFault = default)
         {
             ServiceProvider = serviceProvider;
             DefinitionId = definitionId;
@@ -43,7 +42,6 @@ namespace Elsa.Services.Models
             Variables = variables ?? new Variables();
             Status = status;
             WorkflowFault = workflowFault;
-            ExecutionLog = executionLog?.ToList() ?? new List<ExecutionLogEntry>();
             IsFirstPass = true;
         }
 
@@ -249,7 +247,6 @@ namespace Elsa.Services.Models
         public string InstanceId { get; set; }
         public int Version { get; }
         public string CorrelationId { get; set; }
-        public ICollection<ExecutionLogEntry> ExecutionLog { get; }
         public bool IsFirstPass { get; private set; }
         public void SetVariable(string name, object value) => Variables.SetVariable(name, value);
         public T GetVariable<T>(string name) => (T)GetVariable(name);
@@ -290,16 +287,6 @@ namespace Elsa.Services.Models
             workflowInstance.Status = Status;
             workflowInstance.CorrelationId = CorrelationId;
             workflowInstance.Output = Output;
-
-            var executionLogList = ExecutionLog.Select(x => new Elsa.Models.ExecutionLogEntry(x.Activity.Id, x.Timestamp)).ToList();
-
-            foreach (var log in executionLogList)
-            {
-                if (!workflowInstance.ExecutionLog.Where(x => x.ActivityId == log.ActivityId && x.Timestamp == log.Timestamp).Any())
-                {
-                    workflowInstance.ExecutionLog.Add(log);
-                }
-            }
 
             if (WorkflowFault != null)
             {

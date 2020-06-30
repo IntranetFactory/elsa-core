@@ -42,6 +42,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
         public DbSet<WorkflowInstanceTaskEntity> WorkflowInstanceTasks { get; set; }
         public DbSet<WorkflowDefinitionActivityEntity> WorkflowDefinitionActivities { get; set; }
         public DbSet<WorkflowDefinitionConnectionEntity> WorkflowDefinitionConnections { get; set; }
+        public DbSet<WorkflowInstanceLogEntity> WorkflowInstanceLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,6 +54,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             ConfigureWorkflowDefinitionActivity(modelBuilder);
             ConfigureWorkflowInstanceTask(modelBuilder);
             ConfigureWorkflowDefinitionConnection(modelBuilder);
+            ConfigureExecutionLogEntryEntity(modelBuilder);
         }
 
         private void ConfigureWorkflowDefinition(ModelBuilder modelBuilder)
@@ -95,13 +97,10 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
 
             entity.Property(x => x.Id).UseIdentityColumn();
             entity.Property(x => x.Status).HasConversion<string>();
-            
+
             entity
-                .Property(x => x.ExecutionLog)
-                .HasConversion(
-                    x => Serialize(x),
-                    x => Deserialize<ICollection<ExecutionLogEntry>>(x)
-                );
+                .HasMany(x => x.ExecutionLog)
+                .WithOne(x => x.WorkflowInstance);
 
             entity
                 .Property(x => x.Fault)
@@ -147,6 +146,17 @@ namespace Elsa.Persistence.EntityFrameworkCore.DbContexts
             entity
                 .Property(x => x.Input)
                 .HasConversion(x => Serialize(x), x => Deserialize<Variable>(x));
+        }
+
+        private void ConfigureExecutionLogEntryEntity(ModelBuilder modelBuilder)
+        {
+            var entity = modelBuilder.Entity<WorkflowInstanceLogEntity>();
+
+            entity.HasKey(x => x.Id);
+
+            entity
+                .HasOne(x => x.WorkflowInstance)
+                .WithMany(x => x.ExecutionLog);
         }
 
         private string Serialize(object value)

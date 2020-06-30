@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Expressions;
 using Elsa.Extensions;
-using Elsa.Messaging.Domain;
 using Elsa.Models;
 using Elsa.Persistence;
 using Elsa.Results;
@@ -75,13 +74,6 @@ namespace Elsa.Services
             return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
 
-        public async Task<WorkflowExecutionContext> RunWorkflowDefinitionAsync(int? tenantId, string workflowDefinitionId, string? activityId, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
-        {
-            var workflowDefinitionActiveVersion = await workflowRegistry.GetWorkflowDefinitionActiveVersionAsync(tenantId, workflowDefinitionId, VersionOptions.Published, cancellationToken);
-            var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
-
-            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
-        }
         public async Task<WorkflowExecutionContext> RunScheduledWorkflowInstanceAsync(int? tenantId, string instanceId)
         {
             var workflowInstance = await workflowInstanceStore.GetByIdAsync(tenantId, instanceId);
@@ -106,29 +98,18 @@ namespace Elsa.Services
                 var workflowInstanceTask = workflowExecutionContext.NextScheduledWorkflowInstanceTask();
                 var currentActivity = workflowInstanceTask.Activity;
                 var activityExecutionContext = new ActivityExecutionContext(workflowExecutionContext, currentActivity, workflowInstanceTask.Input);
-                await SaveWorkflowInstanceAsync(workflowExecutionContext, cancellationToken);
+                await SaveWorkflowInstanceAsync(activityExecutionContext, cancellationToken);
             }
 
             return workflowExecutionContext;
-        }
-
-        public async Task<WorkflowExecutionContext> RunWorkflowAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, string? activityId = default, object? input = default, string? correlationId = default, CancellationToken cancellationToken = default)
-        {
-            var workflowInstance = await workflowActivator.ActivateAsync(workflowDefinitionActiveVersion, correlationId, cancellationToken);
-            return await RunAsync(workflowDefinitionActiveVersion, workflowInstance, activityId, input, cancellationToken);
         }
 
         // TO DO: check if unused parameters can be removed (also from other methods that pass it)
         private async Task<WorkflowExecutionContext> RunAsync(WorkflowDefinitionActiveVersion workflowDefinitionActiveVersion, WorkflowInstance workflowInstance, string? activityId = default, object? input = default, CancellationToken cancellationToken = default)
         {
             var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
-            await RunWorkflowAsync(workflowExecutionContext, cancellationToken);
-            return workflowExecutionContext;
-        }
-
-        private async Task RunWorkflowAsync(WorkflowExecutionContext workflowExecutionContext, CancellationToken cancellationToken)
-        {
             await RunAsync(workflowExecutionContext, cancellationToken);
+            return workflowExecutionContext;
         }
 
         private Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowExecutionContext, IActivity activity, object? input, CancellationToken cancellationToken)
@@ -233,8 +214,7 @@ namespace Elsa.Services
                     await result.ExecuteAsync(activityExecutionContext, cancellationToken);
                 }
 
-                LogTaskExecution(activityExecutionContext);
-                await SaveWorkflowInstanceAsync(workflowExecutionContext, cancellationToken);
+                await SaveWorkflowInstanceAsync(activityExecutionContext, cancellationToken);
 
                 workflowExecutionContext.CompletePass();
                 iterationCount++;
@@ -312,21 +292,24 @@ namespace Elsa.Services
                 correlationId,
                 variables,
                 status);
-        private async Task SaveWorkflowInstanceAsync(WorkflowExecutionContext workflowExecutionContext, CancellationToken cancellationToken)
+
+        private async Task SaveWorkflowInstanceAsync(ActivityExecutionContext activityExecutionContext, CancellationToken cancellationToken)
         {
-            var workflowInstance = await workflowInstanceStore.GetByIdAsync(workflowExecutionContext.TenantId, workflowExecutionContext.InstanceId, cancellationToken);
+            var workflowInstance = await workflowInstanceStore.GetByIdAsync(activityExecutionContext.WorkflowExecutionContext.TenantId, activityExecutionContext.WorkflowExecutionContext.InstanceId, cancellationToken);
 
             if (workflowInstance == null)
-                workflowInstance = workflowExecutionContext.CreateWorkflowInstance();
+                workflowInstance = activityExecutionContext.WorkflowExecutionContext.CreateWorkflowInstance();
             else
-                workflowInstance = workflowExecutionContext.UpdateWorkflowInstance(workflowInstance);
+                workflowInstance = activityExecutionContext.WorkflowExecutionContext.UpdateWorkflowInstance(workflowInstance);
 
+            // add log to workflowInstance here so that we do not have to call database for instance twice
+            workflowInstance.ExecutionLog.Add(LogTaskExecution(activityExecutionContext));
             await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
         }
 
-        private void LogTaskExecution(ActivityExecutionContext activityExecutionContext)
+        private Elsa.Models.WorkflowInstanceLog LogTaskExecution(ActivityExecutionContext activityExecutionContext)
         {
-            activityExecutionContext.WorkflowExecutionContext.ExecutionLog.Add(new Elsa.Services.Models.ExecutionLogEntry(activityExecutionContext.Activity, clock.GetCurrentInstant()));
+            return new Elsa.Models.WorkflowInstanceLog(activityExecutionContext.Activity.Id, clock.GetCurrentInstant());
         }
 
         private void ExecuteActivityResult(ActivityExecutionContext activityExecutionContext, ExecutionResult executionResult)

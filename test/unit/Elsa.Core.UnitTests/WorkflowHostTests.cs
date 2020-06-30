@@ -53,28 +53,28 @@ namespace Elsa.Core.UnitTests
             //   logger);
         }
 
-        [Fact(DisplayName = "Can run simple workflow to completed state.")]
-        public async Task RunAsync01()
-        {
-            var activityExecutionResultMock = new Mock<IActivityExecutionResult>();
-            var activity = CreateActivity(activityExecutionResult: activityExecutionResultMock.Object);
-            var workflowDefinitionActiveVersion = CreateWorkflowDefinitionActiveVersion(activity);
-            var executionContext = await workflowHost.RunWorkflowAsync(workflowDefinitionActiveVersion);
+        //[Fact(DisplayName = "Can run simple workflow to completed state.")]
+        //public async Task RunAsync01()
+        //{
+        //    var activityExecutionResultMock = new Mock<IActivityExecutionResult>();
+        //    var activity = CreateActivity(activityExecutionResult: activityExecutionResultMock.Object);
+        //    var workflowDefinitionActiveVersion = CreateWorkflowDefinitionActiveVersion(activity);
+        //    var executionContext = await workflowHost.RunWorkflowAsync(workflowDefinitionActiveVersion);
 
-            Assert.Equal(WorkflowStatus.Completed, executionContext.CreateWorkflowInstance().Status);
-        }
+        //    Assert.Equal(WorkflowStatus.Completed, executionContext.CreateWorkflowInstance().Status);
+        //}
 
-        [Fact(DisplayName = "Invokes returned activity execution result.")]
-        public async Task RunAsync02()
-        {
-            var activityExecutionResultMock = new Mock<IActivityExecutionResult>();
-            var activity = CreateActivity(true, activityExecutionResultMock.Object);
-            var workflowDefinitionActiveVersion = CreateWorkflowDefinitionActiveVersion(activity);
-            var executionContext = await workflowHost.RunWorkflowAsync(workflowDefinitionActiveVersion);
+        //[Fact(DisplayName = "Invokes returned activity execution result.")]
+        //public async Task RunAsync02()
+        //{
+        //    var activityExecutionResultMock = new Mock<IActivityExecutionResult>();
+        //    var activity = CreateActivity(true, activityExecutionResultMock.Object);
+        //    var workflowDefinitionActiveVersion = CreateWorkflowDefinitionActiveVersion(activity);
+        //    var executionContext = await workflowHost.RunWorkflowAsync(workflowDefinitionActiveVersion);
 
-            activityExecutionResultMock
-                .Verify(x => x.ExecuteAsync(It.IsAny<ActivityExecutionContext>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
+        //    activityExecutionResultMock
+        //        .Verify(x => x.ExecuteAsync(It.IsAny<ActivityExecutionContext>(), It.IsAny<CancellationToken>()), Times.Once);
+        //}
 
         private IActivity CreateActivity(bool canExecute = true, IActivityExecutionResult? activityExecutionResult = null)
         {

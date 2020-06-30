@@ -20,7 +20,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Entities
         public DateTime? AbortedAt { get; set; }
         public WorkflowStatus? Status { get; set; }
         public WorkflowFault? Fault { get; set; }
-        public ICollection<ExecutionLogEntry> ExecutionLog { get; set; }
+        public ICollection<WorkflowInstanceLogEntity> ExecutionLog { get; set; }
         // this property is mapped to WorkflowInstance WorkflowInstanceTaskStack
         public ICollection<WorkflowInstanceTaskEntity> WorkflowInstanceTasks { get; set; }
 
