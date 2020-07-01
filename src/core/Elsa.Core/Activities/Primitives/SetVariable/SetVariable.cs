@@ -49,7 +49,7 @@ namespace Elsa.Activities.Primitives
             var value = await context.EvaluateAsync(Value, cancellationToken);
 
             context.SetVariable(VariableName, value);
-            return ExecutionResult(WorkflowInstanceTaskStatus.Completed);
+            return ExecutionResult(WorkflowStatus.Completed);
         }
     }
 }

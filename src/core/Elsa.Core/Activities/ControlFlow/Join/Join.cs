@@ -39,9 +39,9 @@ namespace Elsa.Activities.ControlFlow
             }
 
             if (!allDone)
-                return ExecutionResult(WorkflowInstanceTaskStatus.OnHold);
+                return ExecutionResult(WorkflowStatus.OnHold);
 
-            return ExecutionResult(WorkflowInstanceTaskStatus.Completed);
+            return ExecutionResult(WorkflowStatus.Completed);
         }
     }
 }

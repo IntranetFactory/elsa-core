@@ -38,10 +38,10 @@ namespace Elsa.Services
         protected T GetState<T>(Func<T>? defaultValue = null, [CallerMemberName] string? name = null) => State.GetState(name, defaultValue);
         protected void SetState(object value, [CallerMemberName] string? name = null) => State.SetState(value, name);
         protected ExecutionResult ExecutionResult() => new ExecutionResult();
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status) => new ExecutionResult(status);
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag) => new ExecutionResult(status, tag);
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, IEnumerable<string> outcomes, object? output) => new ExecutionResult(status, tag, message, outcomes, Variable.From(output));
-        protected ExecutionResult ExecutionResult(WorkflowInstanceTaskStatus status, string? tag, LocalizedString? message, params string[] outcomes) => new ExecutionResult(status, tag, message, outcomes, default);
+        protected ExecutionResult ExecutionResult(WorkflowStatus status) => new ExecutionResult(status);
+        protected ExecutionResult ExecutionResult(WorkflowStatus status, string? tag) => new ExecutionResult(status, tag);
+        protected ExecutionResult ExecutionResult(WorkflowStatus status, string? tag, LocalizedString? message, IEnumerable<string> outcomes, object? output) => new ExecutionResult(status, tag, message, outcomes, Variable.From(output));
+        protected ExecutionResult ExecutionResult(WorkflowStatus status, string? tag, LocalizedString? message, params string[] outcomes) => new ExecutionResult(status, tag, message, outcomes, default);
         protected OutcomeResult Done() => new OutcomeResult();
         protected OutcomeResult Done(string outcome, Variable? output) => Done(new[] { outcome }, output);
         protected OutcomeResult Done(IEnumerable<string> outcomes, Variable? output) => new OutcomeResult(outcomes, output);

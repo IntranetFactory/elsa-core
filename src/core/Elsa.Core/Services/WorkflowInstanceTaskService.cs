@@ -15,7 +15,7 @@ namespace Elsa.Services
 
         public async Task<WorkflowInstanceTask> Unblock(WorkflowInstanceTask task, CancellationToken cancellationToken = default)
         {
-            task.Status = WorkflowInstanceTaskStatus.Resume;
+            task.Status = WorkflowStatus.Resume;
             await workflowInstanceTaskStore.SaveAsync(task, cancellationToken);
             return task;
         }

@@ -61,7 +61,7 @@ namespace Elsa.Activities.UserTask.Activities
 
         protected override IActivityExecutionResult OnExecute(ActivityExecutionContext context)
         {
-            return ExecutionResult(WorkflowInstanceTaskStatus.Blocked, this.Tag);
+            return ExecutionResult(WorkflowStatus.Blocked, this.Tag);
         }
 
         protected override IActivityExecutionResult OnResume(ActivityExecutionContext context)
@@ -69,7 +69,7 @@ namespace Elsa.Activities.UserTask.Activities
             // use _Decision_activityId as a default name for variable which holds the decision if VariableName is not provided.
             VariableName = (String.IsNullOrWhiteSpace(VariableName)) ? "_Decision_" + this.Id : VariableName;
             string userAction = context.GetVariable(VariableName).ToString();
-            return ExecutionResult(WorkflowInstanceTaskStatus.Completed, this.Tag, default, userAction);
+            return ExecutionResult(WorkflowStatus.Completed, this.Tag, default, userAction);
         }
     }
 }

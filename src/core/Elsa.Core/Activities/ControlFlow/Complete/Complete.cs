@@ -20,7 +20,7 @@ namespace Elsa.Activities.ControlFlow
     {
         protected override async Task<IActivityExecutionResult> OnExecuteAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
-            return new ExecutionResult(WorkflowInstanceTaskStatus.Completed);
+            return new ExecutionResult(WorkflowStatus.Completed);
         }
     }
 }

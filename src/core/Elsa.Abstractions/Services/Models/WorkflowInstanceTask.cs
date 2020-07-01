@@ -17,7 +17,7 @@ namespace Elsa.Services.Models
         public string? Tag { get; set; }
         public IActivity? Activity { get; }
         public Variable? Input { get; }
-        public WorkflowInstanceTaskStatus? Status { get; set; }
+        public WorkflowStatus Status { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? ScheduleDate { get; set; }
         public DateTime? ExecutionDate { get; set; }

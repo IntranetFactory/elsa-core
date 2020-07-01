@@ -61,7 +61,7 @@ namespace Elsa.Persistence.EntityFrameworkCore.Services
                 .Include(x => x.WorkflowInstanceTasks)
                 .Where(x => x.InstanceId == instanceId).FirstOrDefaultAsync(cancellationToken);
 
-            var taskEntity = workflowInstanceEntity.WorkflowInstanceTasks.Where(x => x.Status == WorkflowInstanceTaskStatus.Blocked).FirstOrDefault();
+            var taskEntity = workflowInstanceEntity.WorkflowInstanceTasks.Where(x => x.Status == WorkflowStatus.Blocked).FirstOrDefault();
 
             return Map(taskEntity);
         }

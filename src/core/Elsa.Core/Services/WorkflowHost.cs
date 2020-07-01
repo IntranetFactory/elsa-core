@@ -93,7 +93,7 @@ namespace Elsa.Services
 
             if (await CanExecuteAsync(workflowExecutionContext, activity, null, cancellationToken))
             {
-                workflowExecutionContext.Status = WorkflowStatus.Scheduled;
+                workflowExecutionContext.Status = workflowInstance.Status;
                 workflowExecutionContext.ScheduleWorkflowInstanceTask(activity, null);
                 var workflowInstanceTask = workflowExecutionContext.NextScheduledWorkflowInstanceTask();
                 var currentActivity = workflowInstanceTask.Activity;
@@ -109,6 +109,27 @@ namespace Elsa.Services
         {
             var workflowExecutionContext = await CreateWorkflowExecutionContext(workflowDefinitionActiveVersion, workflowInstance);
             await RunAsync(workflowExecutionContext, cancellationToken);
+
+            // update workflow instance status to the status of the topmost task when RunAsync finishes
+            workflowInstance = await workflowInstanceStore.GetByIdAsync(workflowExecutionContext.TenantId, workflowExecutionContext.InstanceId, cancellationToken);
+
+            if (workflowExecutionContext.WorkflowInstanceTaskStack.Count() == 0)
+            {
+                workflowInstance.Status = WorkflowStatus.Completed;
+            }
+            else
+            {
+                // if the topmost task status is OnHold - get status of the next activity in the stack and set it as the workflow instance status
+                if (workflowExecutionContext.WorkflowInstanceTaskStack.Peek().Status == WorkflowStatus.OnHold)
+                {
+                    var topTask = workflowExecutionContext.WorkflowInstanceTaskStack.Pop();
+                    workflowInstance.Status = workflowExecutionContext.WorkflowInstanceTaskStack.Peek().Status;
+                    workflowExecutionContext.WorkflowInstanceTaskStack.Push(topTask);
+                }
+            }
+
+            // persist status changes
+            await workflowInstanceStore.SaveAsync(workflowInstance, cancellationToken);
             return workflowExecutionContext;
         }
 
@@ -129,35 +150,35 @@ namespace Elsa.Services
 
                 switch (workflowInstanceTask.Status)
                 {
-                    case WorkflowInstanceTaskStatus.Execute:
+                    case WorkflowStatus.Execute:
                         activityOperation = Execute;
                         break;
 
-                    case WorkflowInstanceTaskStatus.Running:
+                    case WorkflowStatus.Running:
                         activityOperation = Execute;
                         break;
 
-                    case WorkflowInstanceTaskStatus.Resume:
+                    case WorkflowStatus.Resume:
                         activityOperation = Resume;
                         break;
 
-                    case WorkflowInstanceTaskStatus.Faulted:
+                    case WorkflowStatus.Faulted:
                         break;
 
-                    case WorkflowInstanceTaskStatus.Blocked:
+                    case WorkflowStatus.Blocked:
                         break;
 
-                    case WorkflowInstanceTaskStatus.OnHold:
+                    case WorkflowStatus.OnHold:
                         if (iterationCount == workflowInstanceTask.IterationCount) return;
 
                         activityOperation = Execute;
                         break;
 
-                    case WorkflowInstanceTaskStatus.Scheduled:
+                    case WorkflowStatus.Scheduled:
                         activityOperation = Resume;
                         break;
 
-                    case WorkflowInstanceTaskStatus.Completed:
+                    case WorkflowStatus.Completed:
                         break;
                 }
 
@@ -173,27 +194,27 @@ namespace Elsa.Services
 
                     switch (executionResult.Status)
                     {
-                        case WorkflowInstanceTaskStatus.Faulted:
+                        case WorkflowStatus.Faulted:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToFailed();
                             break;
 
-                        case WorkflowInstanceTaskStatus.Blocked:
+                        case WorkflowStatus.Blocked:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToBlocked();
                             break;
 
-                        case WorkflowInstanceTaskStatus.Completed:
+                        case WorkflowStatus.Completed:
                             workflowExecutionContext.PopScheduledWorkflowInstanceTask(currentActivity.Id);
                             break;
 
-                        case WorkflowInstanceTaskStatus.OnHold:
+                        case WorkflowStatus.OnHold:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToOnHold();
                             break;
 
-                        case WorkflowInstanceTaskStatus.Resume:
+                        case WorkflowStatus.Resume:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToResume(Convert.ToDateTime(executionResult.Output.Value));
                             break;
 
-                        case WorkflowInstanceTaskStatus.Scheduled:
+                        case WorkflowStatus.Scheduled:
                             workflowExecutionContext.SetWorkflowInstanceTaskStatusToScheduled(Convert.ToDateTime(executionResult.Output.Value));
                             break;
                     }
@@ -327,16 +348,16 @@ namespace Elsa.Services
             // if any of the listed executionResult.Statuses happen - do not query for next activities
             switch (executionResult.Status)
             {
-                case WorkflowInstanceTaskStatus.Blocked:
+                case WorkflowStatus.Blocked:
                     return new List<IActivity>();
 
-                case WorkflowInstanceTaskStatus.OnHold:
+                case WorkflowStatus.OnHold:
                     return new List<IActivity>();
 
-                case WorkflowInstanceTaskStatus.Faulted:
+                case WorkflowStatus.Faulted:
                     return new List<IActivity>();
 
-                case WorkflowInstanceTaskStatus.Scheduled:
+                case WorkflowStatus.Scheduled:
                     return new List<IActivity>();
             }
 

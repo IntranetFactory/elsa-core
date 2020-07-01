@@ -70,7 +70,7 @@
                                     <td>@latest.WorkflowDefinitionVersion.Description</td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            @if (latest.ScheduledCount > 0)
+                                            @if (latest.ExecuteCount > 0)
                                             {
                                                 <li>
                                                     <span class="badge badge-dot mr-4">
@@ -79,13 +79,13 @@
                                                            asp-controller="WorkflowInstance"
                                                            asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
                                                            asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
-                                                           asp-route-status="Scheduled">
-                                                            @($"{latest.ScheduledCount} Scheduled")
+                                                           asp-route-status="Execute">
+                                                            @($"{latest.ExecuteCount} Execute")
                                                         </a>
                                                     </span>
                                                 </li>
                                             }
-                                            @if (latest.IdleCount > 0)
+                                            @if (latest.ResumeCount > 0)
                                             {
                                                 <li>
                                                     <span class="badge badge-dot mr-4">
@@ -94,8 +94,23 @@
                                                            asp-controller="WorkflowInstance"
                                                            asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
                                                            asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
-                                                           asp-route-status="Idle">
-                                                            @($"{latest.IdleCount} Idle")
+                                                           asp-route-status="Resume">
+                                                            @($"{latest.ResumeCount} Resume")
+                                                        </a>
+                                                    </span>
+                                                </li>
+                                            }
+                                            @if (latest.ScheduledCount > 0)
+                                            {
+                                                <li>
+                                                    <span class="badge badge-dot mr-4">
+                                                        <i class="bg-warning"></i>
+                                                        <a asp-action="Index"
+                                                           asp-controller="WorkflowInstance"
+                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
+                                                           asp-route-status="Schedule">
+                                                            @($"{latest.ScheduledCount} Scheduled")
                                                         </a>
                                                     </span>
                                                 </li>
@@ -115,6 +130,51 @@
                                                     </span>
                                                 </li>
                                             }
+                                            @if (latest.FaultedCount > 0)
+                                            {
+                                                <li>
+                                                    <span class="badge badge-dot mr-4">
+                                                        <i class="bg-danger"></i>
+                                                        <a asp-action="Index"
+                                                           asp-controller="WorkflowInstance"
+                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
+                                                           asp-route-status="Faulted">
+                                                            @($"{latest.FaultedCount} Faulted")
+                                                        </a>
+                                                    </span>
+                                                </li>
+                                            }
+                                            @if (latest.BlockedCount > 0)
+                                            {
+                                                <li>
+                                                    <span class="badge badge-dot mr-4">
+                                                        <i class="bg-warning"></i>
+                                                        <a asp-action="Index"
+                                                           asp-controller="WorkflowInstance"
+                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
+                                                           asp-route-status="Blocked">
+                                                            @($"{latest.BlockedCount} Blocked")
+                                                        </a>
+                                                    </span>
+                                                </li>
+                                            }
+                                            @if (latest.OnHoldCount > 0)
+                                            {
+                                                <li>
+                                                    <span class="badge badge-dot mr-4">
+                                                        <i class="bg-info"></i>
+                                                        <a asp-action="Index"
+                                                           asp-controller="WorkflowInstance"
+                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
+                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
+                                                           asp-route-status="OnHold">
+                                                            @($"{latest.OnHoldCount} OnHold")
+                                                        </a>
+                                                    </span>
+                                                </li>
+                                            }
                                             @if (latest.CompletedCount > 0)
                                             {
                                                 <li>
@@ -126,51 +186,6 @@
                                                            asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
                                                            asp-route-status="Completed">
                                                             @($"{latest.CompletedCount} Completed")
-                                                        </a>
-                                                    </span>
-                                                </li>
-                                            }
-                                            @if (latest.SuspendedCount > 0)
-                                            {
-                                                <li>
-                                                    <span class="badge badge-dot mr-4">
-                                                        <i class="bg-warning"></i>
-                                                        <a asp-action="Index"
-                                                           asp-controller="WorkflowInstance"
-                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
-                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
-                                                           asp-route-status="Suspended">
-                                                            @($"{latest.SuspendedCount} Suspended")
-                                                        </a>
-                                                    </span>
-                                                </li>
-                                            }
-                                            @if (latest.FaultedCount > 0)
-                                            {
-                                                <li>
-                                                    <span class="badge badge-dot mr-4">
-                                                        <i class="bg-warning"></i>
-                                                        <a asp-action="Index"
-                                                           asp-controller="WorkflowInstance"
-                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
-                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
-                                                           asp-route-status="Faulted">
-                                                            @($"{latest.FaultedCount} Faulted")
-                                                        </a>
-                                                    </span>
-                                                </li>
-                                            }
-                                            @if (latest.CancelledCount > 0)
-                                            {
-                                                <li>
-                                                    <span class="badge badge-dot mr-4">
-                                                        <i class="bg-default"></i>
-                                                        <a asp-action="Index"
-                                                           asp-controller="WorkflowInstance"
-                                                           asp-route-tenantId="@latest.WorkflowDefinitionVersion.TenantId"
-                                                           asp-route-definitionId="@latest.WorkflowDefinitionVersion.DefinitionId"
-                                                           asp-route-status="Cancelled">
-                                                            @($"{latest.CancelledCount} Cancelled")
                                                         </a>
                                                     </span>
                                                 </li>

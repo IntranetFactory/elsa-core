@@ -76,13 +76,13 @@ namespace Elsa.Activities
                     break;
             }
 
-            return new ExecutionResult(WorkflowInstanceTaskStatus.Scheduled, null, null, null, Variable.From(Date));
+            return new ExecutionResult(WorkflowStatus.Scheduled, null, null, null, Variable.From(Date));
         }
 
         // OnResumeAsync method is called when Scheduled task is due
         protected override async Task<IActivityExecutionResult> OnResumeAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
-            return new ExecutionResult(WorkflowInstanceTaskStatus.Completed);
+            return new ExecutionResult(WorkflowStatus.Completed);
         }
 
         public static List<SelectOption> GetOffsetTypeOptions()

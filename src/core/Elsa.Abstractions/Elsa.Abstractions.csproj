@@ -20,6 +20,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Services\Extensions\**" />
+      <EmbeddedResource Remove="Services\Extensions\**" />
+      <None Remove="Services\Extensions\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="icon.png">
             <Pack>True</Pack>
             <PackagePath />

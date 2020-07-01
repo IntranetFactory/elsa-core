@@ -31,7 +31,7 @@ namespace Elsa.Services
             {
                 Id = idGenerator.Generate(),
                 TenantId = workflowDefinitionActiveVersion.TenantId,
-                Status = WorkflowStatus.Idle,
+                Status = WorkflowStatus.Running,
                 Version = workflowDefinitionActiveVersion.Version,
                 CorrelationId = correlationId,
                 CreatedAt = clock.GetCurrentInstant(),

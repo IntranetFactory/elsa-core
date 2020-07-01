@@ -8,7 +8,7 @@ namespace Elsa.Models
         {
         }
 
-        public WorkflowInstanceTask(string activityId, int? tenantId, string? tag, WorkflowInstanceTaskStatus? status, DateTime? createDate, DateTime? scheduleDate, DateTime? executionDate, Variable? input = default)
+        public WorkflowInstanceTask(string activityId, int? tenantId, string? tag, WorkflowStatus status, DateTime? createDate, DateTime? scheduleDate, DateTime? executionDate, Variable? input = default)
         {
             ActivityId = activityId;
             TenantId = tenantId;
@@ -23,7 +23,7 @@ namespace Elsa.Models
         public int? TenantId { get; set; }
         public string InstanceId { get; set; }
         public string? Tag { get; set; }
-        public WorkflowInstanceTaskStatus? Status { get; set; }
+        public WorkflowStatus Status { get; set; }
         public Variable? Input { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? ScheduleDate { get; set; }

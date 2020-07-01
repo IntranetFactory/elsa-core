@@ -7,7 +7,7 @@ namespace Elsa.Results
 {
     public class ExecutionResult : ActivityExecutionResult
     {
-        public ExecutionResult(WorkflowInstanceTaskStatus? status = default, string? tag = default, LocalizedString? message = default, IEnumerable<string>? outcomes = default, Variable? output = default)
+        public ExecutionResult(WorkflowStatus? status = default, string? tag = default, LocalizedString? message = default, IEnumerable<string>? outcomes = default, Variable? output = default)
         {
             var outcomeList = outcomes?.ToList() ?? new List<string>();
             _outcomes = outcomeList;
@@ -19,7 +19,7 @@ namespace Elsa.Results
         }
 
         private IReadOnlyCollection<string> _outcomes;
-        public WorkflowInstanceTaskStatus? Status { get; set; }
+        public WorkflowStatus? Status { get; set; }
         public string? Tag { get; set; }
         public LocalizedString? Message { get; }
         public IReadOnlyCollection<string> Outcomes

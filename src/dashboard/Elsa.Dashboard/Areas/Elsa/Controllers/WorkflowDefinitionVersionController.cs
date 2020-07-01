@@ -333,7 +333,7 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             dynamic workflowModel = model.WorkflowModel;
             var activities = workflowModel.GetType().GetProperty("Activities").GetValue(workflowModel, null);
             var connections = workflowModel.GetType().GetProperty("Connections").GetValue(workflowModel, null);
-            
+
             workflowDefinitionVersion.Activities.Clear();
 
             foreach (var activity in activities)
@@ -378,13 +378,14 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             return new WorkflowDefinitionVersionListItemModel
             {
                 WorkflowDefinitionVersion = workflowDefinitionVersion,
+                ExecuteCount = instances.Count(x => x.Status == WorkflowStatus.Execute),
+                ResumeCount = instances.Count(x => x.Status == WorkflowStatus.Resume),
                 ScheduledCount = instances.Count(x => x.Status == WorkflowStatus.Scheduled),
-                IdleCount = instances.Count(x => x.Status == WorkflowStatus.Idle),
                 RunningCount = instances.Count(x => x.Status == WorkflowStatus.Running),
-                CompletedCount = instances.Count(x => x.Status == WorkflowStatus.Completed),
-                SuspendedCount = instances.Count(x => x.Status == WorkflowStatus.Suspended),
                 FaultedCount = instances.Count(x => x.Status == WorkflowStatus.Faulted),
-                CancelledCount = instances.Count(x => x.Status == WorkflowStatus.Cancelled),
+                BlockedCount = instances.Count(x => x.Status == WorkflowStatus.Blocked),
+                OnHoldCount = instances.Count(x => x.Status == WorkflowStatus.OnHold),
+                CompletedCount = instances.Count(x => x.Status == WorkflowStatus.Completed),
             };
         }
     }
