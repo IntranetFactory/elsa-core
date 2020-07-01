@@ -16,7 +16,7 @@ namespace Elsa.Activities.ControlFlow
         Category = "Control Flow",
         Description = "Switch execution based on a given expression.",
         Icon = "far fa-list-alt",
-        RuntimeDescription = "x => !!x.state.expression ? `Switch execution based on <strong>${ x.state.expression.expression }</strong>.` : x.definition.description",
+        RuntimeDescription = "x => (x.state.value != undefined && x.state.value.value.expression != '') ? `Switch execution based on <strong>${x.state.value.value.expression}</strong>.` : x.definition.description",
         Outcomes = new[] { "x => x.state.cases.map(c => c.toString())" }
     )]
     public class Switch : Activity

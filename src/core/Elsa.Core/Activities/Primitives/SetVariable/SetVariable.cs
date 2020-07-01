@@ -15,7 +15,7 @@ namespace Elsa.Activities.Primitives
         DisplayName = "Set Variable",
         Description = "Set variable on the workflow.",
         Category = "Primitives",
-        RuntimeDescription = "x => !!x.state.variableName ? `<strong>${x.state.variableName}</strong> = <strong>${x.state.valueExpression.expression}</strong><br/>${x.state.valueExpression.syntax}` : x.definition.description",
+        RuntimeDescription = "x => (x.state.variableName != undefined && !!x.state.variableName.value) ? `<strong>${x.state.variableName.value}</strong> = <strong>${x.state.value.value.expression}</strong><br/>${x.state.value.value.type} expression` : x.definition.description",
         Outcomes = new[] { OutcomeNames.Done }
     )]
     public class SetVariable : Activity

@@ -13,7 +13,13 @@ using MimeKit.Text;
 
 namespace Elsa.Activities.Email.Activities
 {
-    [WorkflowDefinitionActivity(Category = "Email", Description = "Send an email message.")]
+    [WorkflowDefinitionActivity(
+        Category = "Email", 
+        Description = "Send an email message.",
+        RuntimeDescription = "x => x.definition.description + `<br/>` + ((x.state.from != undefined && x.state.from.value.expression != '') ? `<strong>From: ${x.state.from.value.expression}</strong><br/>${x.state.from.value.type} expression<br/>` : ``)" +
+        " + ((x.state.to != undefined && x.state.to.value.expression != '') ? `<strong>To: ${x.state.to.value.expression}</strong><br/>${x.state.to.value.type} expression<br/>` : ``)" +
+        " + ((x.state.subject != undefined && x.state.subject.value.expression != '') ? `<strong>Subject: ${x.state.subject.value.expression}</strong><br/>${x.state.subject.value.type} expression<br/>` : ``)"
+        )]
     public class SendEmail : Activity
     {
         private readonly ISmtpService smtpService;
