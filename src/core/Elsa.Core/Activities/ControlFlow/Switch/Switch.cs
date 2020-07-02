@@ -17,7 +17,7 @@ namespace Elsa.Activities.ControlFlow
         Description = "Switch execution based on a given expression.",
         Icon = "far fa-list-alt",
         RuntimeDescription = "x => (x.state.value != undefined && x.state.value.value.expression != '') ? `Switch execution based on <strong>${x.state.value.value.expression}</strong>.` : x.definition.description",
-        Outcomes = new[] { "x => x.state.cases.map(c => c.toString())" }
+        Outcomes = new[] { "x => x.state.cases.value", OutcomeNames.Default }
     )]
     public class Switch : Activity
     {
@@ -37,22 +37,27 @@ namespace Elsa.Activities.ControlFlow
         }
 
         [ActivityProperty(Hint = "A comma-separated list of possible outcomes of the expression.")]
-        public HashSet<string> Cases
+        public ICollection<string> Cases
         {
-            get => GetState<HashSet<string>>();
-            set => SetState(new HashSet<string>(value, StringComparer.OrdinalIgnoreCase));
+            get => GetState(() => new string[0]);
+            set => SetState(value);
         }
 
         protected override async Task<IActivityExecutionResult> OnExecuteAsync(ActivityExecutionContext context, CancellationToken cancellationToken)
         {
             var result = await context.EvaluateAsync(Value, cancellationToken);
 
-            if (ContainsCase(result) || !ContainsCase(OutcomeNames.Default))
-                return Done(result, Variable.From(result));
+            if (ContainsCase(result))
+            {
+                return ExecutionResult(WorkflowStatus.Completed, null, null, result);
+            }
 
-            return Done(OutcomeNames.Default, Variable.From(result));
+            return ExecutionResult(WorkflowStatus.Completed, null, null, OutcomeNames.Default);
         }
 
-        private bool ContainsCase(string @case) => Cases.Contains(@case);
+        private bool ContainsCase(string @case)
+        {
+            return Cases.Contains(@case) ? true : false;
+        }
     }
 }
