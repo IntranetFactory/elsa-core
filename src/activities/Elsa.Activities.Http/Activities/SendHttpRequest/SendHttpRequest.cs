@@ -26,8 +26,8 @@ namespace Elsa.Activities.Http
         Category = "HTTP",
         DisplayName = "Send HTTP Request",
         Description = "Send an HTTP request.",
-        RuntimeDescription = "x => (x.state.url != undefined && x.state.url.value.expression != '') ? `<strong>Url: ${x.state.url.value.expression}</strong><br/>${x.state.url.value.type} expression<br/>` : x.definition.description",
-        Outcomes = new[] { OutcomeNames.Done, "x => !!x.state.supportedStatusCodes ? ['UnSupportedStatusCode', ...x.state.supportedStatusCodes] : ['UnSupportedStatusCode']" }
+        RuntimeDescription = "x => (x.state.Url != undefined && x.state.Url.value.Expression != '') ? `<strong>Url: ${x.state.Url.value.Expression}</strong><br/>${x.state.Url.value.Type} expression<br/>` : x.definition.description",
+        Outcomes = new[] { OutcomeNames.Done, "x => !!x.state.SupportedStatusCodes ? ['UnSupportedStatusCode', ...x.state.SupportedStatusCodes] : ['UnSupportedStatusCode']" }
     )]
     public class SendHttpRequest : Activity
     {

@@ -6,7 +6,6 @@ using System.Reflection;
 using Elsa.Attributes;
 using Elsa.Design;
 using Elsa.Expressions;
-using Elsa.Services;
 using Humanizer;
 using Newtonsoft.Json.Linq;
 
@@ -61,7 +60,7 @@ namespace Elsa.Metadata
 
                 yield return new ActivityPropertyDescriptor
                 (
-                    (activityProperty.Name ?? propertyInfo.Name).Camelize(),
+                    (activityProperty.Name ?? propertyInfo.Name),
                     (activityProperty.Type ?? DeterminePropertyType(propertyInfo)).Pascalize(),
                     activityProperty.Label ?? propertyInfo.Name.Humanize(LetterCasing.Title),
                     activityProperty.Hint,

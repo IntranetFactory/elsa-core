@@ -15,7 +15,7 @@ namespace Elsa.Activities.ControlFlow
         DisplayName = "If/Else",
         Category = "Control Flow",
         Description = "Evaluate a Boolean expression and continue execution depending on the result.",
-        RuntimeDescription = "x => (x.state.condition != undefined && x.state.condition.value.expression != '') ? `Evaluate <strong>${ x.state.condition.value.expression }</strong> and continue execution depending on the result.` : x.definition.description",
+        RuntimeDescription = "x => (x.state.Condition != undefined && x.state.Condition.value.Expression != '') ? `Evaluate <strong>${ x.state.Condition.value.Expression }</strong> and continue execution depending on the result.` : x.definition.description",
         Outcomes = new[] { OutcomeNames.True, OutcomeNames.False }
     )]
     public class IfElse : Activity

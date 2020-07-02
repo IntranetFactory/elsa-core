@@ -16,9 +16,9 @@ namespace Elsa.Activities.Email.Activities
     [WorkflowDefinitionActivity(
         Category = "Email", 
         Description = "Send an email message.",
-        RuntimeDescription = "x => x.definition.description + `<br/>` + ((x.state.from != undefined && x.state.from.value.expression != '') ? `<strong>From: ${x.state.from.value.expression}</strong><br/>${x.state.from.value.type} expression<br/>` : ``)" +
-        " + ((x.state.to != undefined && x.state.to.value.expression != '') ? `<strong>To: ${x.state.to.value.expression}</strong><br/>${x.state.to.value.type} expression<br/>` : ``)" +
-        " + ((x.state.subject != undefined && x.state.subject.value.expression != '') ? `<strong>Subject: ${x.state.subject.value.expression}</strong><br/>${x.state.subject.value.type} expression<br/>` : ``)"
+        RuntimeDescription = "x => x.definition.description + `<br/>` + ((x.state.From != undefined && x.state.From.value.Expression != '') ? `<strong>From: ${x.state.From.value.Expression}</strong><br/>${x.state.From.value.Type} expression<br/>` : ``)" +
+        " + ((x.state.To != undefined && x.state.To.value.Expression != '') ? `<strong>To: ${x.state.To.value.Expression}</strong><br/>${x.state.To.value.Type} expression<br/>` : ``)" +
+        " + ((x.state.Subject != undefined && x.state.Subject.value.Expression != '') ? `<strong>Subject: ${x.state.Subject.value.Expression}</strong><br/>${x.state.Subject.value.Type} expression<br/>` : ``)"
         )]
     public class SendEmail : Activity
     {
