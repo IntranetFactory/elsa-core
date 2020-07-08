@@ -165,6 +165,8 @@ namespace Elsa.Dashboard.Areas.Elsa.Controllers
             int tenantId = GetTenant();
             string workflowDefinitionJson;
 
+            // StreamReader is used to read raw data from Request.Body because model binder does not properly bind values form posted ajax requests.
+            // Data is first read and then deserialized into WorkflowDefinitionVersionEditModel so that the json is properly mapped.
             using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
             {
                 workflowDefinitionJson = await reader.ReadToEndAsync();
